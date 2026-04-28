@@ -554,7 +554,15 @@ async function bukaKameraAbsen(tipe) {
   document.getElementById('preview').classList.add('hidden');
 
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    // RESOLUSI RENDAH BIAR CEPAT BUKA
+    stream = await navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        facingMode: 'user',
+        width: { ideal: 640 }, 
+        height: { ideal: 480 } 
+      }, 
+      audio: false 
+    });
     document.getElementById('video').srcObject = stream;
   } catch (err) {
     showNotif('Kamera error: ' + err.message, true);
@@ -565,8 +573,9 @@ async function bukaKameraAbsen(tipe) {
 document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
-
-  const maxWidth = 800;
+  
+  // TURUNIN RESOLUSI BIAR CEPAT: max 600px, quality 0.6
+  const maxWidth = 600;
   let width = video.videoWidth;
   let height = video.videoHeight;
   if (width > maxWidth) {
@@ -576,18 +585,14 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   canvas.width = width;
   canvas.height = height;
   canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-  const foto = canvas.toDataURL('image/jpeg', 0.7);
+  const foto = canvas.toDataURL('image/jpeg', 0.6); // 0.6 = 60% quality
 
   stopKamera();
   document.getElementById('preview').src = foto;
   document.getElementById('preview').classList.remove('hidden');
 
-  const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
-  navigator.geolocation.getCurrentPosition(pos => {
-    kirimAbsenBaru(tipe, foto, pos.coords.latitude, pos.coords.longitude);
-  }, err => {
-    kirimAbsenBaru(tipe, foto, 0, 0);
-  });
+  // LANGSUNG KIRIM, GPS JALAN PARALEL
+  kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe, foto);
 };
 
 document.getElementById('btnBatalFoto').onclick = batalFoto;
@@ -605,17 +610,28 @@ function stopKamera() {
   }
 }
 
-async function kirimAbsenBaru(tipe, foto, lat, lng) {
-  showNotif('Mengirim data...', false, true);
+async function kirimAbsenCepat(tipe, foto) {
+  showNotif('Mengirim...', false, true);
   document.getElementById('kameraArea').classList.add('hidden');
+
+  // JALANIN GPS + FETCH BARENGAN, GPS TIMEOUT 2 DETIK
+  const gpsPromise = new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({lat: pos.coords.latitude, lng: pos.coords.longitude}),
+      err => resolve({lat: 0, lng: 0}), // KALAU GAGAL, PAKE 0,0
+      {timeout: 2000, maximumAge: 60000} // TIMEOUT 2 DETIK AJA
+    );
+  });
+
+  const gps = await gpsPromise; // Tunggu max 2 detik
 
   const data = {
     action: 'absen',
     nama: currentUser.nama,
     tipe: tipe,
     jam: new Date().toLocaleTimeString('id-ID', {hour12: false}),
-    lat: lat,
-    lng: lng,
+    lat: gps.lat,
+    lng: gps.lng,
     foto: foto
   };
 
@@ -634,7 +650,7 @@ async function kirimAbsenBaru(tipe, foto, lat, lng) {
         cekStatusHariIni();
         document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
         document.getElementById('preview').classList.add('hidden');
-      }, 1500);
+      }, 800); // PERCEPAT DARI 1500ms
     } else {
       showNotif(hasil.pesan, true);
       document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
