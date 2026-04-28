@@ -820,8 +820,9 @@ async function loadProfil() {
   });
   const hasil = await res.json();
   if (hasil.status === 'sukses' && hasil.data.fotoProfil) {
-    document.getElementById('fotoProfil').src = hasil.data.fotoProfil;
-    document.getElementById('profilPreview').src = hasil.data.fotoProfil;
+    const cacheBuster = '?t=' + new Date().getTime();
+    document.getElementById('fotoProfil').src = hasil.data.fotoProfil + cacheBuster;
+    document.getElementById('profilPreview').src = hasil.data.fotoProfil + cacheBuster;
   }
   if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
   if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
