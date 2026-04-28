@@ -15,7 +15,6 @@
    .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* SOFT TONE THEME */
     :root {
       --soft-blue: #E3F2FD;
       --soft-blue-text: #1565C0;
@@ -65,11 +64,9 @@
     /* ABSENSI SOFT TONE */
     .card-soft { background: white; margin: 20px; border-radius: 24px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.04); }
     .card-title-soft { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: #333; }
-
     .info-hari-ini { background: var(--soft-blue); border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 24px; }
     .info-tgl { font-size: 14px; color: var(--soft-blue-text); margin-bottom: 8px; font-weight: 600; }
     .info-jam { font-size: 40px; font-weight: 800; color: var(--soft-blue-text); letter-spacing: 1px; }
-
     .timeline-absen { margin-bottom: 24px; }
     .timeline-item { display: flex; gap: 16px; padding: 12px 0; position: relative; }
     .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 40px; bottom: -12px; width: 2px; background: var(--soft-border); }
@@ -80,7 +77,6 @@
     .timeline-label { font-size: 13px; color: #999; margin-bottom: 4px; }
     .timeline-waktu { font-size: 16px; font-weight: 700; color: #333; }
     .timeline-item.done.timeline-waktu { color: var(--soft-green-text); }
-
     .kamera-container-soft { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 16px; background: #000; }
     .kamera-container-soft video { width: 100%; display: block; }
     .kamera-frame-soft { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; pointer-events: none; }
@@ -90,12 +86,10 @@
     .kamera-frame-soft.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 12px; }
     .kamera-frame-soft.br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
     .kamera-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-size: 13px; backdrop-filter: blur(10px); }
-
     .btn-soft { width: 100%; padding: 16px; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-soft:active { transform: scale(0.97); }
     .btn-foto-soft { background: var(--soft-blue-text); color: white; margin-bottom: 8px; }
     .btn-batal-soft { background: var(--soft-gray); color: #666; }
-
     .btn-aksi-soft { width: 100%; padding: 24px; border: none; border-radius: 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: 0.3s; text-align: left; }
     .btn-aksi-soft:active { transform: scale(0.98); }
     .btn-aksi-soft:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -108,9 +102,7 @@
     .btn-aksi-soft[data-tipe="in"].btn-aksi-judul { color: var(--soft-blue-text); }
     .btn-aksi-soft[data-tipe="out"].btn-aksi-judul { color: var(--soft-red-text); }
     .btn-aksi-sub { font-size: 13px; color: #666; }
-
     .preview-soft { width: 100%; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-
     .notif-soft { background: var(--soft-green); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s; }
     .notif-soft.error { background: var(--soft-red); }
     .notif-soft.material-icons-round { font-size: 28px; color: var(--soft-green-text); }
@@ -118,14 +110,40 @@
     .notif-soft p { font-weight: 600; color: #333; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* REKAP SOFT TONE */
+    .rekap-filter { display: flex; gap: 8px; margin-bottom: 20px; }
+    .filter-btn { flex: 1; padding: 10px; border: 2px solid var(--soft-border); background: white; border-radius: 12px; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
+    .filter-btn.active { background: var(--soft-blue); border-color: var(--soft-blue-text); color: var(--soft-blue-text); }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .summary-card { border-radius: 16px; padding: 16px; position: relative; overflow: hidden; }
+    .summary-card.masuk { background: var(--soft-blue); }
+    .summary-card.pulang { background: var(--soft-green); }
+    .summary-card.material-icons-round { position: absolute; right: 12px; top: 12px; font-size: 32px; opacity: 0.3; }
+    .summary-card.masuk.material-icons-round { color: var(--soft-blue-text); }
+    .summary-card.pulang.material-icons-round { color: var(--soft-green-text); }
+    .summary-label { font-size: 12px; margin-bottom: 4px; opacity: 0.8; }
+    .summary-card.masuk.summary-label { color: var(--soft-blue-text); }
+    .summary-card.pulang.summary-label { color: var(--soft-green-text); }
+    .summary-value { font-size: 28px; font-weight: 800; }
+    .summary-card.masuk.summary-value { color: var(--soft-blue-text); }
+    .summary-card.pulang.summary-value { color: var(--soft-green-text); }
+    .rekap-list-soft { display: flex; flex-direction: column; gap: 10px; }
+    .rekap-item-soft { background: #FCFCFC; border: 2px solid var(--soft-border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+    .rekap-item-soft:active { transform: scale(0.98); background: white; }
+    .rekap-tgl-soft { font-weight: 700; color: #333; margin-bottom: 6px; }
+    .rekap-jam-soft { display: flex; gap: 16px; font-size: 13px; }
+    .jam-badge { display: flex; align-items: center; gap: 4px; color: #666; }
+    .jam-badge.material-icons-round { font-size: 16px; }
+    .jam-badge.in.material-icons-round { color: var(--soft-blue-text); }
+    .jam-badge.out.material-icons-round { color: var(--soft-red-text); }
+    .status-hari { width: 8px; height: 40px; border-radius: 8px; background: var(--soft-border); }
+    .status-hari.lengkap { background: var(--soft-green-text); }
+    .status-hari.setengah { background: #FFA726; }
+    .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+    .empty-state.material-icons-round { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
     #video, #preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
    .hidden { display: none!important; }
-
-    /* REKAP */
-   .rekap-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F3F4; }
-   .rekap-item:last-child { border-bottom: none; }
-   .rekap-tgl { font-weight: 600; color: #333; }
-   .rekap-jam { color: #666; font-size: 14px; }
 
     /* FORM */
    .form-group { margin-bottom: 16px; }
@@ -198,8 +216,7 @@
         </div>
       </div>
     </div>
-
-    <!-- PAGE ABSENSI - SOFT TONE 1 TOMBOL -->
+<!-- PAGE ABSENSI - SOFT TONE 1 TOMBOL -->
     <div id="page-absensi" class="page">
       <div class="card-soft">
         <div class="card-title-soft">
@@ -207,13 +224,11 @@
           Absensi Hari Ini
         </div>
 
-        <!-- INFO HARI INI -->
         <div class="info-hari-ini">
           <div class="info-tgl" id="tglAbsen">Sabtu, 26 April 2026</div>
           <div class="info-jam" id="jamAbsen">08:45:12</div>
         </div>
 
-        <!-- STATUS ABSEN -->
         <div class="timeline-absen">
           <div class="timeline-item" id="itemMasuk">
             <div class="timeline-dot"></div>
@@ -221,7 +236,6 @@
               <p class="timeline-label">Check In</p>
               <p class="timeline-waktu" id="waktuMasuk">Belum absen</p>
             </div>
-          </div>
           <div class="timeline-item" id="itemPulang">
             <div class="timeline-dot"></div>
             <div class="timeline-content">
@@ -231,7 +245,6 @@
           </div>
         </div>
 
-        <!-- AREA KAMERA -->
         <div id="kameraArea" class="hidden">
           <div class="kamera-container-soft">
             <video id="video" autoplay playsinline></video>
@@ -255,7 +268,6 @@
 
         <img id="preview" class="hidden preview-soft">
 
-        <!-- 1 TOMBOL UTAMA YANG BERUBAH -->
         <div id="tombolUtamaAbsen">
           <button class="btn-aksi-soft" id="btnAksiUtama" data-tipe="in">
             <div class="btn-aksi-icon">
@@ -268,7 +280,6 @@
           </button>
         </div>
 
-        <!-- NOTIFIKASI -->
         <div id="notifAbsen" class="notif-soft hidden">
           <span class="material-icons-round" id="notifIcon">check_circle</span>
           <p id="notifText">Absen berhasil!</p>
@@ -276,11 +287,39 @@
       </div>
     </div>
 
-    <!-- PAGE REKAP -->
+    <!-- PAGE REKAP - SOFT TONE INTERAKTIF -->
     <div id="page-rekap" class="page">
-      <div class="card">
-        <div class="card-title"><span class="material-icons-round">calendar_month</span> Rekap Mingguan</div>
-        <div id="rekapList"></div>
+      <div class="card-soft">
+        <div class="card-title-soft">
+          <span class="material-icons-round">insights</span>
+          Rekap Absensi
+        </div>
+
+        <div class="rekap-filter">
+          <button class="filter-btn active" data-range="7">7 Hari</button>
+          <button class="filter-btn" data-range="14">14 Hari</button>
+          <button class="filter-btn" data-range="30">30 Hari</button>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card masuk">
+            <p class="summary-label">Total Masuk</p>
+            <p class="summary-value" id="totalMasuk">0</p>
+            <span class="material-icons-round">login</span>
+          </div>
+          <div class="summary-card pulang">
+            <p class="summary-label">Total Pulang</p>
+            <p class="summary-value" id="totalPulang">0</p>
+            <span class="material-icons-round">logout</span>
+          </div>
+        </div>
+
+        <div id="rekapList" class="rekap-list-soft"></div>
+
+        <div id="rekapEmpty" class="empty-state hidden">
+          <span class="material-icons-round">event_busy</span>
+          <p>Belum ada data absensi</p>
+        </div>
       </div>
     </div>
 
@@ -386,6 +425,7 @@ const KARYAWAN = [
 
 let currentUser = null;
 let stream = null;
+let semuaDataRekap = [];
 
 // SOUND TING
 function playTing() {
@@ -462,6 +502,15 @@ window.onload = () => {
     document.getElementById('bottomNav').classList.remove('hidden');
     loadProfil();
   }
+
+  // EVENT FILTER REKAP
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tampilkanRekap(parseInt(btn.dataset.range));
+    };
+  });
 };
 
 function showPage(page) {
@@ -471,7 +520,7 @@ function showPage(page) {
 
   if (page === 'home') {
     document.querySelectorAll('.nav-item')[0].classList.add('active');
-    loadProfil(); // TAMBAHAN: refresh foto tiap buka home
+    loadProfil();
   }
   if (page === 'absensi') {
     document.querySelectorAll('.nav-item')[1].classList.add('active');
@@ -554,14 +603,13 @@ async function bukaKameraAbsen(tipe) {
   document.getElementById('preview').classList.add('hidden');
 
   try {
-    // RESOLUSI RENDAH BIAR CEPAT BUKA
-    stream = await navigator.mediaDevices.getUserMedia({ 
-      video: { 
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
         facingMode: 'user',
-        width: { ideal: 640 }, 
-        height: { ideal: 480 } 
-      }, 
-      audio: false 
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
     });
     document.getElementById('video').srcObject = stream;
   } catch (err) {
@@ -573,8 +621,7 @@ async function bukaKameraAbsen(tipe) {
 document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
-  
-  // TURUNIN RESOLUSI BIAR CEPAT: max 600px, quality 0.6
+
   const maxWidth = 600;
   let width = video.videoWidth;
   let height = video.videoHeight;
@@ -585,13 +632,12 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   canvas.width = width;
   canvas.height = height;
   canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-  const foto = canvas.toDataURL('image/jpeg', 0.6); // 0.6 = 60% quality
+  const foto = canvas.toDataURL('image/jpeg', 0.6);
 
   stopKamera();
   document.getElementById('preview').src = foto;
   document.getElementById('preview').classList.remove('hidden');
 
-  // LANGSUNG KIRIM, GPS JALAN PARALEL
   kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe, foto);
 };
 
@@ -614,16 +660,15 @@ async function kirimAbsenCepat(tipe, foto) {
   showNotif('Mengirim...', false, true);
   document.getElementById('kameraArea').classList.add('hidden');
 
-  // JALANIN GPS + FETCH BARENGAN, GPS TIMEOUT 2 DETIK
   const gpsPromise = new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       pos => resolve({lat: pos.coords.latitude, lng: pos.coords.longitude}),
-      err => resolve({lat: 0, lng: 0}), // KALAU GAGAL, PAKE 0,0
-      {timeout: 2000, maximumAge: 60000} // TIMEOUT 2 DETIK AJA
+      err => resolve({lat: 0, lng: 0}),
+      {timeout: 2000, maximumAge: 60000}
     );
   });
 
-  const gps = await gpsPromise; // Tunggu max 2 detik
+  const gps = await gpsPromise;
 
   const data = {
     action: 'absen',
@@ -650,7 +695,7 @@ async function kirimAbsenCepat(tipe, foto) {
         cekStatusHariIni();
         document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
         document.getElementById('preview').classList.add('hidden');
-      }, 800); // PERCEPAT DARI 1500ms
+      }, 800);
     } else {
       showNotif(hasil.pesan, true);
       document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
@@ -683,7 +728,7 @@ function showNotif(text, isError = false, isLoading = false) {
   }
 }
 
-// REKAP
+// REKAP INTERAKTIF
 async function loadRekap() {
   const res = await fetch(WEB_APP_URL, {
     method: 'POST',
@@ -691,19 +736,62 @@ async function loadRekap() {
   });
   const hasil = await res.json();
 
-  const list = document.getElementById('rekapList');
   if (hasil.status === 'sukses') {
-    list.innerHTML = hasil.data.map(d => `
-      <div class="rekap-item">
-        <div>
-          <div class="rekap-tgl">${d.tanggal}</div>
-          <div class="rekap-jam">Masuk: ${d.masuk} | Pulang: ${d.pulang}</div>
-        </div>
-      </div>
-    `).join('');
+    semuaDataRekap = hasil.data;
+    tampilkanRekap(7);
   } else {
-    list.innerHTML = `<p style="text-align:center;color:#666">Gagal load rekap</p>`;
+    document.getElementById('rekapEmpty').classList.remove('hidden');
   }
+}
+
+function tampilkanRekap(hari) {
+  const list = document.getElementById('rekapList');
+  const empty = document.getElementById('rekapEmpty');
+
+  const dataFilter = semuaDataRekap.slice(0, hari);
+
+  if (dataFilter.length === 0) {
+    list.innerHTML = '';
+    empty.classList.remove('hidden');
+    document.getElementById('totalMasuk').textContent = '0';
+    document.getElementById('totalPulang').textContent = '0';
+    return;
+  }
+
+  empty.classList.add('hidden');
+
+  let masuk = 0, pulang = 0;
+  dataFilter.forEach(d => {
+    if (d.masuk!== '-') masuk++;
+    if (d.pulang!== '-') pulang++;
+  });
+  document.getElementById('totalMasuk').textContent = masuk;
+  document.getElementById('totalPulang').textContent = pulang;
+
+  list.innerHTML = dataFilter.map(d => {
+    const lengkap = d.masuk!== '-' && d.pulang!== '-';
+    const setengah = d.masuk!== '-' && d.pulang === '-';
+    const statusClass = lengkap? 'lengkap' : setengah? 'setengah' : '';
+
+    return `
+      <div class="rekap-item-soft">
+        <div>
+          <div class="rekap-tgl-soft">${d.tanggal}</div>
+          <div class="rekap-jam-soft">
+            <div class="jam-badge in">
+              <span class="material-icons-round">login</span>
+              ${d.masuk}
+            </div>
+            <div class="jam-badge out">
+              <span class="material-icons-round">logout</span>
+              ${d.pulang}
+            </div>
+          </div>
+        </div>
+        <div class="status-hari ${statusClass}"></div>
+      </div>
+    `;
+  }).join('');
 }
 
 // GANTI PASSWORD
@@ -771,7 +859,7 @@ document.getElementById('inputFotoProfil').onchange = (e) => {
   }
 };
 
-// SIMPAN PROFIL
+// SIMPAN PROFIL - FORCE UPDATE
 document.getElementById('btnSimpanProfil').onclick = async () => {
   const status = document.getElementById('profilStatus');
   status.textContent = 'Mengompres & menyimpan...';
@@ -780,8 +868,13 @@ document.getElementById('btnSimpanProfil').onclick = async () => {
 
   const fileInput = document.getElementById('inputFotoProfil');
   let fotoBase64 = '';
+  let previewUrl = '';
+
   if (fileInput.files[0]) {
     fotoBase64 = await compressImage(fileInput.files[0], 400, 0.8);
+    previewUrl = fotoBase64;
+    document.getElementById('fotoProfil').src = previewUrl;
+    document.getElementById('profilPreview').src = previewUrl;
   }
 
   const data = {
@@ -800,12 +893,21 @@ document.getElementById('btnSimpanProfil').onclick = async () => {
   status.textContent = hasil.pesan;
   status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
 
-  if (hasil.status === 'sukses' && hasil.fotoUrl) {
-  const cacheBuster = '?t=' + new Date().getTime();
-  document.getElementById('fotoProfil').src = hasil.fotoUrl + cacheBuster;
-  document.getElementById('profilPreview').src = hasil.fotoUrl + cacheBuster;
-  playTing();
-}
+  if (hasil.status === 'sukses') {
+    playTing();
+    if (hasil.fotoUrl) {
+      setTimeout(() => {
+        const urlFinal = hasil.fotoUrl + '?t=' + new Date().getTime();
+        document.getElementById('fotoProfil').src = '';
+        document.getElementById('profilPreview').src = '';
+        setTimeout(() => {
+          document.getElementById('fotoProfil').src = urlFinal;
+          document.getElementById('profilPreview').src = urlFinal;
+        }, 50);
+      }, 500);
+    }
+    fileInput.value = '';
+  }
 };
 
 function compressImage(file, maxWidth, quality) {
@@ -832,20 +934,26 @@ function compressImage(file, maxWidth, quality) {
   });
 }
 
-// LOAD PROFIL
+// LOAD PROFIL - FORCE NO CACHE
 async function loadProfil() {
   const res = await fetch(WEB_APP_URL, {
     method: 'POST',
     body: JSON.stringify({ action: 'getProfil', nama: currentUser.nama })
   });
   const hasil = await res.json();
-  if (hasil.status === 'sukses' && hasil.data.fotoProfil) {
-    const cacheBuster = '?t=' + new Date().getTime();
-    document.getElementById('fotoProfil').src = hasil.data.fotoProfil + cacheBuster;
-    document.getElementById('profilPreview').src = hasil.data.fotoProfil + cacheBuster;
+  if (hasil.status === 'sukses') {
+    if (hasil.data.fotoProfil) {
+      const urlBaru = hasil.data.fotoProfil + '?t=' + new Date().getTime();
+      document.getElementById('fotoProfil').src = '';
+      document.getElementById('profilPreview').src = '';
+      setTimeout(() => {
+        document.getElementById('fotoProfil').src = urlBaru;
+        document.getElementById('profilPreview').src = urlBaru;
+      }, 50);
+    }
+    if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
+    if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
   }
-  if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
-  if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
 }
 
 if ('serviceWorker' in navigator) {
