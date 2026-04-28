@@ -18,7 +18,7 @@
   /* LOGIN */
  .login-card { background: white; margin: 40px 20px; border-radius: 20px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
  .login-card h1 { text-align: center; color: #1565C0; margin-bottom: 8px; font-size: 24px; font-weight: 800; }
- .login-card.subtitle { text-align: center; color: #666; margin-bottom: 28px; }
+ .login-card .subtitle { text-align: center; color: #666; margin-bottom: 28px; }
  .input-group { position: relative; margin-bottom: 16px; }
  .input-group input { width: 100%; padding: 14px 16px; border: 2px solid #EEEEEE; border-radius: 14px; font-size: 16px; transition: 0.2s; background: #FCFCFC; }
  .input-group input:focus { outline: none; border-color: #1565C0; background: white; }
@@ -39,18 +39,18 @@
  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px; margin-top: -40px; }
  .menu-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); cursor: pointer; transition: 0.2s; text-align: center; }
  .menu-card:active { transform: scale(0.95); }
- .menu-card.icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 28px; }
+ .menu-card .icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 28px; }
  .menu-card h3 { font-size: 14px; color: #333; font-weight: 600; }
  .icon-blue { background: #E3F2FD; color: #1565C0; }
  .icon-green { background: #E8F5E9; color: #2E7D32; }
  .icon-orange { background: #FFF8E1; color: #F57C00; }
  .icon-purple { background: #F3E5F5; color: #7B1FA2; }
 
-  /* CARD UMUM - PAKE INI BIAR AMAN */
+  /* CARD UMUM */
  .card { background: white; margin: 20px; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #333; }
 
-  /* REKAP SOFT TONE - CUMA INI YANG BARU */
+  /* REKAP SOFT TONE */
   .rekap-filter { display: flex; gap: 8px; margin-bottom: 20px; }
   .filter-btn { flex: 1; padding: 10px; border: 2px solid #EEEEEE; background: white; border-radius: 12px; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
   .filter-btn.active { background: #E3F2FD; border-color: #1565C0; color: #1565C0; }
@@ -58,25 +58,25 @@
   .summary-card { border-radius: 16px; padding: 16px; position: relative; overflow: hidden; }
   .summary-card.masuk { background: #E3F2FD; }
   .summary-card.pulang { background: #E8F5E9; }
-  .summary-card.material-icons-round { position: absolute; right: 12px; top: 12px; font-size: 32px; opacity: 0.3; color: #1565C0; }
-  .summary-card.pulang.material-icons-round { color: #2E7D32; }
+  .summary-card .material-icons-round { position: absolute; right: 12px; top: 12px; font-size: 32px; opacity: 0.3; color: #1565C0; }
+  .summary-card.pulang .material-icons-round { color: #2E7D32; }
   .summary-label { font-size: 12px; margin-bottom: 4px; opacity: 0.8; color: #1565C0; }
-  .summary-card.pulang.summary-label { color: #2E7D32; }
+  .summary-card.pulang .summary-label { color: #2E7D32; }
   .summary-value { font-size: 28px; font-weight: 800; color: #1565C0; }
-  .summary-card.pulang.summary-value { color: #2E7D32; }
+  .summary-card.pulang .summary-value { color: #2E7D32; }
   .rekap-list-soft { display: flex; flex-direction: column; gap: 10px; }
   .rekap-item-soft { background: #FCFCFC; border: 2px solid #EEEEEE; border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
   .rekap-tgl-soft { font-weight: 700; color: #333; margin-bottom: 6px; }
   .rekap-jam-soft { display: flex; gap: 16px; font-size: 13px; }
   .jam-badge { display: flex; align-items: center; gap: 4px; color: #666; }
-  .jam-badge.material-icons-round { font-size: 16px; }
-  .jam-badge.in.material-icons-round { color: #1565C0; }
-  .jam-badge.out.material-icons-round { color: #C62828; }
+  .jam-badge .material-icons-round { font-size: 16px; }
+  .jam-badge.in .material-icons-round { color: #1565C0; }
+  .jam-badge.out .material-icons-round { color: #C62828; }
   .status-hari { width: 8px; height: 40px; border-radius: 8px; background: #EEEEEE; }
   .status-hari.lengkap { background: #2E7D32; }
   .status-hari.setengah { background: #FFA726; }
   .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-  .empty-state.material-icons-round { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state .material-icons-round { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
 
   #video, #preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
  .hidden { display: none!important; }
@@ -91,12 +91,39 @@
  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 12px rgba(0,0,0,0.05); max-width: 450px; margin: 0 auto; }
  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; cursor: pointer; font-size: 12px; }
  .nav-item.active { color: #1565C0; }
- .nav-item.material-icons-round { font-size: 24px; }
+ .nav-item .material-icons-round { font-size: 24px; }
 
  .status { padding: 14px; border-radius: 14px; text-align: center; margin-top: 16px; font-weight: 600; }
  .sukses { background: #E8F5E9; color: #2E7D32; }
  .gagal { background: #FFEBEE; color: #C62828; }
  .loading { background: #E3F2FD; color: #1565C0; }
+
+/* TAMBAHAN UNTUK SOFT UI */
+.card-soft { background: white; margin: 20px; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+.card-title-soft { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #333; }
+.info-hari-ini { text-align: center; margin-bottom: 16px; }
+.info-tgl { color: #666; font-size: 14px; }
+.info-jam { font-size: 36px; font-weight: 800; color: #1565C0; }
+.timeline-absen { margin: 20px 0; }
+.timeline-item { display: flex; gap: 12px; padding: 10px 0; opacity: 0.5; }
+.timeline-item.active, .timeline-item.done { opacity: 1; }
+.timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; margin-top: 6px; flex-shrink: 0; }
+.timeline-item.active .timeline-dot { background: #1565C0; }
+.timeline-item.done .timeline-dot { background: #2E7D32; }
+.timeline-label { font-size: 12px; color: #888; }
+.timeline-waktu { font-weight: 700; color: #333; }
+.btn-soft { width: 100%; padding: 16px; background: #1565C0; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-batal-soft { background: #F1F3F4; color: #666; }
+.btn-aksi-soft { width: 100%; padding: 20px; background: linear-gradient(135deg, #1565C0, #1976D2); color: white; border: none; border-radius: 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; }
+.btn-aksi-icon { width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.btn-aksi-icon .material-icons-round { font-size: 28px; }
+.btn-aksi-judul { font-size: 18px; font-weight: 800; text-align: left; }
+.btn-aksi-sub { font-size: 13px; opacity: 0.9; text-align: left; }
+.notif-soft { padding: 14px; border-radius: 14px; text-align: center; margin-top: 16px; font-weight: 600; background: #E8F5E9; color: #2E7D32; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.notif-soft.error { background: #FFEBEE; color: #C62828; }
+.kamera-container-soft { position: relative; margin-bottom: 12px; }
+.kamera-hint { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; color: white; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 0 0 12px 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; }
+.preview-soft { width: 100%; border-radius: 12px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -152,7 +179,8 @@
         </div>
       </div>
     </div>
-<!-- PAGE ABSENSI - SOFT TONE 1 TOMBOL -->
+
+<!-- PAGE ABSENSI -->
     <div id="page-absensi" class="page">
       <div class="card-soft">
         <div class="card-title-soft">
@@ -167,13 +195,13 @@
 
         <div class="timeline-absen">
           <div class="timeline-item" id="itemMasuk">
-  <div class="timeline-dot"></div>
-  <div class="timeline-content">
-    <p class="timeline-label">Check In</p>
-    <p class="timeline-waktu" id="waktuMasuk">Belum absen</p>
-  </div>
-</div> <!-- <--- INI HILANG -->
-<div class="timeline-item" id="itemPulang">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <p class="timeline-label">Check In</p>
+              <p class="timeline-waktu" id="waktuMasuk">Belum absen</p>
+            </div>
+          </div>
+          <div class="timeline-item" id="itemPulang">
             <div class="timeline-dot"></div>
             <div class="timeline-content">
               <p class="timeline-label">Check Out</p>
@@ -185,12 +213,6 @@
         <div id="kameraArea" class="hidden">
           <div class="kamera-container-soft">
             <video id="video" autoplay playsinline></video>
-            <div class="kamera-frame-soft">
-              <div class="corner tl"></div>
-              <div class="corner tr"></div>
-              <div class="corner bl"></div>
-              <div class="corner br"></div>
-            </div>
             <div class="kamera-hint">
               <span class="material-icons-round">face</span>
               <p>Posisikan wajah di tengah</p>
@@ -224,7 +246,7 @@
       </div>
     </div>
 
-    <!-- PAGE REKAP - SOFT TONE INTERAKTIF -->
+    <!-- PAGE REKAP -->
     <div id="page-rekap" class="page">
   <div class="card">
     <div class="card-title">
@@ -336,7 +358,6 @@
     </div>
   </div>
 
-  <!-- AUDIO TING -->
   <audio id="audioTing" preload="auto">
     <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE" type="audio/wav">
   </audio>
@@ -364,17 +385,15 @@ let currentUser = null;
 let stream = null;
 let semuaDataRekap = [];
 
-// SOUND TING
 function playTing() {
   const audio = document.getElementById('audioTing');
   audio.currentTime = 0;
   audio.play().catch(e => console.log('Audio error:', e));
 }
 
-// TOGGLE PASSWORD LOGIN
 function togglePassword() {
   const input = document.getElementById('password');
-  const icon = document.querySelector('.toggle-pass');
+  const icon = document.querySelector('#page-login .toggle-pass');
   if (input.type === 'password') {
     input.type = 'text';
     icon.textContent = 'visibility';
@@ -384,7 +403,6 @@ function togglePassword() {
   }
 }
 
-// TOGGLE PASSWORD GANTI PASSWORD
 function togglePassField(fieldId, iconElement) {
   const input = document.getElementById(fieldId);
   if (input.type === 'password') {
@@ -396,7 +414,6 @@ function togglePassField(fieldId, iconElement) {
   }
 }
 
-// JAM
 setInterval(() => {
   const now = new Date();
   document.getElementById('jamSekarang').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
@@ -407,7 +424,6 @@ setInterval(() => {
   }
 }, 1000);
 
-// LOGIN
 document.getElementById('btnLogin').onclick = async () => {
   const user = document.getElementById('username').value.trim().toLowerCase();
   const pass = document.getElementById('password').value;
@@ -429,7 +445,6 @@ document.getElementById('btnLogin').onclick = async () => {
   }
 };
 
-// CEK LOGIN
 window.onload = () => {
   const saved = localStorage.getItem('user');
   if (saved) {
@@ -439,8 +454,6 @@ window.onload = () => {
     document.getElementById('bottomNav').classList.remove('hidden');
     loadProfil();
   }
-
-  // EVENT FILTER REKAP
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -474,7 +487,6 @@ function logout() {
   location.reload();
 }
 
-// CEK STATUS ABSEN + SET TOMBOL MASUK/PULANG
 async function cekStatusHariIni() {
   const res = await fetch(WEB_APP_URL, {
     method: 'POST',
@@ -490,16 +502,15 @@ async function cekStatusHariIni() {
     const itemMasuk = document.getElementById('itemMasuk');
     const itemPulang = document.getElementById('itemPulang');
 
-    // Reset
     itemMasuk.classList.remove('active', 'done');
     itemPulang.classList.remove('active', 'done');
     btnAksi.disabled = false;
 
-    if (dataHariIni && dataHariIni.masuk!== '-') {
+    if (dataHariIni && dataHariIni.masuk !== '-') {
       itemMasuk.classList.add('done');
       document.getElementById('waktuMasuk').textContent = dataHariIni.masuk;
 
-      if (dataHariIni.pulang!== '-') {
+      if (dataHariIni.pulang !== '-') {
         itemPulang.classList.add('done');
         document.getElementById('waktuPulang').textContent = dataHariIni.pulang;
         btnAksi.disabled = true;
@@ -526,7 +537,6 @@ async function cekStatusHariIni() {
   }
 }
 
-// TOMBOL UTAMA DIKLIK
 document.getElementById('btnAksiUtama').onclick = () => {
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   if (tipe === 'done') return;
@@ -541,11 +551,7 @@ async function bukaKameraAbsen(tipe) {
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      },
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false
     });
     document.getElementById('video').srcObject = stream;
@@ -558,7 +564,6 @@ async function bukaKameraAbsen(tipe) {
 document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
-
   const maxWidth = 600;
   let width = video.videoWidth;
   let height = video.videoHeight;
@@ -574,7 +579,6 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   stopKamera();
   document.getElementById('preview').src = foto;
   document.getElementById('preview').classList.remove('hidden');
-
   kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe, foto);
 };
 
@@ -604,7 +608,6 @@ async function kirimAbsenCepat(tipe, foto) {
       {timeout: 2000, maximumAge: 60000}
     );
   });
-
   const gps = await gpsPromise;
 
   const data = {
@@ -618,14 +621,10 @@ async function kirimAbsenCepat(tipe, foto) {
   };
 
   try {
-    const res = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
+    const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(data) });
     const hasil = await res.json();
-
     if (hasil.status === 'sukses') {
-      const pesan = tipe === 'in'? 'Absen Masuk Berhasil!' : 'Absen Pulang Berhasil!';
+      const pesan = tipe === 'in' ? 'Absen Masuk Berhasil!' : 'Absen Pulang Berhasil!';
       showNotif(pesan, false);
       playTing();
       setTimeout(() => {
@@ -647,32 +646,24 @@ function showNotif(text, isError = false, isLoading = false) {
   const notif = document.getElementById('notifAbsen');
   const icon = document.getElementById('notifIcon');
   document.getElementById('notifText').textContent = text;
-
+  notif.classList.remove('error');
   if (isLoading) {
-    notif.classList.remove('error');
     icon.textContent = 'hourglass_empty';
   } else if (isError) {
     notif.classList.add('error');
     icon.textContent = 'error';
   } else {
-    notif.classList.remove('error');
     icon.textContent = 'check_circle';
   }
-
   notif.classList.remove('hidden');
   if (!isLoading) {
     setTimeout(() => notif.classList.add('hidden'), 3000);
   }
 }
 
-// REKAP INTERAKTIF
 async function loadRekap() {
-  const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'rekap', nama: currentUser.nama })
-  });
+  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'rekap', nama: currentUser.nama }) });
   const hasil = await res.json();
-
   if (hasil.status === 'sukses') {
     semuaDataRekap = hasil.data;
     tampilkanRekap(7);
@@ -684,9 +675,7 @@ async function loadRekap() {
 function tampilkanRekap(hari) {
   const list = document.getElementById('rekapList');
   const empty = document.getElementById('rekapEmpty');
-
   const dataFilter = semuaDataRekap.slice(0, hari);
-
   if (dataFilter.length === 0) {
     list.innerHTML = '';
     empty.classList.remove('hidden');
@@ -694,22 +683,18 @@ function tampilkanRekap(hari) {
     document.getElementById('totalPulang').textContent = '0';
     return;
   }
-
   empty.classList.add('hidden');
-
   let masuk = 0, pulang = 0;
   dataFilter.forEach(d => {
-    if (d.masuk!== '-') masuk++;
-    if (d.pulang!== '-') pulang++;
+    if (d.masuk !== '-') masuk++;
+    if (d.pulang !== '-') pulang++;
   });
   document.getElementById('totalMasuk').textContent = masuk;
   document.getElementById('totalPulang').textContent = pulang;
-
   list.innerHTML = dataFilter.map(d => {
-    const lengkap = d.masuk!== '-' && d.pulang!== '-';
-    const setengah = d.masuk!== '-' && d.pulang === '-';
-    const statusClass = lengkap? 'lengkap' : setengah? 'setengah' : '';
-
+    const lengkap = d.masuk !== '-' && d.pulang !== '-';
+    const setengah = d.masuk !== '-' && d.pulang === '-';
+    const statusClass = lengkap ? 'lengkap' : setengah ? 'setengah' : '';
     return `
       <div class="rekap-item-soft">
         <div>
@@ -731,20 +716,18 @@ function tampilkanRekap(hari) {
   }).join('');
 }
 
-// GANTI PASSWORD
 document.getElementById('btnGantiPass').onclick = async () => {
   const lama = document.getElementById('passLama').value;
   const baru = document.getElementById('passBaru').value;
   const baru2 = document.getElementById('passBaru2').value;
   const status = document.getElementById('passStatus');
-
-  if (!lama ||!baru ||!baru2) {
+  if (!lama || !baru || !baru2) {
     status.textContent = 'Semua field wajib diisi';
     status.className = 'status gagal';
     status.classList.remove('hidden');
     return;
   }
-  if (baru!== baru2) {
+  if (baru !== baru2) {
     status.textContent = 'Password baru tidak sama';
     status.className = 'status gagal';
     status.classList.remove('hidden');
@@ -756,11 +739,9 @@ document.getElementById('btnGantiPass').onclick = async () => {
     status.classList.remove('hidden');
     return;
   }
-
   status.textContent = 'Menyimpan...';
   status.className = 'status loading';
   status.classList.remove('hidden');
-
   const res = await fetch(WEB_APP_URL, {
     method: 'POST',
     body: JSON.stringify({
@@ -772,8 +753,7 @@ document.getElementById('btnGantiPass').onclick = async () => {
   });
   const hasil = await res.json();
   status.textContent = hasil.pesan;
-  status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
-
+  status.className = hasil.status === 'sukses' ? 'status sukses' : 'status gagal';
   if (hasil.status === 'sukses') {
     document.getElementById('passLama').value = '';
     document.getElementById('passBaru').value = '';
@@ -784,7 +764,6 @@ document.getElementById('btnGantiPass').onclick = async () => {
   }
 };
 
-// FOTO PROFIL PREVIEW
 document.getElementById('inputFotoProfil').onchange = (e) => {
   const file = e.target.files[0];
   if (file) {
@@ -796,24 +775,18 @@ document.getElementById('inputFotoProfil').onchange = (e) => {
   }
 };
 
-// SIMPAN PROFIL - FORCE UPDATE
 document.getElementById('btnSimpanProfil').onclick = async () => {
   const status = document.getElementById('profilStatus');
   status.textContent = 'Mengompres & menyimpan...';
   status.className = 'status loading';
   status.classList.remove('hidden');
-
   const fileInput = document.getElementById('inputFotoProfil');
   let fotoBase64 = '';
-  let previewUrl = '';
-
   if (fileInput.files[0]) {
     fotoBase64 = await compressImage(fileInput.files[0], 400, 0.8);
-    previewUrl = fotoBase64;
-    document.getElementById('fotoProfil').src = previewUrl;
-    document.getElementById('profilPreview').src = previewUrl;
+    document.getElementById('fotoProfil').src = fotoBase64;
+    document.getElementById('profilPreview').src = fotoBase64;
   }
-
   const data = {
     action: 'updateProfil',
     nama: currentUser.nama,
@@ -821,26 +794,17 @@ document.getElementById('btnSimpanProfil').onclick = async () => {
     noHp: document.getElementById('noHp').value,
     alamat: document.getElementById('alamat').value
   };
-
-  const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(data) });
   const hasil = await res.json();
   status.textContent = hasil.pesan;
-  status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
-
+  status.className = hasil.status === 'sukses' ? 'status sukses' : 'status gagal';
   if (hasil.status === 'sukses') {
     playTing();
     if (hasil.fotoUrl) {
       setTimeout(() => {
         const urlFinal = hasil.fotoUrl + '?t=' + new Date().getTime();
-        document.getElementById('fotoProfil').src = '';
-        document.getElementById('profilPreview').src = '';
-        setTimeout(() => {
-          document.getElementById('fotoProfil').src = urlFinal;
-          document.getElementById('profilPreview').src = urlFinal;
-        }, 50);
+        document.getElementById('fotoProfil').src = urlFinal;
+        document.getElementById('profilPreview').src = urlFinal;
       }, 500);
     }
     fileInput.value = '';
@@ -871,30 +835,18 @@ function compressImage(file, maxWidth, quality) {
   });
 }
 
-// LOAD PROFIL - FORCE NO CACHE
 async function loadProfil() {
-  const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getProfil', nama: currentUser.nama })
-  });
+  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfil', nama: currentUser.nama }) });
   const hasil = await res.json();
   if (hasil.status === 'sukses') {
     if (hasil.data.fotoProfil) {
       const urlBaru = hasil.data.fotoProfil + '?t=' + new Date().getTime();
-      document.getElementById('fotoProfil').src = '';
-      document.getElementById('profilPreview').src = '';
-      setTimeout(() => {
-        document.getElementById('fotoProfil').src = urlBaru;
-        document.getElementById('profilPreview').src = urlBaru;
-      }, 50);
+      document.getElementById('fotoProfil').src = urlBaru;
+      document.getElementById('profilPreview').src = urlBaru;
     }
     if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
     if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
   }
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
 }
 </script>
 </body>
