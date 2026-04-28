@@ -155,7 +155,14 @@
           <div class="timeline-item" id="itemPulang"><div class="timeline-dot"></div><div class="timeline-content"><p class="timeline-label">Check Out</p><p class="timeline-waktu" id="waktuPulang">Belum absen</p></div></div>
         </div>
         <div id="kameraArea" class="hidden">
-          <div class="kamera-container-soft"><video id="video" autoplay playsinline></video><div class="kamera-hint"><span class="material-icons-round">face</span><p>Posisikan wajah di tengah</p></div></div>
+          <div class="kamera-container-soft"><video id="video" autoplay playsinline></video>
+        <div id="watermarkLive" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.75);color:#fff;padding:12px 14px;font-size:15px;line-height:1.4;pointer-events:none;font-family:'Segoe UI',sans-serif">
+          <div id="wmNama" style="font-weight:800;font-size:20px;letter-spacing:0.3px;margin-bottom:2px;text-transform:uppercase"></div>
+          <div id="wmWaktu" style="font-size:16px;font-weight:600;margin-bottom:2px"></div>
+          <div id="wmAlamat" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0.95"></div>
+          <div id="wmGps" style="font-family:'Courier New',monospace;opacity:0.85;font-size:13px;margin-top:2px"></div>
+        </div>
+        <div class="kamera-hint"><span class="material-icons-round">face</span><p>Posisikan wajah di tengah</p></div></div>
           <canvas id="canvas" class="hidden"></canvas>
           <button class="btn-soft btn-foto-soft" id="btnAmbilFoto"><span class="material-icons-round">photo_camera</span> Ambil Foto</button>
           <button class="btn-soft btn-batal-soft" id="btnBatalFoto">Batal</button>
@@ -242,7 +249,17 @@ function logout(){ localStorage.removeItem('user'); location.reload(); }
 async function cekStatusHariIni(){ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'rekap',nama:currentUser.nama})}); const hasil=await res.json(); if(hasil.status==='sukses'){ const today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}); const d=hasil.data.find(x=>x.tanggal===today); const btn=document.getElementById('btnAksiUtama'); const im=document.getElementById('itemMasuk'); const ip=document.getElementById('itemPulang'); im.classList.remove('active','done'); ip.classList.remove('active','done'); btn.disabled=false; if(d && d.masuk!=='-'){ im.classList.add('done'); document.getElementById('waktuMasuk').textContent=d.masuk; if(d.pulang!=='-'){ ip.classList.add('done'); document.getElementById('waktuPulang').textContent=d.pulang; btn.disabled=true; document.getElementById('judulAksi').textContent='SELESAI'; document.getElementById('subAksi').textContent='Absen hari ini lengkap'; document.getElementById('iconAksi').textContent='check_circle'; btn.dataset.tipe='done'; }else{ ip.classList.add('active'); btn.dataset.tipe='out'; document.getElementById('judulAksi').textContent='PULANG'; document.getElementById('subAksi').textContent='Tap untuk absen pulang'; document.getElementById('iconAksi').textContent='logout'; } }else{ im.classList.add('active'); document.getElementById('waktuMasuk').textContent='Belum absen'; document.getElementById('waktuPulang').textContent='Belum absen'; btn.dataset.tipe='in'; document.getElementById('judulAksi').textContent='MASUK'; document.getElementById('subAksi').textContent='Tap untuk absen masuk'; document.getElementById('iconAksi').textContent='login'; } } }
 
 document.getElementById('btnAksiUtama').onclick=()=>{ const t=document.getElementById('btnAksiUtama').dataset.tipe; if(t==='done')return; bukaKameraAbsen(t); };
-async function bukaKameraAbsen(t){ document.getElementById('tombolUtamaAbsen').classList.add('hidden'); document.getElementById('kameraArea').classList.remove('hidden'); document.getElementById('notifAbsen').classList.add('hidden'); document.getElementById('preview').classList.add('hidden'); try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}); document.getElementById('video').srcObject=stream; }catch(e){ showNotif('Kamera error: '+e.message,true); batalFoto(); } }
+async function bukaKameraAbsen(t){ document.getElementById('tombolUtamaAbsen').classList.add('hidden'); document.getElementById('kameraArea').classList.remove('hidden'); document.getElementById('notifAbsen').classList.add('hidden'); document.getElementById('preview').classList.add('hidden'); try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}); document.getElementById('video').srcObject=stream; 
+  // LIVE WATERMARK ala Timemark
+  document.getElementById('wmNama').textContent = currentUser.nama;
+  const updateWaktu = ()=>{ const n=new Date(); document.getElementById('wmWaktu').textContent = n.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+n.toLocaleTimeString('id-ID',{hour12:false})+' WIB'; };
+  updateWaktu(); window.wmInterval = setInterval(updateWaktu,1000);
+  navigator.geolocation.getCurrentPosition(async p=>{
+    const lat=p.coords.latitude.toFixed(6), lng=p.coords.longitude.toFixed(6);
+    document.getElementById('wmGps').textContent = `GPS: ${lat}, ${lng}`;
+    try{ const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`,{headers:{'Accept-Language':'id'}}); const d=await r.json(); document.getElementById('wmAlamat').textContent = d.display_name||''; }catch{ document.getElementById('wmAlamat').textContent='Alamat tidak tersedia'; }
+  },()=>{ document.getElementById('wmGps').textContent='GPS tidak aktif'; });
+ }catch(e){ showNotif('Kamera error: '+e.message,true); batalFoto(); } }
 document.getElementById('btnAmbilFoto').onclick = async () => {
   const v=document.getElementById('video');
   const c=document.getElementById('canvas');
@@ -299,8 +316,8 @@ document.getElementById('btnAmbilFoto').onclick = async () => {
   kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe,foto);
 };
 document.getElementById('btnBatalFoto').onclick=batalFoto;
-function batalFoto(){ stopKamera(); document.getElementById('kameraArea').classList.add('hidden'); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); }
-function stopKamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function batalFoto(){ if(window.wmInterval) clearInterval(window.wmInterval); stopKamera(); document.getElementById('kameraArea').classList.add('hidden'); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); }
+function stopKamera(){ if(window.wmInterval) clearInterval(window.wmInterval); if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
 async function kirimAbsenCepat(tipe,foto){ showNotif('Mengirim...',false,true); document.getElementById('kameraArea').classList.add('hidden'); const gps=await new Promise(r=>navigator.geolocation.getCurrentPosition(p=>r({lat:p.coords.latitude,lng:p.coords.longitude}),()=>r({lat:0,lng:0}),{timeout:2000})); const data={action:'absen',nama:currentUser.nama,tipe,jam:new Date().toLocaleTimeString('id-ID',{hour12:false}),lat:gps.lat,lng:gps.lng,foto}; try{ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify(data)}); const h=await res.json(); if(h.status==='sukses'){ showNotif(tipe==='in'?'Absen Masuk Berhasil!':'Absen Pulang Berhasil!',false); playTing(); setTimeout(()=>{cekStatusHariIni(); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); document.getElementById('preview').classList.add('hidden');},800); }else{ showNotif(h.pesan,true); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); } }catch(e){ showNotif('Gagal kirim: '+e.message,true); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); } }
 function showNotif(txt,err=false,load=false){ const n=document.getElementById('notifAbsen'); const ic=document.getElementById('notifIcon'); document.getElementById('notifText').textContent=txt; n.classList.remove('error'); ic.textContent=load?'hourglass_empty':err?'error':'check_circle'; if(err)n.classList.add('error'); n.classList.remove('hidden'); if(!load)setTimeout(()=>n.classList.add('hidden'),3000); }
 async function loadRekap(){ const r=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'rekap',nama:currentUser.nama})}); const h=await r.json(); if(h.status==='sukses'){semuaDataRekap=h.data;tampilkanRekap(7);} }
