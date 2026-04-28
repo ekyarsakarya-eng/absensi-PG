@@ -469,7 +469,10 @@ function showPage(page) {
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-  if (page === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+  if (page === 'home') {
+    document.querySelectorAll('.nav-item')[0].classList.add('active');
+    loadProfil(); // TAMBAHAN: refresh foto tiap buka home
+  }
   if (page === 'absensi') {
     document.querySelectorAll('.nav-item')[1].classList.add('active');
     cekStatusHariIni();
@@ -782,10 +785,11 @@ document.getElementById('btnSimpanProfil').onclick = async () => {
   status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
 
   if (hasil.status === 'sukses' && hasil.fotoUrl) {
-    document.getElementById('fotoProfil').src = hasil.fotoUrl + '?t=' + new Date().getTime();
-    document.getElementById('profilPreview').src = hasil.fotoUrl + '?t=' + new Date().getTime();
-    playTing();
-  }
+  const cacheBuster = '?t=' + new Date().getTime();
+  document.getElementById('fotoProfil').src = hasil.fotoUrl + cacheBuster;
+  document.getElementById('profilPreview').src = hasil.fotoUrl + cacheBuster;
+  playTing();
+}
 };
 
 function compressImage(file, maxWidth, quality) {
