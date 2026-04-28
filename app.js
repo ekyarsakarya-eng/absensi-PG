@@ -1,4 +1,4 @@
-const GAS_URL = "PASTE_URL_WEB_APP_KAMU_DISINI";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyVDXgzGGOeEkm205monVjShLmXQv1MPbUbBuVQS2OcdhUpNHgZF_wUoyLKSl96eqCC/exec";
 const KANTOR_LAT = -6.970117;
 const KANTOR_LNG = 110.395559;
 
