@@ -2,30 +2,237 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#2d415a"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absensi Pamili Garmen</title>
   <link rel="manifest" href="manifest.json">
-  <title>Absensi Pamili</title>
+  <meta name="theme-color" content="#1A73E8">
   <style>
-    body{font-family:sans-serif;text-align:center;padding:20px;background:#f5f5f5}
-   .card{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);max-width:400px;margin:auto}
-    video{width:100%;border-radius:8px;margin:10px 0}
-    button{width:48%;padding:15px;margin:5px 1%;border:none;border-radius:8px;font-size:16px;font-weight:bold}
-   .in{background:#28a745;color:white}.out{background:#dc3545;color:white}
-    select{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ddd}
-    #status{margin-top:15px;font-weight:bold;min-height:20px}
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f5f5f5; }
+    .container { max-width: 400px; margin: 0 auto; padding: 20px; }
+    .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 40px; }
+    h1 { text-align: center; color: #1A73E8; margin-bottom: 8px; font-size: 22px; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
+    input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-size: 16px; }
+    button { width: 100%; padding: 14px; background: #1A73E8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    button:disabled { background: #ccc; }
+    .btn-out { background: #EA4335; margin-top: 12px; }
+    .hidden { display: none; }
+    #video { width: 100%; border-radius: 8px; margin: 12px 0; }
+    #preview { width: 100%; border-radius: 8px; margin: 12px 0; }
+    .info { text-align: center; margin: 16px 0; color: #333; }
+    .jam { font-size: 32px; font-weight: 700; color: #1A73E8; }
+    .nama { font-size: 18px; font-weight: 600; margin-top: 8px; }
+    .status { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; font-weight: 600; }
+    .sukses { background: #E6F4EA; color: #137333; }
+    .gagal { background: #FCE8E6; color: #C5221F; }
+    .loading { background: #E8F0FE; color: #1967D2; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h3>ABSENSI PAMILI GARMEN</h3>
-    <select id="nama"></select>
-    <video id="kamera" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button class="in" onclick="prosesAbsen('in')">CHECK IN</button>
-    <button class="out" onclick="prosesAbsen('out')">CHECK OUT</button>
-    <p id="status"></p>
+  <div class="container">
+    
+    <!-- HALAMAN LOGIN -->
+    <div id="loginPage" class="card">
+      <h1>PAMILI GARMEN</h1>
+      <p class="subtitle">Absensi Karyawan</p>
+      <input type="text" id="username" placeholder="Username" autocomplete="username">
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+      <button id="btnLogin">Login</button>
+      <div id="loginStatus" class="status hidden"></div>
+    </div>
+
+    <!-- HALAMAN ABSEN -->
+    <div id="absenPage" class="card hidden">
+      <h1>PAMILI GARMEN</h1>
+      <div class="info">
+        <div class="jam" id="jamSekarang">00:00:00</div>
+        <div class="nama" id="namaKaryawan">-</div>
+        <div id="tglSekarang">-</div>
+      </div>
+      
+      <video id="video" class="hidden" autoplay playsinline></video>
+      <canvas id="canvas" class="hidden"></canvas>
+      <img id="preview" class="hidden">
+      
+      <button id="btnCheckIn">Check In + Foto</button>
+      <button id="btnCheckOut" class="btn-out">Check Out + Foto</button>
+      <button id="btnLogout" style="background:#666; margin-top:12px">Logout</button>
+      
+      <div id="absenStatus" class="status hidden"></div>
+    </div>
+
   </div>
-<script src="app.js"></script>
+
+<script>
+const WEB_APP_URL = 'GANTI_DENGAN_URL_WEB_APP_KAMU'; // WAJIB GANTI
+
+const KARYAWAN = [
+  { nama: 'MUTMAINAH', username: 'mutmainah', password: '12345' },
+  { nama: 'SUGIYARTI', username: 'sugiyarti', password: '12345' },
+  { nama: 'MUJIATI', username: 'mujiati', password: '12345' },
+  { nama: 'AULIA ZULFA', username: 'auliazulfa', password: '12345' },
+  { nama: 'CHOIRIYAH', username: 'choiriyah', password: '12345' },
+  { nama: 'SUWARTINI', username: 'suwartini', password: '12345' },
+  { nama: 'INDANG HASTUTIK', username: 'indanghastutik', password: '12345' },
+  { nama: 'IKA NURHAYATI', username: 'ikanurhayati', password: '12345' },
+  { nama: 'FAJAR FITRIYAH', username: 'fajarfitriyah', password: '12345' },
+  { nama: 'SURANI', username: 'surani', password: '12345' },
+  { nama: 'NUR AMALIA', username: 'nuramalia', password: '12345' },
+  { nama: 'DWI NINGSIH', username: 'dwiningsih', password: '12345' },
+  { nama: 'LINA ROSSILAWATI', username: 'linarossilawati', password: '12345' },
+  { nama: 'RISWAHYUNINGSIH', username: 'riswahyuningsih', password: '12345' }
+];
+
+let currentUser = null;
+let stream = null;
+
+// Update jam
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('jamSekarang').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
+  document.getElementById('tglSekarang').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+}, 1000);
+
+// LOGIN
+document.getElementById('btnLogin').onclick = () => {
+  const user = document.getElementById('username').value.trim().toLowerCase();
+  const pass = document.getElementById('password').value;
+  const status = document.getElementById('loginStatus');
+
+  const karyawan = KARYAWAN.find(k => k.username === user && k.password === pass);
+  
+  if (karyawan) {
+    currentUser = karyawan;
+    localStorage.setItem('user', JSON.stringify(karyawan));
+    document.getElementById('namaKaryawan').textContent = karyawan.nama;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('absenPage').classList.remove('hidden');
+  } else {
+    status.textContent = 'Username atau Password salah';
+    status.className = 'status gagal';
+    status.classList.remove('hidden');
+  }
+};
+
+// CEK LOGIN OTOMATIS
+window.onload = () => {
+  const saved = localStorage.getItem('user');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    document.getElementById('namaKaryawan').textContent = currentUser.nama;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('absenPage').classList.remove('hidden');
+  }
+};
+
+// LOGOUT
+document.getElementById('btnLogout').onclick = () => {
+  localStorage.removeItem('user');
+  location.reload();
+};
+
+// FUNGSI KAMERA
+async function bukaKamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    document.getElementById('video').srcObject = stream;
+    document.getElementById('video').classList.remove('hidden');
+    return true;
+  } catch (err) {
+    alert('Kamera error: ' + err.message);
+    return false;
+  }
+}
+
+function ambilFoto() {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  return canvas.toDataURL('image/jpeg', 0.8);
+}
+
+function stopKamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    document.getElementById('video').classList.add('hidden');
+  }
+}
+
+// CHECK IN
+document.getElementById('btnCheckIn').onclick = async () => {
+  await prosesAbsen('in');
+};
+
+// CHECK OUT
+document.getElementById('btnCheckOut').onclick = async () => {
+  await prosesAbsen('out');
+};
+
+async function prosesAbsen(tipe) {
+  const status = document.getElementById('absenStatus');
+  status.textContent = 'Buka kamera...';
+  status.className = 'status loading';
+  status.classList.remove('hidden');
+
+  const kameraOk = await bukaKamera();
+  if (!kameraOk) return;
+
+  // Tunggu 2 detik biar siap foto
+  setTimeout(async () => {
+    status.textContent = 'Mengambil foto & lokasi...';
+    const foto = ambilFoto();
+    stopKamera();
+    
+    navigator.geolocation.getCurrentPosition(pos => {
+      kirimAbsen(tipe, foto, pos.coords.latitude, pos.coords.longitude);
+    }, err => {
+      kirimAbsen(tipe, foto, 0, 0); // Kirim tanpa GPS kalau error
+    });
+  }, 2000);
+}
+
+async function kirimAbsen(tipe, foto, lat, lng) {
+  const status = document.getElementById('absenStatus');
+  status.textContent = 'Mengirim data...';
+
+  const data = {
+    nama: currentUser.nama,
+    tipe: tipe,
+    jam: new Date().toLocaleTimeString('id-ID', {hour12: false}),
+    lat: lat,
+    lng: lng,
+    foto: foto
+  };
+
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    const hasil = await res.json();
+
+    if (hasil.status === 'sukses') {
+      status.textContent = hasil.pesan;
+      status.className = 'status sukses';
+      document.getElementById('preview').src = foto;
+      document.getElementById('preview').classList.remove('hidden');
+    } else {
+      status.textContent = hasil.pesan;
+      status.className = 'status gagal';
+    }
+  } catch (err) {
+    status.textContent = 'Gagal kirim: ' + err.message;
+    status.className = 'status gagal';
+  }
+}
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
