@@ -160,26 +160,38 @@
     </div>
 
     <!-- PAGE GANTI PASSWORD -->
-    <div id="page-password" class="page">
-      <div class="card">
-        <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
-        <div class="form-group">
-          <label>Password Lama</label>
-          <input type="password" id="passLama" placeholder="Masukkan password lama">
-        </div>
-        <div class="form-group">
-          <label>Password Baru</label>
-          <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
-        </div>
-        <div class="form-group">
-          <label>Konfirmasi Password Baru</label>
-          <input type="password" id="passBaru2" placeholder="Ulangi password baru">
-        </div>
-        <button class="btn" id="btnGantiPass">Simpan Password</button>
-        <div id="passStatus" class="status hidden"></div>
+<div id="page-password" class="page">
+  <div class="card">
+    <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
+    
+    <div class="form-group">
+      <label>Password Lama</label>
+      <div class="input-group">
+        <input type="password" id="passLama" placeholder="Masukkan password lama">
+        <span class="material-icons-round toggle-pass" onclick="togglePassField('passLama', this)">visibility_off</span>
       </div>
     </div>
-
+    
+    <div class="form-group">
+      <label>Password Baru</label>
+      <div class="input-group">
+        <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
+        <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru', this)">visibility_off</span>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Konfirmasi Password Baru</label>
+      <div class="input-group">
+        <input type="password" id="passBaru2" placeholder="Ulangi password baru">
+        <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru2', this)">visibility_off</span>
+      </div>
+    </div>
+    
+    <button class="btn" id="btnGantiPass">Simpan Password</button>
+    <div id="passStatus" class="status hidden"></div>
+  </div>
+</div>
     <!-- PAGE PROFIL -->
     <div id="page-profil" class="page">
       <div class="card">
@@ -247,15 +259,14 @@ let stream = null;
 let tipeAbsen = null;
 
 // TOGGLE PASSWORD
-function togglePassword() {
-  const input = document.getElementById('password');
-  const icon = document.querySelector('.toggle-pass');
+function togglePassField(fieldId, iconElement) {
+  const input = document.getElementById(fieldId);
   if (input.type === 'password') {
     input.type = 'text';
-    icon.textContent = 'visibility';
+    iconElement.textContent = 'visibility';
   } else {
     input.type = 'password';
-    icon.textContent = 'visibility_off';
+    iconElement.textContent = 'visibility_off';
   }
 }
 
