@@ -243,7 +243,61 @@ async function cekStatusHariIni(){ const res=await fetch(WEB_APP_URL,{method:'PO
 
 document.getElementById('btnAksiUtama').onclick=()=>{ const t=document.getElementById('btnAksiUtama').dataset.tipe; if(t==='done')return; bukaKameraAbsen(t); };
 async function bukaKameraAbsen(t){ document.getElementById('tombolUtamaAbsen').classList.add('hidden'); document.getElementById('kameraArea').classList.remove('hidden'); document.getElementById('notifAbsen').classList.add('hidden'); document.getElementById('preview').classList.add('hidden'); try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}); document.getElementById('video').srcObject=stream; }catch(e){ showNotif('Kamera error: '+e.message,true); batalFoto(); } }
-document.getElementById('btnAmbilFoto').onclick=()=>{ const v=document.getElementById('video'); const c=document.getElementById('canvas'); const max=600; let w=v.videoWidth,h=v.videoHeight; if(w>max){h=(h*max)/w;w=max;} c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h); const foto=c.toDataURL('image/jpeg',0.6); stopKamera(); document.getElementById('preview').src=foto; document.getElementById('preview').classList.remove('hidden'); kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe,foto); };
+document.getElementById('btnAmbilFoto').onclick = async () => {
+  const v=document.getElementById('video');
+  const c=document.getElementById('canvas');
+  const max=800;
+  let w=v.videoWidth,h=v.videoHeight;
+  if(w>max){h=(h*max)/w;w=max;}
+  c.width=w;c.height=h;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(v,0,0,w,h);
+
+  // Ambil GPS dulu untuk watermark
+  const gps = await new Promise(r=>navigator.geolocation.getCurrentPosition(
+    p=>r({lat:p.coords.latitude.toFixed(6),lng:p.coords.longitude.toFixed(6)}),
+    ()=>r({lat:'-',lng:'-'}),
+    {enableHighAccuracy:true,timeout:4000}
+  ));
+
+  // Ambil alamat dari GPS (Timemark style)
+  let alamat='';
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${gps.lat}&lon=${gps.lng}&zoom=18&addressdetails=1`,{headers:{'Accept-Language':'id'}});
+    const data=await res.json();
+    alamat=data.display_name||'';
+    if(alamat.length>85) alamat=alamat.substring(0,82)+'...';
+  }catch{alamat='Alamat tidak tersedia';}
+
+  const now=new Date();
+  const tgl=now.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const jam=now.toLocaleTimeString('id-ID',{hour12:false});
+
+  // Watermark ala Timemark
+  const bar=Math.max(100,h*0.20);
+  ctx.fillStyle='rgba(0,0,0,0.70)';
+  ctx.fillRect(0,h-bar,w,bar);
+  
+  ctx.fillStyle='#FFFFFF';
+  ctx.font=`bold ${Math.floor(bar*0.24)}px 'Segoe UI'`;
+  ctx.fillText(currentUser.nama,20,h-bar+28);
+  
+  ctx.font=`${Math.floor(bar*0.20)}px 'Segoe UI'`;
+  ctx.fillText(`${tgl} ${jam} WIB`,20,h-bar+54);
+  
+  ctx.font=`${Math.floor(bar*0.18)}px 'Segoe UI'`;
+  ctx.fillText(alamat,20,h-bar+78);
+  
+  ctx.font=`${Math.floor(bar*0.15)}px monospace`;
+  ctx.fillStyle='rgba(255,255,255,0.85)';
+  ctx.fillText(`GPS: ${gps.lat}, ${gps.lng}`,20,h-12);
+
+  const foto=c.toDataURL('image/jpeg',0.78);
+  stopKamera();
+  document.getElementById('preview').src=foto;
+  document.getElementById('preview').classList.remove('hidden');
+  kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe,foto);
+};
 document.getElementById('btnBatalFoto').onclick=batalFoto;
 function batalFoto(){ stopKamera(); document.getElementById('kameraArea').classList.add('hidden'); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); }
 function stopKamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
