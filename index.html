@@ -5,54 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Absensi Pamili Garmen</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1A73E8">
+  <meta name="theme-color" content="#E3F2FD">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #F8F9FA; padding-bottom: 80px; }
+    body { background: #F8FAFC; padding-bottom: 80px; }
    .container { max-width: 450px; margin: 0 auto; }
    .page { display: none; animation: fadeIn 0.3s; }
    .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+    /* SOFT TONE THEME */
+    :root {
+      --soft-blue: #E3F2FD;
+      --soft-blue-text: #1565C0;
+      --soft-green: #E8F5E9;
+      --soft-green-text: #2E7D32;
+      --soft-red: #FFEBEE;
+      --soft-red-text: #C62828;
+      --soft-gray: #F5F5F5;
+      --soft-border: #EEEEEE;
+    }
+
     /* LOGIN */
-   .login-card { background: white; margin: 40px 20px; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-   .login-card h1 { text-align: center; color: #1A73E8; margin-bottom: 8px; font-size: 24px; }
+   .login-card { background: white; margin: 40px 20px; border-radius: 20px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+   .login-card h1 { text-align: center; color: var(--soft-blue-text); margin-bottom: 8px; font-size: 24px; font-weight: 800; }
    .login-card.subtitle { text-align: center; color: #666; margin-bottom: 28px; }
    .input-group { position: relative; margin-bottom: 16px; }
-   .input-group input { width: 100%; padding: 14px 16px; border: 2px solid #E8EAED; border-radius: 12px; font-size: 16px; transition: 0.2s; }
-   .input-group input:focus { outline: none; border-color: #1A73E8; }
-   .toggle-pass { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; cursor: pointer; }
-   .btn { width: 100%; padding: 16px; background: #1A73E8; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+   .input-group input { width: 100%; padding: 14px 16px; border: 2px solid var(--soft-border); border-radius: 14px; font-size: 16px; transition: 0.2s; background: #FCFCFC; }
+   .input-group input:focus { outline: none; border-color: var(--soft-blue-text); background: white; }
+   .toggle-pass { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer; }
+   .btn { width: 100%; padding: 16px; background: var(--soft-blue-text); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
    .btn:active { transform: scale(0.98); }
    .btn:disabled { background: #ccc; }
 
     /* HEADER */
-   .header { background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%); color: white; padding: 24px 20px 80px; border-radius: 0 0 24px 24px; }
+   .header { background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); color: var(--soft-blue-text); padding: 24px 20px 80px; border-radius: 0 0 28px 28px; }
    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-   .header h2 { font-size: 20px; }
-   .profil-img { width: 48px; height: 48px; border-radius: 50%; border: 3px solid white; object-fit: cover; }
-   .jam-besar { font-size: 48px; font-weight: 700; text-align: center; margin: 8px 0; }
-   .tgl { text-align: center; opacity: 0.9; }
+   .header h2 { font-size: 20px; font-weight: 700; }
+   .profil-img { width: 48px; height: 48px; border-radius: 50%; border: 3px solid white; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+   .jam-besar { font-size: 48px; font-weight: 800; text-align: center; margin: 8px 0; }
+   .tgl { text-align: center; opacity: 0.8; font-weight: 500; }
 
     /* CARD MENU HOME */
-   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; margin-top: -40px; }
-   .menu-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: 0.2s; text-align: center; }
+   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px; margin-top: -40px; }
+   .menu-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); cursor: pointer; transition: 0.2s; text-align: center; }
    .menu-card:active { transform: scale(0.95); }
    .menu-card.icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 28px; }
-   .menu-card h3 { font-size: 14px; color: #333; }
-   .icon-blue { background: #E8F0FE; color: #1A73E8; }
-   .icon-green { background: #E6F4EA; color: #137333; }
-   .icon-orange { background: #FEF7E0; color: #F9AB00; }
-   .icon-purple { background: #F3E8FD; color: #9334E6; }
+   .menu-card h3 { font-size: 14px; color: #333; font-weight: 600; }
+   .icon-blue { background: #E3F2FD; color: #1565C0; }
+   .icon-green { background: #E8F5E9; color: #2E7D32; }
+   .icon-orange { background: #FFF8E1; color: #F57C00; }
+   .icon-purple { background: #F3E5F5; color: #7B1FA2; }
 
-    /* HALAMAN ABSENSI */
-   .card { background: white; margin: 20px; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-   .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    /* CARD UMUM */
+   .card { background: white; margin: 20px; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+   .card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #333; }
+
+    /* ABSENSI SOFT TONE */
+    .card-soft { background: white; margin: 20px; border-radius: 24px; padding: 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.04); }
+    .card-title-soft { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: #333; }
+
+    .info-hari-ini { background: var(--soft-blue); border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 24px; }
+    .info-tgl { font-size: 14px; color: var(--soft-blue-text); margin-bottom: 8px; font-weight: 600; }
+    .info-jam { font-size: 40px; font-weight: 800; color: var(--soft-blue-text); letter-spacing: 1px; }
+
+    .timeline-absen { margin-bottom: 24px; }
+    .timeline-item { display: flex; gap: 16px; padding: 12px 0; position: relative; }
+    .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 40px; bottom: -12px; width: 2px; background: var(--soft-border); }
+    .timeline-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--soft-gray); border: 3px solid white; box-shadow: 0 0 0 2px var(--soft-border); flex-shrink: 0; transition: 0.3s; }
+    .timeline-item.active.timeline-dot { background: var(--soft-blue-text); box-shadow: 0 0 0 2px var(--soft-blue); animation: dotPulse 1.5s infinite; }
+    .timeline-item.done.timeline-dot { background: var(--soft-green-text); box-shadow: 0 0 0 2px var(--soft-green); }
+    @keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    .timeline-label { font-size: 13px; color: #999; margin-bottom: 4px; }
+    .timeline-waktu { font-size: 16px; font-weight: 700; color: #333; }
+    .timeline-item.done.timeline-waktu { color: var(--soft-green-text); }
+
+    .kamera-container-soft { position: relative; border-radius: 20px; overflow: hidden; margin-bottom: 16px; background: #000; }
+    .kamera-container-soft video { width: 100%; display: block; }
+    .kamera-frame-soft { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; pointer-events: none; }
+    .kamera-frame-soft.corner { position: absolute; width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.9); }
+    .kamera-frame-soft.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 12px 0 0 0; }
+    .kamera-frame-soft.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 12px 0 0; }
+    .kamera-frame-soft.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 12px; }
+    .kamera-frame-soft.br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
+    .kamera-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 6px; font-size: 13px; backdrop-filter: blur(10px); }
+
+    .btn-soft { width: 100%; padding: 16px; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-soft:active { transform: scale(0.97); }
+    .btn-foto-soft { background: var(--soft-blue-text); color: white; margin-bottom: 8px; }
+    .btn-batal-soft { background: var(--soft-gray); color: #666; }
+
+    .btn-aksi-soft { width: 100%; padding: 24px; border: none; border-radius: 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: 0.3s; text-align: left; }
+    .btn-aksi-soft:active { transform: scale(0.98); }
+    .btn-aksi-soft:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-aksi-soft[data-tipe="in"] { background: var(--soft-blue); }
+    .btn-aksi-soft[data-tipe="out"] { background: var(--soft-red); }
+    .btn-aksi-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .btn-aksi-soft[data-tipe="in"].btn-aksi-icon { background: var(--soft-blue-text); color: white; }
+    .btn-aksi-soft[data-tipe="out"].btn-aksi-icon { background: var(--soft-red-text); color: white; }
+    .btn-aksi-judul { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+    .btn-aksi-soft[data-tipe="in"].btn-aksi-judul { color: var(--soft-blue-text); }
+    .btn-aksi-soft[data-tipe="out"].btn-aksi-judul { color: var(--soft-red-text); }
+    .btn-aksi-sub { font-size: 13px; color: #666; }
+
+    .preview-soft { width: 100%; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+    .notif-soft { background: var(--soft-green); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s; }
+    .notif-soft.error { background: var(--soft-red); }
+    .notif-soft.material-icons-round { font-size: 28px; color: var(--soft-green-text); }
+    .notif-soft.error.material-icons-round { color: var(--soft-red-text); }
+    .notif-soft p { font-weight: 600; color: #333; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
     #video, #preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
-   .btn-foto { background: #34A853; margin-bottom: 8px; }
-   .btn-batal { background: #9E9E9E; }
-   .btn-out { background: #EA4335; }
    .hidden { display: none!important; }
 
     /* REKAP */
@@ -64,18 +130,19 @@
     /* FORM */
    .form-group { margin-bottom: 16px; }
    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 14px; }
-   .form-group input,.form-group textarea { width: 100%; padding: 12px; border: 2px solid #E8EAED; border-radius: 12px; font-size: 15px; }
+   .form-group input,.form-group textarea { width: 100%; padding: 12px; border: 2px solid var(--soft-border); border-radius: 14px; font-size: 15px; background: #FCFCFC; }
+   .form-group input:focus,.form-group textarea:focus { outline: none; border-color: var(--soft-blue-text); background: white; }
 
     /* BOTTOM NAV */
-   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); max-width: 450px; margin: 0 auto; }
-   .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #666; cursor: pointer; font-size: 12px; }
-   .nav-item.active { color: #1A73E8; }
+   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 12px rgba(0,0,0,0.05); max-width: 450px; margin: 0 auto; }
+   .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; cursor: pointer; font-size: 12px; }
+   .nav-item.active { color: var(--soft-blue-text); }
    .nav-item.material-icons-round { font-size: 24px; }
 
-   .status { padding: 14px; border-radius: 12px; text-align: center; margin-top: 16px; font-weight: 600; }
-   .sukses { background: #E6F4EA; color: #137333; }
-   .gagal { background: #FCE8E6; color: #C5221F; }
-   .loading { background: #E8F0FE; color: #1967D2; }
+   .status { padding: 14px; border-radius: 14px; text-align: center; margin-top: 16px; font-weight: 600; }
+   .sukses { background: #E8F5E9; color: #2E7D32; }
+   .gagal { background: #FFEBEE; color: #C62828; }
+   .loading { background: #E3F2FD; color: #1565C0; }
   </style>
 </head>
 <body>
@@ -132,22 +199,80 @@
       </div>
     </div>
 
-    <!-- PAGE ABSENSI -->
+    <!-- PAGE ABSENSI - SOFT TONE 1 TOMBOL -->
     <div id="page-absensi" class="page">
-      <div class="card">
-        <div class="card-title"><span class="material-icons-round">camera_alt</span> Absensi Hari Ini</div>
+      <div class="card-soft">
+        <div class="card-title-soft">
+          <span class="material-icons-round">schedule</span>
+          Absensi Hari Ini
+        </div>
+
+        <!-- INFO HARI INI -->
+        <div class="info-hari-ini">
+          <div class="info-tgl" id="tglAbsen">Sabtu, 26 April 2026</div>
+          <div class="info-jam" id="jamAbsen">08:45:12</div>
+        </div>
+
+        <!-- STATUS ABSEN -->
+        <div class="timeline-absen">
+          <div class="timeline-item" id="itemMasuk">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <p class="timeline-label">Check In</p>
+              <p class="timeline-waktu" id="waktuMasuk">Belum absen</p>
+            </div>
+          </div>
+          <div class="timeline-item" id="itemPulang">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <p class="timeline-label">Check Out</p>
+              <p class="timeline-waktu" id="waktuPulang">Belum absen</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AREA KAMERA -->
         <div id="kameraArea" class="hidden">
-          <video id="video" autoplay playsinline></video>
+          <div class="kamera-container-soft">
+            <video id="video" autoplay playsinline></video>
+            <div class="kamera-frame-soft">
+              <div class="corner tl"></div>
+              <div class="corner tr"></div>
+              <div class="corner bl"></div>
+              <div class="corner br"></div>
+            </div>
+            <div class="kamera-hint">
+              <span class="material-icons-round">face</span>
+              <p>Posisikan wajah di tengah</p>
+            </div>
+          </div>
           <canvas id="canvas" class="hidden"></canvas>
-          <button class="btn btn-foto" id="btnAmbilFoto">Ambil Foto</button>
-          <button class="btn btn-batal" id="btnBatalFoto">Batal</button>
+          <button class="btn-soft btn-foto-soft" id="btnAmbilFoto">
+            <span class="material-icons-round">photo_camera</span> Ambil Foto
+          </button>
+          <button class="btn-soft btn-batal-soft" id="btnBatalFoto">Batal</button>
         </div>
-        <img id="preview" class="hidden">
-        <div id="tombolAbsen">
-          <button class="btn" id="btnCheckIn">Check In + Foto</button>
-          <button class="btn btn-out" id="btnCheckOut">Check Out + Foto</button>
+
+        <img id="preview" class="hidden preview-soft">
+
+        <!-- 1 TOMBOL UTAMA YANG BERUBAH -->
+        <div id="tombolUtamaAbsen">
+          <button class="btn-aksi-soft" id="btnAksiUtama" data-tipe="in">
+            <div class="btn-aksi-icon">
+              <span class="material-icons-round" id="iconAksi">login</span>
+            </div>
+            <div class="btn-aksi-text">
+              <p class="btn-aksi-judul" id="judulAksi">MASUK</p>
+              <p class="btn-aksi-sub" id="subAksi">Tap untuk absen masuk</p>
+            </div>
+          </button>
         </div>
-        <div id="absenStatus" class="status hidden"></div>
+
+        <!-- NOTIFIKASI -->
+        <div id="notifAbsen" class="notif-soft hidden">
+          <span class="material-icons-round" id="notifIcon">check_circle</span>
+          <p id="notifText">Absen berhasil!</p>
+        </div>
       </div>
     </div>
 
@@ -160,44 +285,45 @@
     </div>
 
     <!-- PAGE GANTI PASSWORD -->
-<div id="page-password" class="page">
-  <div class="card">
-    <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
-    
-    <div class="form-group">
-      <label>Password Lama</label>
-      <div class="input-group">
-        <input type="password" id="passLama" placeholder="Masukkan password lama">
-        <span class="material-icons-round toggle-pass" onclick="togglePassField('passLama', this)">visibility_off</span>
+    <div id="page-password" class="page">
+      <div class="card">
+        <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
+        
+        <div class="form-group">
+          <label>Password Lama</label>
+          <div class="input-group">
+            <input type="password" id="passLama" placeholder="Masukkan password lama">
+            <span class="material-icons-round toggle-pass" onclick="togglePassField('passLama', this)">visibility_off</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Password Baru</label>
+          <div class="input-group">
+            <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
+            <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru', this)">visibility_off</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Konfirmasi Password Baru</label>
+          <div class="input-group">
+            <input type="password" id="passBaru2" placeholder="Ulangi password baru">
+            <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru2', this)">visibility_off</span>
+          </div>
+        </div>
+        
+        <button class="btn" id="btnGantiPass">Simpan Password</button>
+        <div id="passStatus" class="status hidden"></div>
       </div>
     </div>
-    
-    <div class="form-group">
-      <label>Password Baru</label>
-      <div class="input-group">
-        <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
-        <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru', this)">visibility_off</span>
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label>Konfirmasi Password Baru</label>
-      <div class="input-group">
-        <input type="password" id="passBaru2" placeholder="Ulangi password baru">
-        <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru2', this)">visibility_off</span>
-      </div>
-    </div>
-    
-    <button class="btn" id="btnGantiPass">Simpan Password</button>
-    <div id="passStatus" class="status hidden"></div>
-  </div>
-</div>
+
     <!-- PAGE PROFIL -->
     <div id="page-profil" class="page">
       <div class="card">
         <div class="card-title"><span class="material-icons-round">person</span> Update Data Diri</div>
         <div style="text-align:center; margin-bottom:20px">
-          <img id="profilPreview" src="https://via.placeholder.com/100" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #1A73E8;">
+          <img id="profilPreview" src="https://via.placeholder.com/100" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #1565C0;">
           <input type="file" id="inputFotoProfil" accept="image/*" class="hidden">
           <button class="btn" style="margin-top:12px; background:#666" onclick="document.getElementById('inputFotoProfil').click()">Ganti Foto</button>
         </div>
@@ -234,6 +360,10 @@
     </div>
   </div>
 
+  <!-- AUDIO TING -->
+  <audio id="audioTing" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE" type="audio/wav">
+  </audio>
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyQrjOZz_KQcPTSyUo8XOVoIYJFcHVzdhPetDOeDn342rv8UoabKhU_CNjJzXPbAiDZ/exec';
 
@@ -256,9 +386,28 @@ const KARYAWAN = [
 
 let currentUser = null;
 let stream = null;
-let tipeAbsen = null;
 
-// TOGGLE PASSWORD
+// SOUND TING
+function playTing() {
+  const audio = document.getElementById('audioTing');
+  audio.currentTime = 0;
+  audio.play().catch(e => console.log('Audio error:', e));
+}
+
+// TOGGLE PASSWORD LOGIN
+function togglePassword() {
+  const input = document.getElementById('password');
+  const icon = document.querySelector('.toggle-pass');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility_off';
+  }
+}
+
+// TOGGLE PASSWORD GANTI PASSWORD
 function togglePassField(fieldId, iconElement) {
   const input = document.getElementById(fieldId);
   if (input.type === 'password') {
@@ -275,6 +424,10 @@ setInterval(() => {
   const now = new Date();
   document.getElementById('jamSekarang').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
   document.getElementById('tglSekarang').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+  if (document.getElementById('jamAbsen')) {
+    document.getElementById('jamAbsen').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
+    document.getElementById('tglAbsen').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+  }
 }, 1000);
 
 // LOGIN
@@ -315,8 +468,12 @@ function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
   if (page === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
-  if (page === 'absensi') document.querySelectorAll('.nav-item')[1].classList.add('active');
+  if (page === 'absensi') {
+    document.querySelectorAll('.nav-item')[1].classList.add('active');
+    cekStatusHariIni();
+  }
   if (page === 'rekap') {
     document.querySelectorAll('.nav-item')[2].classList.add('active');
     loadRekap();
@@ -328,22 +485,76 @@ function logout() {
   location.reload();
 }
 
-// ABSENSI
-document.getElementById('btnCheckIn').onclick = () => bukaKameraManual('in');
-document.getElementById('btnCheckOut').onclick = () => bukaKameraManual('out');
+// CEK STATUS ABSEN + SET TOMBOL MASUK/PULANG
+async function cekStatusHariIni() {
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'rekap', nama: currentUser.nama })
+  });
+  const hasil = await res.json();
 
-async function bukaKameraManual(tipe) {
-  tipeAbsen = tipe;
-  document.getElementById('tombolAbsen').classList.add('hidden');
+  if (hasil.status === 'sukses') {
+    const today = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric'});
+    const dataHariIni = hasil.data.find(d => d.tanggal === today);
+
+    const btnAksi = document.getElementById('btnAksiUtama');
+    const itemMasuk = document.getElementById('itemMasuk');
+    const itemPulang = document.getElementById('itemPulang');
+
+    // Reset
+    itemMasuk.classList.remove('active', 'done');
+    itemPulang.classList.remove('active', 'done');
+    btnAksi.disabled = false;
+
+    if (dataHariIni && dataHariIni.masuk!== '-') {
+      itemMasuk.classList.add('done');
+      document.getElementById('waktuMasuk').textContent = dataHariIni.masuk;
+
+      if (dataHariIni.pulang!== '-') {
+        itemPulang.classList.add('done');
+        document.getElementById('waktuPulang').textContent = dataHariIni.pulang;
+        btnAksi.disabled = true;
+        document.getElementById('judulAksi').textContent = 'SELESAI';
+        document.getElementById('subAksi').textContent = 'Absen hari ini lengkap';
+        document.getElementById('iconAksi').textContent = 'check_circle';
+        btnAksi.dataset.tipe = 'done';
+      } else {
+        itemPulang.classList.add('active');
+        btnAksi.dataset.tipe = 'out';
+        document.getElementById('judulAksi').textContent = 'PULANG';
+        document.getElementById('subAksi').textContent = 'Tap untuk absen pulang';
+        document.getElementById('iconAksi').textContent = 'logout';
+      }
+    } else {
+      itemMasuk.classList.add('active');
+      document.getElementById('waktuMasuk').textContent = 'Belum absen';
+      document.getElementById('waktuPulang').textContent = 'Belum absen';
+      btnAksi.dataset.tipe = 'in';
+      document.getElementById('judulAksi').textContent = 'MASUK';
+      document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
+      document.getElementById('iconAksi').textContent = 'login';
+    }
+  }
+}
+
+// TOMBOL UTAMA DIKLIK
+document.getElementById('btnAksiUtama').onclick = () => {
+  const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
+  if (tipe === 'done') return;
+  bukaKameraAbsen(tipe);
+};
+
+async function bukaKameraAbsen(tipe) {
+  document.getElementById('tombolUtamaAbsen').classList.add('hidden');
   document.getElementById('kameraArea').classList.remove('hidden');
-  document.getElementById('absenStatus').classList.add('hidden');
+  document.getElementById('notifAbsen').classList.add('hidden');
   document.getElementById('preview').classList.add('hidden');
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
     document.getElementById('video').srcObject = stream;
   } catch (err) {
-    alert('Kamera error: ' + err.message);
+    showNotif('Kamera error: ' + err.message, true);
     batalFoto();
   }
 }
@@ -352,7 +563,6 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
 
-  // KOMPRES JADI MAX 800px
   const maxWidth = 800;
   let width = video.videoWidth;
   let height = video.videoHeight;
@@ -363,17 +573,17 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   canvas.width = width;
   canvas.height = height;
   canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-
-  const foto = canvas.toDataURL('image/jpeg', 0.7); // Kualitas 70%
+  const foto = canvas.toDataURL('image/jpeg', 0.7);
 
   stopKamera();
   document.getElementById('preview').src = foto;
   document.getElementById('preview').classList.remove('hidden');
 
+  const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   navigator.geolocation.getCurrentPosition(pos => {
-    kirimAbsen(tipeAbsen, foto, pos.coords.latitude, pos.coords.longitude);
+    kirimAbsenBaru(tipe, foto, pos.coords.latitude, pos.coords.longitude);
   }, err => {
-    kirimAbsen(tipeAbsen, foto, 0, 0);
+    kirimAbsenBaru(tipe, foto, 0, 0);
   });
 };
 
@@ -382,7 +592,7 @@ document.getElementById('btnBatalFoto').onclick = batalFoto;
 function batalFoto() {
   stopKamera();
   document.getElementById('kameraArea').classList.add('hidden');
-  document.getElementById('tombolAbsen').classList.remove('hidden');
+  document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
 }
 
 function stopKamera() {
@@ -392,11 +602,8 @@ function stopKamera() {
   }
 }
 
-async function kirimAbsen(tipe, foto, lat, lng) {
-  const status = document.getElementById('absenStatus');
-  status.textContent = 'Mengirim data...';
-  status.className = 'status loading';
-  status.classList.remove('hidden');
+async function kirimAbsenBaru(tipe, foto, lat, lng) {
+  showNotif('Mengirim data...', false, true);
   document.getElementById('kameraArea').classList.add('hidden');
 
   const data = {
@@ -417,20 +624,43 @@ async function kirimAbsen(tipe, foto, lat, lng) {
     const hasil = await res.json();
 
     if (hasil.status === 'sukses') {
-      status.textContent = hasil.pesan;
-      status.className = 'status sukses';
-      if (hasil.fotoUrl) document.getElementById('preview').src = hasil.fotoUrl;
+      const pesan = tipe === 'in'? 'Absen Masuk Berhasil!' : 'Absen Pulang Berhasil!';
+      showNotif(pesan, false);
+      playTing();
+      setTimeout(() => {
+        cekStatusHariIni();
+        document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
+        document.getElementById('preview').classList.add('hidden');
+      }, 1500);
     } else {
-      status.textContent = hasil.pesan;
-      status.className = 'status gagal';
+      showNotif(hasil.pesan, true);
+      document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
     }
   } catch (err) {
-    status.textContent = 'Gagal kirim: ' + err.message;
-    status.className = 'status gagal';
-  } finally {
-    document.getElementById('tombolAbsen').classList.remove('hidden');
-    document.getElementById('kameraArea').classList.add('hidden');
-    document.getElementById('preview').classList.add('hidden'); // Tambahin ini
+    showNotif('Gagal kirim: ' + err.message, true);
+    document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
+  }
+}
+
+function showNotif(text, isError = false, isLoading = false) {
+  const notif = document.getElementById('notifAbsen');
+  const icon = document.getElementById('notifIcon');
+  document.getElementById('notifText').textContent = text;
+
+  if (isLoading) {
+    notif.classList.remove('error');
+    icon.textContent = 'hourglass_empty';
+  } else if (isError) {
+    notif.classList.add('error');
+    icon.textContent = 'error';
+  } else {
+    notif.classList.remove('error');
+    icon.textContent = 'check_circle';
+  }
+
+  notif.classList.remove('hidden');
+  if (!isLoading) {
+    setTimeout(() => notif.classList.add('hidden'), 3000);
   }
 }
 
@@ -504,9 +734,9 @@ document.getElementById('btnGantiPass').onclick = async () => {
     document.getElementById('passLama').value = '';
     document.getElementById('passBaru').value = '';
     document.getElementById('passBaru2').value = '';
-    // Update local storage
     currentUser.password = baru;
     localStorage.setItem('user', JSON.stringify(currentUser));
+    playTing();
   }
 };
 
@@ -525,14 +755,14 @@ document.getElementById('inputFotoProfil').onchange = (e) => {
 // SIMPAN PROFIL
 document.getElementById('btnSimpanProfil').onclick = async () => {
   const status = document.getElementById('profilStatus');
-  status.textContent = 'Menyimpan...';
+  status.textContent = 'Mengompres & menyimpan...';
   status.className = 'status loading';
   status.classList.remove('hidden');
 
   const fileInput = document.getElementById('inputFotoProfil');
   let fotoBase64 = '';
   if (fileInput.files[0]) {
-    fotoBase64 = await toBase64(fileInput.files[0]);
+    fotoBase64 = await compressImage(fileInput.files[0], 400, 0.8);
   }
 
   const data = {
@@ -552,16 +782,33 @@ document.getElementById('btnSimpanProfil').onclick = async () => {
   status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
 
   if (hasil.status === 'sukses' && hasil.fotoUrl) {
-    document.getElementById('fotoProfil').src = hasil.fotoUrl;
+    document.getElementById('fotoProfil').src = hasil.fotoUrl + '?t=' + new Date().getTime();
+    document.getElementById('profilPreview').src = hasil.fotoUrl + '?t=' + new Date().getTime();
+    playTing();
   }
 };
 
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve) => {
     const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
   });
 }
 
