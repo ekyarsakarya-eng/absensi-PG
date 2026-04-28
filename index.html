@@ -9,29 +9,31 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #f5f5f5; }
-    .container { max-width: 400px; margin: 0 auto; padding: 20px; }
-    .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 40px; }
+   .container { max-width: 400px; margin: 0 auto; padding: 20px; }
+   .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 40px; }
     h1 { text-align: center; color: #1A73E8; margin-bottom: 8px; font-size: 22px; }
-    .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
+   .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
     input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-size: 16px; }
-    button { width: 100%; padding: 14px; background: #1A73E8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
-    button:disabled { background: #ccc; }
-    .btn-out { background: #EA4335; margin-top: 12px; }
-    .hidden { display: none; }
+    button { width: 100%; padding: 14px; background: #1A73E8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+   .btn-out { background: #EA4335; }
+   .btn-foto { background: #34A853; }
+   .btn-batal { background: #9E9E9E; }
+   .hidden { display: none; }
     #video { width: 100%; border-radius: 8px; margin: 12px 0; }
     #preview { width: 100%; border-radius: 8px; margin: 12px 0; }
-    .info { text-align: center; margin: 16px 0; color: #333; }
-    .jam { font-size: 32px; font-weight: 700; color: #1A73E8; }
-    .nama { font-size: 18px; font-weight: 600; margin-top: 8px; }
-    .status { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; font-weight: 600; }
-    .sukses { background: #E6F4EA; color: #137333; }
-    .gagal { background: #FCE8E6; color: #C5221F; }
-    .loading { background: #E8F0FE; color: #1967D2; }
+   .info { text-align: center; margin: 16px 0; color: #333; }
+   .jam { font-size: 32px; font-weight: 700; color: #1A73E8; }
+   .nama { font-size: 18px; font-weight: 600; margin-top: 8px; }
+   .status { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; font-weight: 600; }
+   .sukses { background: #E6F4EA; color: #137333; }
+   .gagal { background: #FCE8E6; color: #C5221F; }
+   .loading { background: #E8F0FE; color: #1967D2; }
   </style>
 </head>
 <body>
   <div class="container">
-    
+
     <!-- HALAMAN LOGIN -->
     <div id="loginPage" class="card">
       <h1>PAMILI GARMEN</h1>
@@ -50,15 +52,24 @@
         <div class="nama" id="namaKaryawan">-</div>
         <div id="tglSekarang">-</div>
       </div>
-      
-      <video id="video" class="hidden" autoplay playsinline></video>
-      <canvas id="canvas" class="hidden"></canvas>
+
+      <!-- AREA KAMERA -->
+      <div id="kameraArea" class="hidden">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" class="hidden"></canvas>
+        <button id="btnAmbilFoto" class="btn-foto">Ambil Foto</button>
+        <button id="btnBatalFoto" class="btn-batal">Batal</button>
+      </div>
+
       <img id="preview" class="hidden">
-      
-      <button id="btnCheckIn">Check In + Foto</button>
-      <button id="btnCheckOut" class="btn-out">Check Out + Foto</button>
-      <button id="btnLogout" style="background:#666; margin-top:12px">Logout</button>
-      
+
+      <!-- TOMBOL UTAMA -->
+      <div id="tombolUtama">
+        <button id="btnCheckIn">Check In + Foto</button>
+        <button id="btnCheckOut" class="btn-out">Check Out + Foto</button>
+        <button id="btnLogout" style="background:#666">Logout</button>
+      </div>
+
       <div id="absenStatus" class="status hidden"></div>
     </div>
 
@@ -86,6 +97,7 @@ const KARYAWAN = [
 
 let currentUser = null;
 let stream = null;
+let tipeAbsen = null;
 
 // Update jam
 setInterval(() => {
@@ -101,7 +113,7 @@ document.getElementById('btnLogin').onclick = () => {
   const status = document.getElementById('loginStatus');
 
   const karyawan = KARYAWAN.find(k => k.username === user && k.password === pass);
-  
+
   if (karyawan) {
     currentUser = karyawan;
     localStorage.setItem('user', JSON.stringify(karyawan));
@@ -132,71 +144,68 @@ document.getElementById('btnLogout').onclick = () => {
   location.reload();
 };
 
-// FUNGSI KAMERA
-async function bukaKamera() {
+// BUKA KAMERA MANUAL
+document.getElementById('btnCheckIn').onclick = () => bukaKameraManual('in');
+document.getElementById('btnCheckOut').onclick = () => bukaKameraManual('out');
+
+async function bukaKameraManual(tipe) {
+  tipeAbsen = tipe;
+  document.getElementById('tombolUtama').classList.add('hidden');
+  document.getElementById('kameraArea').classList.remove('hidden');
+  document.getElementById('absenStatus').classList.add('hidden');
+
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
     document.getElementById('video').srcObject = stream;
-    document.getElementById('video').classList.remove('hidden');
-    return true;
   } catch (err) {
     alert('Kamera error: ' + err.message);
-    return false;
+    batalFoto();
   }
 }
 
-function ambilFoto() {
+// TOMBOL AMBIL FOTO
+document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
-  return canvas.toDataURL('image/jpeg', 0.8);
+  const foto = canvas.toDataURL('image/jpeg', 0.8);
+
+  stopKamera();
+  document.getElementById('preview').src = foto;
+  document.getElementById('preview').classList.remove('hidden');
+
+  // Ambil GPS lalu kirim
+  navigator.geolocation.getCurrentPosition(pos => {
+    kirimAbsen(tipeAbsen, foto, pos.coords.latitude, pos.coords.longitude);
+  }, err => {
+    kirimAbsen(tipeAbsen, foto, 0, 0);
+  });
+};
+
+// TOMBOL BATAL
+document.getElementById('btnBatalFoto').onclick = batalFoto;
+
+function batalFoto() {
+  stopKamera();
+  document.getElementById('kameraArea').classList.add('hidden');
+  document.getElementById('tombolUtama').classList.remove('hidden');
 }
 
 function stopKamera() {
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
-    document.getElementById('video').classList.add('hidden');
+    stream = null;
   }
-}
-
-// CHECK IN
-document.getElementById('btnCheckIn').onclick = async () => {
-  await prosesAbsen('in');
-};
-
-// CHECK OUT
-document.getElementById('btnCheckOut').onclick = async () => {
-  await prosesAbsen('out');
-};
-
-async function prosesAbsen(tipe) {
-  const status = document.getElementById('absenStatus');
-  status.textContent = 'Buka kamera...';
-  status.className = 'status loading';
-  status.classList.remove('hidden');
-
-  const kameraOk = await bukaKamera();
-  if (!kameraOk) return;
-
-  // Tunggu 2 detik biar siap foto
-  setTimeout(async () => {
-    status.textContent = 'Mengambil foto & lokasi...';
-    const foto = ambilFoto();
-    stopKamera();
-    
-    navigator.geolocation.getCurrentPosition(pos => {
-      kirimAbsen(tipe, foto, pos.coords.latitude, pos.coords.longitude);
-    }, err => {
-      kirimAbsen(tipe, foto, 0, 0); // Kirim tanpa GPS kalau error
-    });
-  }, 2000);
 }
 
 async function kirimAbsen(tipe, foto, lat, lng) {
   const status = document.getElementById('absenStatus');
   status.textContent = 'Mengirim data...';
+  status.className = 'status loading';
+  status.classList.remove('hidden');
+  document.getElementById('kameraArea').classList.add('hidden');
 
   const data = {
     nama: currentUser.nama,
@@ -217,8 +226,6 @@ async function kirimAbsen(tipe, foto, lat, lng) {
     if (hasil.status === 'sukses') {
       status.textContent = hasil.pesan;
       status.className = 'status sukses';
-      document.getElementById('preview').src = foto;
-      document.getElementById('preview').classList.remove('hidden');
     } else {
       status.textContent = hasil.pesan;
       status.className = 'status gagal';
@@ -226,10 +233,11 @@ async function kirimAbsen(tipe, foto, lat, lng) {
   } catch (err) {
     status.textContent = 'Gagal kirim: ' + err.message;
     status.className = 'status gagal';
+  } finally {
+    document.getElementById('tombolUtama').classList.remove('hidden');
   }
 }
 
-// Register Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
