@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyVDXgzGGOeEkm205monVjShLmXQv1MPbUbBuVQS2OcdhUpNHgZF_wUoyLKSl96eqCC/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyQrjOZz_KQcPTSyUo8XOVoIYJFcHVzdhPetDOeDn342rv8UoabKhU_CNjJzXPbAiDZ/exec";
 const KARYAWAN = ["MUTMAINAH","SUGIARTI","MUJIATI","CHOIRIYAH","AULIA ZULFA","SUWARTINI","INDANG HASTUTIK","IKA NURHAYATI","FAJAR FITRIYAH","SURANI","NUR AMALIA","DWI NINGSIH","LANI ROSSILAWATI","RISWAHYUNINGSIH"];
 
 const video = document.getElementById('kamera');
