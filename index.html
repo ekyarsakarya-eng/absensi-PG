@@ -14,8 +14,6 @@
  .page { display: none; animation: fadeIn 0.3s; }
  .page.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  /* LOGIN */
  .login-card { background: white; margin: 40px 20px; border-radius: 20px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
  .login-card h1 { text-align: center; color: #1565C0; margin-bottom: 8px; font-size: 24px; font-weight: 800; }
  .login-card .subtitle { text-align: center; color: #666; margin-bottom: 28px; }
@@ -26,16 +24,12 @@
  .btn { width: 100%; padding: 16px; background: #1565C0; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
  .btn:active { transform: scale(0.98); }
  .btn:disabled { background: #ccc; }
-
-  /* HEADER */
  .header { background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); color: #1565C0; padding: 24px 20px 80px; border-radius: 0 0 28px 28px; }
  .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
  .header h2 { font-size: 20px; font-weight: 700; }
  .profil-img { width: 48px; height: 48px; border-radius: 50%; border: 3px solid white; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
  .jam-besar { font-size: 48px; font-weight: 800; text-align: center; margin: 8px 0; }
  .tgl { text-align: center; opacity: 0.8; font-weight: 500; }
-
-  /* MENU HOME */
  .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px; margin-top: -40px; }
  .menu-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); cursor: pointer; transition: 0.2s; text-align: center; }
  .menu-card:active { transform: scale(0.95); }
@@ -45,12 +39,8 @@
  .icon-green { background: #E8F5E9; color: #2E7D32; }
  .icon-orange { background: #FFF8E1; color: #F57C00; }
  .icon-purple { background: #F3E5F5; color: #7B1FA2; }
-
-  /* CARD UMUM */
  .card { background: white; margin: 20px; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #333; }
-
-  /* REKAP SOFT TONE */
   .rekap-filter { display: flex; gap: 8px; margin-bottom: 20px; }
   .filter-btn { flex: 1; padding: 10px; border: 2px solid #EEEEEE; background: white; border-radius: 12px; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
   .filter-btn.active { background: #E3F2FD; border-color: #1565C0; color: #1565C0; }
@@ -77,28 +67,20 @@
   .status-hari.setengah { background: #FFA726; }
   .empty-state { text-align: center; padding: 40px 20px; color: #999; }
   .empty-state .material-icons-round { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-
   #video, #preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
  .hidden { display: none!important; }
-
-  /* FORM */
  .form-group { margin-bottom: 16px; }
  .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 14px; }
  .form-group input,.form-group textarea { width: 100%; padding: 12px; border: 2px solid #EEEEEE; border-radius: 14px; font-size: 15px; background: #FCFCFC; }
  .form-group input:focus,.form-group textarea:focus { outline: none; border-color: #1565C0; background: white; }
-
-  /* BOTTOM NAV */
  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 12px rgba(0,0,0,0.05); max-width: 450px; margin: 0 auto; }
  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; cursor: pointer; font-size: 12px; }
  .nav-item.active { color: #1565C0; }
  .nav-item .material-icons-round { font-size: 24px; }
-
  .status { padding: 14px; border-radius: 14px; text-align: center; margin-top: 16px; font-weight: 600; }
  .sukses { background: #E8F5E9; color: #2E7D32; }
  .gagal { background: #FFEBEE; color: #C62828; }
  .loading { background: #E3F2FD; color: #1565C0; }
-
-/* TAMBAHAN UNTUK SOFT UI */
 .card-soft { background: white; margin: 20px; border-radius: 20px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
 .card-title-soft { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: #333; }
 .info-hari-ini { text-align: center; margin-bottom: 16px; }
@@ -128,8 +110,6 @@
 </head>
 <body>
   <div class="container">
-
-    <!-- PAGE LOGIN -->
     <div id="page-login" class="page active">
       <div class="login-card">
         <h1>PAMILI GARMEN</h1>
@@ -146,7 +126,6 @@
       </div>
     </div>
 
-    <!-- PAGE HOME -->
     <div id="page-home" class="page">
       <div class="header">
         <div class="header-top">
@@ -159,695 +138,124 @@
         <div class="jam-besar" id="jamSekarang">00:00:00</div>
         <div class="tgl" id="tglSekarang">-</div>
       </div>
-
       <div class="menu-grid">
-        <div class="menu-card" onclick="showPage('absensi')">
-          <div class="icon icon-blue"><span class="material-icons-round">camera_alt</span></div>
-          <h3>Absensi</h3>
-        </div>
-        <div class="menu-card" onclick="showPage('rekap')">
-          <div class="icon icon-green"><span class="material-icons-round">calendar_month</span></div>
-          <h3>Rekap Saya</h3>
-        </div>
-        <div class="menu-card" onclick="showPage('password')">
-          <div class="icon icon-orange"><span class="material-icons-round">lock</span></div>
-          <h3>Ganti Password</h3>
-        </div>
-        <div class="menu-card" onclick="showPage('profil')">
-          <div class="icon icon-purple"><span class="material-icons-round">person</span></div>
-          <h3>Update Profil</h3>
-        </div>
+        <div class="menu-card" onclick="showPage('absensi')"><div class="icon icon-blue"><span class="material-icons-round">camera_alt</span></div><h3>Absensi</h3></div>
+        <div class="menu-card" onclick="showPage('rekap')"><div class="icon icon-green"><span class="material-icons-round">calendar_month</span></div><h3>Rekap Saya</h3></div>
+        <div class="menu-card" onclick="showPage('password')"><div class="icon icon-orange"><span class="material-icons-round">lock</span></div><h3>Ganti Password</h3></div>
+        <div class="menu-card" onclick="showPage('profil')"><div class="icon icon-purple"><span class="material-icons-round">person</span></div><h3>Update Profil</h3></div>
       </div>
     </div>
 
-<!-- PAGE ABSENSI -->
     <div id="page-absensi" class="page">
       <div class="card-soft">
-        <div class="card-title-soft">
-          <span class="material-icons-round">schedule</span>
-          Absensi Hari Ini
-        </div>
-
-        <div class="info-hari-ini">
-          <div class="info-tgl" id="tglAbsen">Sabtu, 26 April 2026</div>
-          <div class="info-jam" id="jamAbsen">08:45:12</div>
-        </div>
-
+        <div class="card-title-soft"><span class="material-icons-round">schedule</span>Absensi Hari Ini</div>
+        <div class="info-hari-ini"><div class="info-tgl" id="tglAbsen">-</div><div class="info-jam" id="jamAbsen">00:00:00</div></div>
         <div class="timeline-absen">
-          <div class="timeline-item" id="itemMasuk">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-              <p class="timeline-label">Check In</p>
-              <p class="timeline-waktu" id="waktuMasuk">Belum absen</p>
-            </div>
-          </div>
-          <div class="timeline-item" id="itemPulang">
-            <div class="timeline-dot"></div>
-            <div class="timeline-content">
-              <p class="timeline-label">Check Out</p>
-              <p class="timeline-waktu" id="waktuPulang">Belum absen</p>
-            </div>
-          </div>
+          <div class="timeline-item" id="itemMasuk"><div class="timeline-dot"></div><div class="timeline-content"><p class="timeline-label">Check In</p><p class="timeline-waktu" id="waktuMasuk">Belum absen</p></div></div>
+          <div class="timeline-item" id="itemPulang"><div class="timeline-dot"></div><div class="timeline-content"><p class="timeline-label">Check Out</p><p class="timeline-waktu" id="waktuPulang">Belum absen</p></div></div>
         </div>
-
         <div id="kameraArea" class="hidden">
-          <div class="kamera-container-soft">
-            <video id="video" autoplay playsinline></video>
-            <div class="kamera-hint">
-              <span class="material-icons-round">face</span>
-              <p>Posisikan wajah di tengah</p>
-            </div>
-          </div>
+          <div class="kamera-container-soft"><video id="video" autoplay playsinline></video><div class="kamera-hint"><span class="material-icons-round">face</span><p>Posisikan wajah di tengah</p></div></div>
           <canvas id="canvas" class="hidden"></canvas>
-          <button class="btn-soft btn-foto-soft" id="btnAmbilFoto">
-            <span class="material-icons-round">photo_camera</span> Ambil Foto
-          </button>
+          <button class="btn-soft btn-foto-soft" id="btnAmbilFoto"><span class="material-icons-round">photo_camera</span> Ambil Foto</button>
           <button class="btn-soft btn-batal-soft" id="btnBatalFoto">Batal</button>
         </div>
-
         <img id="preview" class="hidden preview-soft">
-
-        <div id="tombolUtamaAbsen">
-          <button class="btn-aksi-soft" id="btnAksiUtama" data-tipe="in">
-            <div class="btn-aksi-icon">
-              <span class="material-icons-round" id="iconAksi">login</span>
-            </div>
-            <div class="btn-aksi-text">
-              <p class="btn-aksi-judul" id="judulAksi">MASUK</p>
-              <p class="btn-aksi-sub" id="subAksi">Tap untuk absen masuk</p>
-            </div>
-          </button>
-        </div>
-
-        <div id="notifAbsen" class="notif-soft hidden">
-          <span class="material-icons-round" id="notifIcon">check_circle</span>
-          <p id="notifText">Absen berhasil!</p>
-        </div>
+        <div id="tombolUtamaAbsen"><button class="btn-aksi-soft" id="btnAksiUtama" data-tipe="in"><div class="btn-aksi-icon"><span class="material-icons-round" id="iconAksi">login</span></div><div class="btn-aksi-text"><p class="btn-aksi-judul" id="judulAksi">MASUK</p><p class="btn-aksi-sub" id="subAksi">Tap untuk absen masuk</p></div></button></div>
+        <div id="notifAbsen" class="notif-soft hidden"><span class="material-icons-round" id="notifIcon">check_circle</span><p id="notifText">Absen berhasil!</p></div>
       </div>
     </div>
 
-    <!-- PAGE REKAP -->
     <div id="page-rekap" class="page">
-  <div class="card">
-    <div class="card-title">
-      <span class="material-icons-round">insights</span>
-      Rekap Absensi
-    </div>
-
-    <div class="rekap-filter">
-      <button class="filter-btn active" data-range="7">7 Hari</button>
-      <button class="filter-btn" data-range="14">14 Hari</button>
-      <button class="filter-btn" data-range="30">30 Hari</button>
-    </div>
-
-    <div class="summary-grid">
-      <div class="summary-card masuk">
-        <p class="summary-label">Total Masuk</p>
-        <p class="summary-value" id="totalMasuk">0</p>
-        <span class="material-icons-round">login</span>
-      </div>
-      <div class="summary-card pulang">
-        <p class="summary-label">Total Pulang</p>
-        <p class="summary-value" id="totalPulang">0</p>
-        <span class="material-icons-round">logout</span>
+      <div class="card"><div class="card-title"><span class="material-icons-round">insights</span>Rekap Absensi</div>
+        <div class="rekap-filter"><button class="filter-btn active" data-range="7">7 Hari</button><button class="filter-btn" data-range="14">14 Hari</button><button class="filter-btn" data-range="30">30 Hari</button></div>
+        <div class="summary-grid"><div class="summary-card masuk"><p class="summary-label">Total Masuk</p><p class="summary-value" id="totalMasuk">0</p><span class="material-icons-round">login</span></div><div class="summary-card pulang"><p class="summary-label">Total Pulang</p><p class="summary-value" id="totalPulang">0</p><span class="material-icons-round">logout</span></div></div>
+        <div id="rekapList" class="rekap-list-soft"></div>
+        <div id="rekapEmpty" class="empty-state hidden"><span class="material-icons-round">event_busy</span><p>Belum ada data absensi</p></div>
       </div>
     </div>
 
-    <div id="rekapList" class="rekap-list-soft"></div>
-
-    <div id="rekapEmpty" class="empty-state hidden">
-      <span class="material-icons-round">event_busy</span>
-      <p>Belum ada data absensi</p>
-    </div>
-  </div>
-</div>
-
-    <!-- PAGE GANTI PASSWORD -->
     <div id="page-password" class="page">
-      <div class="card">
-        <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
-        
-        <div class="form-group">
-          <label>Password Lama</label>
-          <div class="input-group">
-            <input type="password" id="passLama" placeholder="Masukkan password lama">
-            <span class="material-icons-round toggle-pass" onclick="togglePassField('passLama', this)">visibility_off</span>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Password Baru</label>
-          <div class="input-group">
-            <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
-            <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru', this)">visibility_off</span>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Konfirmasi Password Baru</label>
-          <div class="input-group">
-            <input type="password" id="passBaru2" placeholder="Ulangi password baru">
-            <span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru2', this)">visibility_off</span>
-          </div>
-        </div>
-        
-        <button class="btn" id="btnGantiPass">Simpan Password</button>
-        <div id="passStatus" class="status hidden"></div>
+      <div class="card"><div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
+        <div class="form-group"><label>Password Lama</label><div class="input-group"><input type="password" id="passLama" placeholder="Masukkan password lama"><span class="material-icons-round toggle-pass" onclick="togglePassField('passLama', this)">visibility_off</span></div></div>
+        <div class="form-group"><label>Password Baru</label><div class="input-group"><input type="password" id="passBaru" placeholder="Minimal 5 karakter"><span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru', this)">visibility_off</span></div></div>
+        <div class="form-group"><label>Konfirmasi Password Baru</label><div class="input-group"><input type="password" id="passBaru2" placeholder="Ulangi password baru"><span class="material-icons-round toggle-pass" onclick="togglePassField('passBaru2', this)">visibility_off</span></div></div>
+        <button class="btn" id="btnGantiPass">Simpan Password</button><div id="passStatus" class="status hidden"></div>
       </div>
     </div>
 
-    <!-- PAGE PROFIL -->
     <div id="page-profil" class="page">
-      <div class="card">
-        <div class="card-title"><span class="material-icons-round">person</span> Update Data Diri</div>
-        <div style="text-align:center; margin-bottom:20px">
-          <img id="profilPreview" src="https://via.placeholder.com/100" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #1565C0;">
-          <input type="file" id="inputFotoProfil" accept="image/*" class="hidden">
-          <button class="btn" style="margin-top:12px; background:#666" onclick="document.getElementById('inputFotoProfil').click()">Ganti Foto</button>
-        </div>
-        <div class="form-group">
-          <label>No HP</label>
-          <input type="tel" id="noHp" placeholder="08xxxxxxxxxx">
-        </div>
-        <div class="form-group">
-          <label>Alamat</label>
-          <textarea id="alamat" rows="3" placeholder="Alamat lengkap"></textarea>
-        </div>
-        <button class="btn" id="btnSimpanProfil">Simpan Data</button>
-        <div id="profilStatus" class="status hidden"></div>
+      <div class="card"><div class="card-title"><span class="material-icons-round">person</span> Update Data Diri</div>
+        <div style="text-align:center; margin-bottom:20px"><img id="profilPreview" src="https://via.placeholder.com/100" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #1565C0;"><input type="file" id="inputFotoProfil" accept="image/*" class="hidden"><button class="btn" style="margin-top:12px; background:#666" onclick="document.getElementById('inputFotoProfil').click()">Ganti Foto</button></div>
+        <div class="form-group"><label>No HP</label><input type="tel" id="noHp" placeholder="08xxxxxxxxxx"></div>
+        <div class="form-group"><label>Alamat</label><textarea id="alamat" rows="3" placeholder="Alamat lengkap"></textarea></div>
+        <button class="btn" id="btnSimpanProfil">Simpan Data</button><div id="profilStatus" class="status hidden"></div>
       </div>
     </div>
 
-  <!-- BOTTOM NAV -->
   <div id="bottomNav" class="bottom-nav hidden">
-    <div class="nav-item active" onclick="showPage('home')">
-      <span class="material-icons-round">home</span>
-      <span>Home</span>
-    </div>
-    <div class="nav-item" onclick="showPage('absensi')">
-      <span class="material-icons-round">camera_alt</span>
-      <span>Absen</span>
-    </div>
-    <div class="nav-item" onclick="showPage('rekap')">
-      <span class="material-icons-round">calendar_month</span>
-      <span>Rekap</span>
-    </div>
-    <div class="nav-item" onclick="logout()">
-      <span class="material-icons-round">logout</span>
-      <span>Logout</span>
-    </div>
+    <div class="nav-item active" onclick="showPage('home')"><span class="material-icons-round">home</span><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('absensi')"><span class="material-icons-round">camera_alt</span><span>Absen</span></div>
+    <div class="nav-item" onclick="showPage('rekap')"><span class="material-icons-round">calendar_month</span><span>Rekap</span></div>
+    <div class="nav-item" onclick="logout()"><span class="material-icons-round">logout</span><span>Logout</span></div>
   </div>
 
-  <audio id="audioTing" preload="auto">
-    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE" type="audio/wav">
-  </audio>
+  <audio id="audioTing" preload="auto"><source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE" type="audio/wav"></audio>
 <script>
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyQrjOZz_KQcPTSyUo8XOVoIYJFcHVzdhPetDOeDn342rv8UoabKhU_CNjJzXPbAiDZ/exec';
-
-const KARYAWAN = [
-  { nama: 'MUTMAINAH', username: 'mutmainah', password: '12345' },
-  { nama: 'SUGIYARTI', username: 'sugiyarti', password: '12345' },
-  { nama: 'MUJIATI', username: 'mujiati', password: '12345' },
-  { nama: 'AULIA ZULFA', username: 'auliazulfa', password: '12345' },
-  { nama: 'CHOIRIYAH', username: 'choiriyah', password: '12345' },
-  { nama: 'SUWARTINI', username: 'suwartini', password: '12345' },
-  { nama: 'INDANG HASTUTIK', username: 'indanghastutik', password: '12345' },
-  { nama: 'IKA NURHAYATI', username: 'ikanurhayati', password: '12345' },
-  { nama: 'FAJAR FITRIYAH', username: 'fajarfitriyah', password: '12345' },
-  { nama: 'SURANI', username: 'surani', password: '12345' },
-  { nama: 'NUR AMALIA', username: 'nuramalia', password: '12345' },
-  { nama: 'DWI NINGSIH', username: 'dwiningsih', password: '12345' },
-  { nama: 'LINA ROSSILAWATI', username: 'linarossilawati', password: '12345' },
-  { nama: 'RISWAHYUNINGSIH', username: 'riswahyuningsih', password: '12345' }
-];
 
 let currentUser = null;
 let stream = null;
 let semuaDataRekap = [];
 
-function playTing() {
-  const audio = document.getElementById('audioTing');
-  audio.currentTime = 0;
-  audio.play().catch(e => console.log('Audio error:', e));
-}
+function playTing(){ const a=document.getElementById('audioTing'); a.currentTime=0; a.play().catch(()=>{}); }
+function togglePassword(){ const i=document.getElementById('password'); const ic=document.querySelector('#page-login .toggle-pass'); if(i.type==='password'){i.type='text';ic.textContent='visibility';}else{i.type='password';ic.textContent='visibility_off';} }
+function togglePassField(id,el){ const i=document.getElementById(id); if(i.type==='password'){i.type='text';el.textContent='visibility';}else{i.type='password';el.textContent='visibility_off';} }
 
-function togglePassword() {
-  const input = document.getElementById('password');
-  const icon = document.querySelector('#page-login .toggle-pass');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.textContent = 'visibility';
-  } else {
-    input.type = 'password';
-    icon.textContent = 'visibility_off';
-  }
-}
-
-function togglePassField(fieldId, iconElement) {
-  const input = document.getElementById(fieldId);
-  if (input.type === 'password') {
-    input.type = 'text';
-    iconElement.textContent = 'visibility';
-  } else {
-    input.type = 'password';
-    iconElement.textContent = 'visibility_off';
-  }
-}
-
-setInterval(() => {
-  const now = new Date();
-  document.getElementById('jamSekarang').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
-  document.getElementById('tglSekarang').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
-  if (document.getElementById('jamAbsen')) {
-    document.getElementById('jamAbsen').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
-    document.getElementById('tglAbsen').textContent = now.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
-  }
-}, 1000);
+setInterval(()=>{ const n=new Date(); document.getElementById('jamSekarang').textContent=n.toLocaleTimeString('id-ID',{hour12:false}); document.getElementById('tglSekarang').textContent=n.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}); if(document.getElementById('jamAbsen')){document.getElementById('jamAbsen').textContent=n.toLocaleTimeString('id-ID',{hour12:false}); document.getElementById('tglAbsen').textContent=n.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});} },1000);
 
 document.getElementById('btnLogin').onclick = async () => {
   const user = document.getElementById('username').value.trim().toLowerCase();
   const pass = document.getElementById('password').value;
   const status = document.getElementById('loginStatus');
-
-  const karyawan = KARYAWAN.find(k => k.username === user && k.password === pass);
-
-  if (karyawan) {
-    currentUser = karyawan;
-    localStorage.setItem('user', JSON.stringify(karyawan));
-    document.getElementById('namaKaryawan').textContent = karyawan.nama;
-    showPage('home');
-    document.getElementById('bottomNav').classList.remove('hidden');
-    loadProfil();
-  } else {
-    status.textContent = 'Username atau Password salah';
-    status.className = 'status gagal';
-    status.classList.remove('hidden');
-  }
-};
-
-window.onload = () => {
-  const saved = localStorage.getItem('user');
-  if (saved) {
-    currentUser = JSON.parse(saved);
-    document.getElementById('namaKaryawan').textContent = currentUser.nama;
-    showPage('home');
-    document.getElementById('bottomNav').classList.remove('hidden');
-    loadProfil();
-  }
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      tampilkanRekap(parseInt(btn.dataset.range));
-    };
-  });
-};
-
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  if (page === 'home') {
-    document.querySelectorAll('.nav-item')[0].classList.add('active');
-    loadProfil();
-  }
-  if (page === 'absensi') {
-    document.querySelectorAll('.nav-item')[1].classList.add('active');
-    cekStatusHariIni();
-  }
-  if (page === 'rekap') {
-    document.querySelectorAll('.nav-item')[2].classList.add('active');
-    loadRekap();
-  }
-}
-
-function logout() {
-  localStorage.removeItem('user');
-  location.reload();
-}
-
-async function cekStatusHariIni() {
-  const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'rekap', nama: currentUser.nama })
-  });
-  const hasil = await res.json();
-
-  if (hasil.status === 'sukses') {
-    const today = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit', year:'numeric'});
-    const dataHariIni = hasil.data.find(d => d.tanggal === today);
-
-    const btnAksi = document.getElementById('btnAksiUtama');
-    const itemMasuk = document.getElementById('itemMasuk');
-    const itemPulang = document.getElementById('itemPulang');
-
-    itemMasuk.classList.remove('active', 'done');
-    itemPulang.classList.remove('active', 'done');
-    btnAksi.disabled = false;
-
-    if (dataHariIni && dataHariIni.masuk !== '-') {
-      itemMasuk.classList.add('done');
-      document.getElementById('waktuMasuk').textContent = dataHariIni.masuk;
-
-      if (dataHariIni.pulang !== '-') {
-        itemPulang.classList.add('done');
-        document.getElementById('waktuPulang').textContent = dataHariIni.pulang;
-        btnAksi.disabled = true;
-        document.getElementById('judulAksi').textContent = 'SELESAI';
-        document.getElementById('subAksi').textContent = 'Absen hari ini lengkap';
-        document.getElementById('iconAksi').textContent = 'check_circle';
-        btnAksi.dataset.tipe = 'done';
-      } else {
-        itemPulang.classList.add('active');
-        btnAksi.dataset.tipe = 'out';
-        document.getElementById('judulAksi').textContent = 'PULANG';
-        document.getElementById('subAksi').textContent = 'Tap untuk absen pulang';
-        document.getElementById('iconAksi').textContent = 'logout';
-      }
-    } else {
-      itemMasuk.classList.add('active');
-      document.getElementById('waktuMasuk').textContent = 'Belum absen';
-      document.getElementById('waktuPulang').textContent = 'Belum absen';
-      btnAksi.dataset.tipe = 'in';
-      document.getElementById('judulAksi').textContent = 'MASUK';
-      document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
-      document.getElementById('iconAksi').textContent = 'login';
-    }
-  }
-}
-
-document.getElementById('btnAksiUtama').onclick = () => {
-  const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
-  if (tipe === 'done') return;
-  bukaKameraAbsen(tipe);
-};
-
-async function bukaKameraAbsen(tipe) {
-  document.getElementById('tombolUtamaAbsen').classList.add('hidden');
-  document.getElementById('kameraArea').classList.remove('hidden');
-  document.getElementById('notifAbsen').classList.add('hidden');
-  document.getElementById('preview').classList.add('hidden');
-
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
-    });
-    document.getElementById('video').srcObject = stream;
-  } catch (err) {
-    showNotif('Kamera error: ' + err.message, true);
-    batalFoto();
-  }
-}
-
-document.getElementById('btnAmbilFoto').onclick = () => {
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const maxWidth = 600;
-  let width = video.videoWidth;
-  let height = video.videoHeight;
-  if (width > maxWidth) {
-    height = (height * maxWidth) / width;
-    width = maxWidth;
-  }
-  canvas.width = width;
-  canvas.height = height;
-  canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-  const foto = canvas.toDataURL('image/jpeg', 0.6);
-
-  stopKamera();
-  document.getElementById('preview').src = foto;
-  document.getElementById('preview').classList.remove('hidden');
-  kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe, foto);
-};
-
-document.getElementById('btnBatalFoto').onclick = batalFoto;
-
-function batalFoto() {
-  stopKamera();
-  document.getElementById('kameraArea').classList.add('hidden');
-  document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
-}
-
-function stopKamera() {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-}
-
-async function kirimAbsenCepat(tipe, foto) {
-  showNotif('Mengirim...', false, true);
-  document.getElementById('kameraArea').classList.add('hidden');
-
-  const gpsPromise = new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({lat: pos.coords.latitude, lng: pos.coords.longitude}),
-      err => resolve({lat: 0, lng: 0}),
-      {timeout: 2000, maximumAge: 60000}
-    );
-  });
-  const gps = await gpsPromise;
-
-  const data = {
-    action: 'absen',
-    nama: currentUser.nama,
-    tipe: tipe,
-    jam: new Date().toLocaleTimeString('id-ID', {hour12: false}),
-    lat: gps.lat,
-    lng: gps.lng,
-    foto: foto
-  };
-
-  try {
-    const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(data) });
+  const btn = document.getElementById('btnLogin');
+  if(!user || !pass){ status.textContent='Isi username dan password'; status.className='status gagal'; status.classList.remove('hidden'); return; }
+  btn.disabled=true; btn.textContent='Memproses...'; status.classList.add('hidden');
+  try{
+    const res = await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'login',username:user,password:pass})});
     const hasil = await res.json();
-    if (hasil.status === 'sukses') {
-      const pesan = tipe === 'in' ? 'Absen Masuk Berhasil!' : 'Absen Pulang Berhasil!';
-      showNotif(pesan, false);
-      playTing();
-      setTimeout(() => {
-        cekStatusHariIni();
-        document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
-        document.getElementById('preview').classList.add('hidden');
-      }, 800);
-    } else {
-      showNotif(hasil.pesan, true);
-      document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
-    }
-  } catch (err) {
-    showNotif('Gagal kirim: ' + err.message, true);
-    document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
-  }
-}
-
-function showNotif(text, isError = false, isLoading = false) {
-  const notif = document.getElementById('notifAbsen');
-  const icon = document.getElementById('notifIcon');
-  document.getElementById('notifText').textContent = text;
-  notif.classList.remove('error');
-  if (isLoading) {
-    icon.textContent = 'hourglass_empty';
-  } else if (isError) {
-    notif.classList.add('error');
-    icon.textContent = 'error';
-  } else {
-    icon.textContent = 'check_circle';
-  }
-  notif.classList.remove('hidden');
-  if (!isLoading) {
-    setTimeout(() => notif.classList.add('hidden'), 3000);
-  }
-}
-
-async function loadRekap() {
-  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'rekap', nama: currentUser.nama }) });
-  const hasil = await res.json();
-  if (hasil.status === 'sukses') {
-    semuaDataRekap = hasil.data;
-    tampilkanRekap(7);
-  } else {
-    document.getElementById('rekapEmpty').classList.remove('hidden');
-  }
-}
-
-function tampilkanRekap(hari) {
-  const list = document.getElementById('rekapList');
-  const empty = document.getElementById('rekapEmpty');
-  const dataFilter = semuaDataRekap.slice(0, hari);
-  if (dataFilter.length === 0) {
-    list.innerHTML = '';
-    empty.classList.remove('hidden');
-    document.getElementById('totalMasuk').textContent = '0';
-    document.getElementById('totalPulang').textContent = '0';
-    return;
-  }
-  empty.classList.add('hidden');
-  let masuk = 0, pulang = 0;
-  dataFilter.forEach(d => {
-    if (d.masuk !== '-') masuk++;
-    if (d.pulang !== '-') pulang++;
-  });
-  document.getElementById('totalMasuk').textContent = masuk;
-  document.getElementById('totalPulang').textContent = pulang;
-  list.innerHTML = dataFilter.map(d => {
-    const lengkap = d.masuk !== '-' && d.pulang !== '-';
-    const setengah = d.masuk !== '-' && d.pulang === '-';
-    const statusClass = lengkap ? 'lengkap' : setengah ? 'setengah' : '';
-    return `
-      <div class="rekap-item-soft">
-        <div>
-          <div class="rekap-tgl-soft">${d.tanggal}</div>
-          <div class="rekap-jam-soft">
-            <div class="jam-badge in">
-              <span class="material-icons-round">login</span>
-              ${d.masuk}
-            </div>
-            <div class="jam-badge out">
-              <span class="material-icons-round">logout</span>
-              ${d.pulang}
-            </div>
-          </div>
-        </div>
-        <div class="status-hari ${statusClass}"></div>
-      </div>
-    `;
-  }).join('');
-}
-
-document.getElementById('btnGantiPass').onclick = async () => {
-  const lama = document.getElementById('passLama').value;
-  const baru = document.getElementById('passBaru').value;
-  const baru2 = document.getElementById('passBaru2').value;
-  const status = document.getElementById('passStatus');
-  if (!lama || !baru || !baru2) {
-    status.textContent = 'Semua field wajib diisi';
-    status.className = 'status gagal';
-    status.classList.remove('hidden');
-    return;
-  }
-  if (baru !== baru2) {
-    status.textContent = 'Password baru tidak sama';
-    status.className = 'status gagal';
-    status.classList.remove('hidden');
-    return;
-  }
-  if (baru.length < 5) {
-    status.textContent = 'Password minimal 5 karakter';
-    status.className = 'status gagal';
-    status.classList.remove('hidden');
-    return;
-  }
-  status.textContent = 'Menyimpan...';
-  status.className = 'status loading';
-  status.classList.remove('hidden');
-  const res = await fetch(WEB_APP_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: 'gantiPassword',
-      nama: currentUser.nama,
-      passwordLama: lama,
-      passwordBaru: baru
-    })
-  });
-  const hasil = await res.json();
-  status.textContent = hasil.pesan;
-  status.className = hasil.status === 'sukses' ? 'status sukses' : 'status gagal';
-  if (hasil.status === 'sukses') {
-    document.getElementById('passLama').value = '';
-    document.getElementById('passBaru').value = '';
-    document.getElementById('passBaru2').value = '';
-    currentUser.password = baru;
-    localStorage.setItem('user', JSON.stringify(currentUser));
-    playTing();
-  }
+    if(hasil.status==='sukses'){
+      currentUser={nama:hasil.data.nama,username:hasil.data.username};
+      localStorage.setItem('user',JSON.stringify(currentUser));
+      document.getElementById('namaKaryawan').textContent=hasil.data.nama;
+      showPage('home'); document.getElementById('bottomNav').classList.remove('hidden'); loadProfil(); playTing();
+    }else{ throw new Error(hasil.pesan); }
+  }catch(err){ status.textContent=err.message||'Login gagal'; status.className='status gagal'; status.classList.remove('hidden'); }
+  finally{ btn.disabled=false; btn.textContent='Login'; }
 };
 
-document.getElementById('inputFotoProfil').onchange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      document.getElementById('profilPreview').src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-};
+window.onload=()=>{ const s=localStorage.getItem('user'); if(s){ currentUser=JSON.parse(s); document.getElementById('namaKaryawan').textContent=currentUser.nama; showPage('home'); document.getElementById('bottomNav').classList.remove('hidden'); loadProfil(); } document.querySelectorAll('.filter-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tampilkanRekap(parseInt(b.dataset.range));};}); };
 
-document.getElementById('btnSimpanProfil').onclick = async () => {
-  const status = document.getElementById('profilStatus');
-  status.textContent = 'Mengompres & menyimpan...';
-  status.className = 'status loading';
-  status.classList.remove('hidden');
-  const fileInput = document.getElementById('inputFotoProfil');
-  let fotoBase64 = '';
-  if (fileInput.files[0]) {
-    fotoBase64 = await compressImage(fileInput.files[0], 400, 0.8);
-    document.getElementById('fotoProfil').src = fotoBase64;
-    document.getElementById('profilPreview').src = fotoBase64;
-  }
-  const data = {
-    action: 'updateProfil',
-    nama: currentUser.nama,
-    fotoProfil: fotoBase64,
-    noHp: document.getElementById('noHp').value,
-    alamat: document.getElementById('alamat').value
-  };
-  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(data) });
-  const hasil = await res.json();
-  status.textContent = hasil.pesan;
-  status.className = hasil.status === 'sukses' ? 'status sukses' : 'status gagal';
-  if (hasil.status === 'sukses') {
-    playTing();
-    if (hasil.fotoUrl) {
-      setTimeout(() => {
-        const urlFinal = hasil.fotoUrl + '?t=' + new Date().getTime();
-        document.getElementById('fotoProfil').src = urlFinal;
-        document.getElementById('profilPreview').src = urlFinal;
-      }, 500);
-    }
-    fileInput.value = '';
-  }
-};
+function showPage(p){ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); if(p==='home'){document.querySelectorAll('.nav-item')[0].classList.add('active');loadProfil();} if(p==='absensi'){document.querySelectorAll('.nav-item')[1].classList.add('active');cekStatusHariIni();} if(p==='rekap'){document.querySelectorAll('.nav-item')[2].classList.add('active');loadRekap();} }
+function logout(){ localStorage.removeItem('user'); location.reload(); }
 
-function compressImage(file, maxWidth, quality) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        if (width > maxWidth) {
-          height = (height * maxWidth) / width;
-          width = maxWidth;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+async function cekStatusHariIni(){ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'rekap',nama:currentUser.nama})}); const hasil=await res.json(); if(hasil.status==='sukses'){ const today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}); const d=hasil.data.find(x=>x.tanggal===today); const btn=document.getElementById('btnAksiUtama'); const im=document.getElementById('itemMasuk'); const ip=document.getElementById('itemPulang'); im.classList.remove('active','done'); ip.classList.remove('active','done'); btn.disabled=false; if(d && d.masuk!=='-'){ im.classList.add('done'); document.getElementById('waktuMasuk').textContent=d.masuk; if(d.pulang!=='-'){ ip.classList.add('done'); document.getElementById('waktuPulang').textContent=d.pulang; btn.disabled=true; document.getElementById('judulAksi').textContent='SELESAI'; document.getElementById('subAksi').textContent='Absen hari ini lengkap'; document.getElementById('iconAksi').textContent='check_circle'; btn.dataset.tipe='done'; }else{ ip.classList.add('active'); btn.dataset.tipe='out'; document.getElementById('judulAksi').textContent='PULANG'; document.getElementById('subAksi').textContent='Tap untuk absen pulang'; document.getElementById('iconAksi').textContent='logout'; } }else{ im.classList.add('active'); document.getElementById('waktuMasuk').textContent='Belum absen'; document.getElementById('waktuPulang').textContent='Belum absen'; btn.dataset.tipe='in'; document.getElementById('judulAksi').textContent='MASUK'; document.getElementById('subAksi').textContent='Tap untuk absen masuk'; document.getElementById('iconAksi').textContent='login'; } } }
 
-async function loadProfil() {
-  const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'getProfil', nama: currentUser.nama }) });
-  const hasil = await res.json();
-  if (hasil.status === 'sukses') {
-    if (hasil.data.fotoProfil) {
-      const urlBaru = hasil.data.fotoProfil + '?t=' + new Date().getTime();
-      document.getElementById('fotoProfil').src = urlBaru;
-      document.getElementById('profilPreview').src = urlBaru;
-    }
-    if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
-    if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
-  }
-}
+document.getElementById('btnAksiUtama').onclick=()=>{ const t=document.getElementById('btnAksiUtama').dataset.tipe; if(t==='done')return; bukaKameraAbsen(t); };
+async function bukaKameraAbsen(t){ document.getElementById('tombolUtamaAbsen').classList.add('hidden'); document.getElementById('kameraArea').classList.remove('hidden'); document.getElementById('notifAbsen').classList.add('hidden'); document.getElementById('preview').classList.add('hidden'); try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}); document.getElementById('video').srcObject=stream; }catch(e){ showNotif('Kamera error: '+e.message,true); batalFoto(); } }
+document.getElementById('btnAmbilFoto').onclick=()=>{ const v=document.getElementById('video'); const c=document.getElementById('canvas'); const max=600; let w=v.videoWidth,h=v.videoHeight; if(w>max){h=(h*max)/w;w=max;} c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h); const foto=c.toDataURL('image/jpeg',0.6); stopKamera(); document.getElementById('preview').src=foto; document.getElementById('preview').classList.remove('hidden'); kirimAbsenCepat(document.getElementById('btnAksiUtama').dataset.tipe,foto); };
+document.getElementById('btnBatalFoto').onclick=batalFoto;
+function batalFoto(){ stopKamera(); document.getElementById('kameraArea').classList.add('hidden'); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); }
+function stopKamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+async function kirimAbsenCepat(tipe,foto){ showNotif('Mengirim...',false,true); document.getElementById('kameraArea').classList.add('hidden'); const gps=await new Promise(r=>navigator.geolocation.getCurrentPosition(p=>r({lat:p.coords.latitude,lng:p.coords.longitude}),()=>r({lat:0,lng:0}),{timeout:2000})); const data={action:'absen',nama:currentUser.nama,tipe,jam:new Date().toLocaleTimeString('id-ID',{hour12:false}),lat:gps.lat,lng:gps.lng,foto}; try{ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify(data)}); const h=await res.json(); if(h.status==='sukses'){ showNotif(tipe==='in'?'Absen Masuk Berhasil!':'Absen Pulang Berhasil!',false); playTing(); setTimeout(()=>{cekStatusHariIni(); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); document.getElementById('preview').classList.add('hidden');},800); }else{ showNotif(h.pesan,true); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); } }catch(e){ showNotif('Gagal kirim: '+e.message,true); document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); } }
+function showNotif(txt,err=false,load=false){ const n=document.getElementById('notifAbsen'); const ic=document.getElementById('notifIcon'); document.getElementById('notifText').textContent=txt; n.classList.remove('error'); ic.textContent=load?'hourglass_empty':err?'error':'check_circle'; if(err)n.classList.add('error'); n.classList.remove('hidden'); if(!load)setTimeout(()=>n.classList.add('hidden'),3000); }
+async function loadRekap(){ const r=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'rekap',nama:currentUser.nama})}); const h=await r.json(); if(h.status==='sukses'){semuaDataRekap=h.data;tampilkanRekap(7);} }
+function tampilkanRekap(hari){ const list=document.getElementById('rekapList'); const empty=document.getElementById('rekapEmpty'); const data=semuaDataRekap.slice(0,hari); if(!data.length){list.innerHTML='';empty.classList.remove('hidden');document.getElementById('totalMasuk').textContent='0';document.getElementById('totalPulang').textContent='0';return;} empty.classList.add('hidden'); let m=0,p=0; data.forEach(d=>{if(d.masuk!=='-')m++;if(d.pulang!=='-')p++;}); document.getElementById('totalMasuk').textContent=m; document.getElementById('totalPulang').textContent=p; list.innerHTML=data.map(d=>{const lengkap=d.masuk!=='-'&&d.pulang!=='-';const setengah=d.masuk!=='-'&&d.pulang==='-';const cls=lengkap?'lengkap':setengah?'setengah':'';return`<div class="rekap-item-soft"><div><div class="rekap-tgl-soft">${d.tanggal}</div><div class="rekap-jam-soft"><div class="jam-badge in"><span class="material-icons-round">login</span>${d.masuk}</div><div class="jam-badge out"><span class="material-icons-round">logout</span>${d.pulang}</div></div></div><div class="status-hari ${cls}"></div></div>`;}).join(''); }
+document.getElementById('btnGantiPass').onclick=async()=>{ const lama=document.getElementById('passLama').value; const baru=document.getElementById('passBaru').value; const baru2=document.getElementById('passBaru2').value; const st=document.getElementById('passStatus'); if(!lama||!baru||!baru2){st.textContent='Semua field wajib diisi';st.className='status gagal';st.classList.remove('hidden');return;} if(baru!==baru2){st.textContent='Password baru tidak sama';st.className='status gagal';st.classList.remove('hidden');return;} if(baru.length<5){st.textContent='Password minimal 5 karakter';st.className='status gagal';st.classList.remove('hidden');return;} st.textContent='Menyimpan...';st.className='status loading';st.classList.remove('hidden'); const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'gantiPassword',nama:currentUser.nama,passwordLama:lama,passwordBaru:baru})}); const h=await res.json(); st.textContent=h.pesan; st.className=h.status==='sukses'?'status sukses':'status gagal'; if(h.status==='sukses'){document.getElementById('passLama').value='';document.getElementById('passBaru').value='';document.getElementById('passBaru2').value='';playTing();} };
+document.getElementById('inputFotoProfil').onchange=e=>{ const f=e.target.files[0]; if(f){ const r=new FileReader(); r.onload=ev=>{document.getElementById('profilPreview').src=ev.target.result;}; r.readAsDataURL(f);} };
+document.getElementById('btnSimpanProfil').onclick=async()=>{ const st=document.getElementById('profilStatus'); st.textContent='Mengompres & menyimpan...'; st.className='status loading'; st.classList.remove('hidden'); const inp=document.getElementById('inputFotoProfil'); let foto=''; if(inp.files[0]){ foto=await compressImage(inp.files[0],400,0.8); document.getElementById('fotoProfil').src=foto; document.getElementById('profilPreview').src=foto; } const data={action:'updateProfil',nama:currentUser.nama,fotoProfil:foto,noHp:document.getElementById('noHp').value,alamat:document.getElementById('alamat').value}; const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify(data)}); const h=await res.json(); st.textContent=h.pesan; st.className=h.status==='sukses'?'status sukses':'status gagal'; if(h.status==='sukses'&&h.fotoUrl){ setTimeout(()=>{const u=h.fotoUrl+'?t='+Date.now(); document.getElementById('fotoProfil').src=u; document.getElementById('profilPreview').src=u;},500); playTing(); } inp.value=''; };
+function compressImage(file,maxW,q){return new Promise(r=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=(h*maxW)/w;w=maxW;}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);r(c.toDataURL('image/jpeg',q));};img.src=e.target.result;};rd.readAsDataURL(file);});}
+async function loadProfil(){ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'getProfil',nama:currentUser.nama})}); const h=await res.json(); if(h.status==='sukses'){ if(h.data.fotoProfil){ const u=h.data.fotoProfil+'?t='+Date.now(); document.getElementById('fotoProfil').src=u; document.getElementById('profilPreview').src=u; } if(h.data.noHp)document.getElementById('noHp').value=h.data.noHp; if(h.data.alamat)document.getElementById('alamat').value=h.data.alamat; } }
 </script>
 </body>
 </html>
