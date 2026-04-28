@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,26 +7,73 @@
   <title>Absensi Pamili Garmen</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1A73E8">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #f5f5f5; }
-   .container { max-width: 400px; margin: 0 auto; padding: 20px; }
-   .card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 40px; }
-    h1 { text-align: center; color: #1A73E8; margin-bottom: 8px; font-size: 22px; }
-   .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; }
-    input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px; font-size: 16px; }
-    button { width: 100%; padding: 14px; background: #1A73E8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-   .btn-out { background: #EA4335; }
-   .btn-foto { background: #34A853; }
+    body { background: #F8F9FA; padding-bottom: 80px; }
+   .container { max-width: 450px; margin: 0 auto; }
+   .page { display: none; animation: fadeIn 0.3s; }
+   .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* LOGIN */
+   .login-card { background: white; margin: 40px 20px; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+   .login-card h1 { text-align: center; color: #1A73E8; margin-bottom: 8px; font-size: 24px; }
+   .login-card.subtitle { text-align: center; color: #666; margin-bottom: 28px; }
+   .input-group { position: relative; margin-bottom: 16px; }
+   .input-group input { width: 100%; padding: 14px 16px; border: 2px solid #E8EAED; border-radius: 12px; font-size: 16px; transition: 0.2s; }
+   .input-group input:focus { outline: none; border-color: #1A73E8; }
+   .toggle-pass { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; cursor: pointer; }
+   .btn { width: 100%; padding: 16px; background: #1A73E8; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+   .btn:active { transform: scale(0.98); }
+   .btn:disabled { background: #ccc; }
+
+    /* HEADER */
+   .header { background: linear-gradient(135deg, #1A73E8 0%, #4285F4 100%); color: white; padding: 24px 20px 80px; border-radius: 0 0 24px 24px; }
+   .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+   .header h2 { font-size: 20px; }
+   .profil-img { width: 48px; height: 48px; border-radius: 50%; border: 3px solid white; object-fit: cover; }
+   .jam-besar { font-size: 48px; font-weight: 700; text-align: center; margin: 8px 0; }
+   .tgl { text-align: center; opacity: 0.9; }
+
+    /* CARD MENU HOME */
+   .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; margin-top: -40px; }
+   .menu-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: 0.2s; text-align: center; }
+   .menu-card:active { transform: scale(0.95); }
+   .menu-card.icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 28px; }
+   .menu-card h3 { font-size: 14px; color: #333; }
+   .icon-blue { background: #E8F0FE; color: #1A73E8; }
+   .icon-green { background: #E6F4EA; color: #137333; }
+   .icon-orange { background: #FEF7E0; color: #F9AB00; }
+   .icon-purple { background: #F3E8FD; color: #9334E6; }
+
+    /* HALAMAN ABSENSI */
+   .card { background: white; margin: 20px; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+   .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    #video, #preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
+   .btn-foto { background: #34A853; margin-bottom: 8px; }
    .btn-batal { background: #9E9E9E; }
-   .hidden { display: none; }
-    #video { width: 100%; border-radius: 8px; margin: 12px 0; }
-    #preview { width: 100%; border-radius: 8px; margin: 12px 0; }
-   .info { text-align: center; margin: 16px 0; color: #333; }
-   .jam { font-size: 32px; font-weight: 700; color: #1A73E8; }
-   .nama { font-size: 18px; font-weight: 600; margin-top: 8px; }
-   .status { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; font-weight: 600; }
+   .btn-out { background: #EA4335; }
+   .hidden { display: none!important; }
+
+    /* REKAP */
+   .rekap-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F3F4; }
+   .rekap-item:last-child { border-bottom: none; }
+   .rekap-tgl { font-weight: 600; color: #333; }
+   .rekap-jam { color: #666; font-size: 14px; }
+
+    /* FORM */
+   .form-group { margin-bottom: 16px; }
+   .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 14px; }
+   .form-group input,.form-group textarea { width: 100%; padding: 12px; border: 2px solid #E8EAED; border-radius: 12px; font-size: 15px; }
+
+    /* BOTTOM NAV */
+   .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); max-width: 450px; margin: 0 auto; }
+   .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #666; cursor: pointer; font-size: 12px; }
+   .nav-item.active { color: #1A73E8; }
+   .nav-item.material-icons-round { font-size: 24px; }
+
+   .status { padding: 14px; border-radius: 12px; text-align: center; margin-top: 16px; font-weight: 600; }
    .sukses { background: #E6F4EA; color: #137333; }
    .gagal { background: #FCE8E6; color: #C5221F; }
    .loading { background: #E8F0FE; color: #1967D2; }
@@ -34,49 +82,149 @@
 <body>
   <div class="container">
 
-    <!-- HALAMAN LOGIN -->
-    <div id="loginPage" class="card">
-      <h1>PAMILI GARMEN</h1>
-      <p class="subtitle">Absensi Karyawan</p>
-      <input type="text" id="username" placeholder="Username" autocomplete="username">
-      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
-      <button id="btnLogin">Login</button>
-      <div id="loginStatus" class="status hidden"></div>
+    <!-- PAGE LOGIN -->
+    <div id="page-login" class="page active">
+      <div class="login-card">
+        <h1>PAMILI GARMEN</h1>
+        <p class="subtitle">Sistem Absensi Karyawan</p>
+        <div class="input-group">
+          <input type="text" id="username" placeholder="Username" autocomplete="username">
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+          <span class="material-icons-round toggle-pass" onclick="togglePassword()">visibility_off</span>
+        </div>
+        <button class="btn" id="btnLogin">Login</button>
+        <div id="loginStatus" class="status hidden"></div>
+      </div>
     </div>
 
-    <!-- HALAMAN ABSEN -->
-    <div id="absenPage" class="card hidden">
-      <h1>PAMILI GARMEN</h1>
-      <div class="info">
-        <div class="jam" id="jamSekarang">00:00:00</div>
-        <div class="nama" id="namaKaryawan">-</div>
-        <div id="tglSekarang">-</div>
+    <!-- PAGE HOME -->
+    <div id="page-home" class="page">
+      <div class="header">
+        <div class="header-top">
+          <div>
+            <p style="opacity:0.9; font-size:14px">Selamat datang,</p>
+            <h2 id="namaKaryawan">-</h2>
+          </div>
+          <img id="fotoProfil" src="https://via.placeholder.com/48" class="profil-img">
+        </div>
+        <div class="jam-besar" id="jamSekarang">00:00:00</div>
+        <div class="tgl" id="tglSekarang">-</div>
       </div>
 
-      <!-- AREA KAMERA -->
-      <div id="kameraArea" class="hidden">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas" class="hidden"></canvas>
-        <button id="btnAmbilFoto" class="btn-foto">Ambil Foto</button>
-        <button id="btnBatalFoto" class="btn-batal">Batal</button>
+      <div class="menu-grid">
+        <div class="menu-card" onclick="showPage('absensi')">
+          <div class="icon icon-blue"><span class="material-icons-round">camera_alt</span></div>
+          <h3>Absensi</h3>
+        </div>
+        <div class="menu-card" onclick="showPage('rekap')">
+          <div class="icon icon-green"><span class="material-icons-round">calendar_month</span></div>
+          <h3>Rekap Saya</h3>
+        </div>
+        <div class="menu-card" onclick="showPage('password')">
+          <div class="icon icon-orange"><span class="material-icons-round">lock</span></div>
+          <h3>Ganti Password</h3>
+        </div>
+        <div class="menu-card" onclick="showPage('profil')">
+          <div class="icon icon-purple"><span class="material-icons-round">person</span></div>
+          <h3>Update Profil</h3>
+        </div>
       </div>
-
-      <img id="preview" class="hidden">
-
-      <!-- TOMBOL UTAMA -->
-      <div id="tombolUtama">
-        <button id="btnCheckIn">Check In + Foto</button>
-        <button id="btnCheckOut" class="btn-out">Check Out + Foto</button>
-        <button id="btnLogout" style="background:#666">Logout</button>
-      </div>
-
-      <div id="absenStatus" class="status hidden"></div>
     </div>
 
+    <!-- PAGE ABSENSI -->
+    <div id="page-absensi" class="page">
+      <div class="card">
+        <div class="card-title"><span class="material-icons-round">camera_alt</span> Absensi Hari Ini</div>
+        <div id="kameraArea" class="hidden">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" class="hidden"></canvas>
+          <button class="btn btn-foto" id="btnAmbilFoto">Ambil Foto</button>
+          <button class="btn btn-batal" id="btnBatalFoto">Batal</button>
+        </div>
+        <img id="preview" class="hidden">
+        <div id="tombolAbsen">
+          <button class="btn" id="btnCheckIn">Check In + Foto</button>
+          <button class="btn btn-out" id="btnCheckOut">Check Out + Foto</button>
+        </div>
+        <div id="absenStatus" class="status hidden"></div>
+      </div>
+    </div>
+
+    <!-- PAGE REKAP -->
+    <div id="page-rekap" class="page">
+      <div class="card">
+        <div class="card-title"><span class="material-icons-round">calendar_month</span> Rekap Mingguan</div>
+        <div id="rekapList"></div>
+      </div>
+    </div>
+
+    <!-- PAGE GANTI PASSWORD -->
+    <div id="page-password" class="page">
+      <div class="card">
+        <div class="card-title"><span class="material-icons-round">lock</span> Ganti Password</div>
+        <div class="form-group">
+          <label>Password Lama</label>
+          <input type="password" id="passLama" placeholder="Masukkan password lama">
+        </div>
+        <div class="form-group">
+          <label>Password Baru</label>
+          <input type="password" id="passBaru" placeholder="Minimal 5 karakter">
+        </div>
+        <div class="form-group">
+          <label>Konfirmasi Password Baru</label>
+          <input type="password" id="passBaru2" placeholder="Ulangi password baru">
+        </div>
+        <button class="btn" id="btnGantiPass">Simpan Password</button>
+        <div id="passStatus" class="status hidden"></div>
+      </div>
+    </div>
+
+    <!-- PAGE PROFIL -->
+    <div id="page-profil" class="page">
+      <div class="card">
+        <div class="card-title"><span class="material-icons-round">person</span> Update Data Diri</div>
+        <div style="text-align:center; margin-bottom:20px">
+          <img id="profilPreview" src="https://via.placeholder.com/100" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #1A73E8;">
+          <input type="file" id="inputFotoProfil" accept="image/*" class="hidden">
+          <button class="btn" style="margin-top:12px; background:#666" onclick="document.getElementById('inputFotoProfil').click()">Ganti Foto</button>
+        </div>
+        <div class="form-group">
+          <label>No HP</label>
+          <input type="tel" id="noHp" placeholder="08xxxxxxxxxx">
+        </div>
+        <div class="form-group">
+          <label>Alamat</label>
+          <textarea id="alamat" rows="3" placeholder="Alamat lengkap"></textarea>
+        </div>
+        <button class="btn" id="btnSimpanProfil">Simpan Data</button>
+        <div id="profilStatus" class="status hidden"></div>
+      </div>
+    </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottomNav" class="bottom-nav hidden">
+    <div class="nav-item active" onclick="showPage('home')">
+      <span class="material-icons-round">home</span>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="showPage('absensi')">
+      <span class="material-icons-round">camera_alt</span>
+      <span>Absen</span>
+    </div>
+    <div class="nav-item" onclick="showPage('rekap')">
+      <span class="material-icons-round">calendar_month</span>
+      <span>Rekap</span>
+    </div>
+    <div class="nav-item" onclick="logout()">
+      <span class="material-icons-round">logout</span>
+      <span>Logout</span>
+    </div>
   </div>
 
 <script>
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyQrjOZz_KQcPTSyUo8XOVoIYJFcHVzdhPetDOeDn342rv8UoabKhU_CNjJzXPbAiDZ/exec'; // WAJIB GANTI
+const WEB_APP_URL = 'GANTI_DENGAN_URL_WEB_APP_KAMU';
 
 const KARYAWAN = [
   { nama: 'MUTMAINAH', username: 'mutmainah', password: '12345' },
@@ -99,7 +247,20 @@ let currentUser = null;
 let stream = null;
 let tipeAbsen = null;
 
-// Update jam
+// TOGGLE PASSWORD
+function togglePassword() {
+  const input = document.getElementById('password');
+  const icon = document.querySelector('.toggle-pass');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility_off';
+  }
+}
+
+// JAM
 setInterval(() => {
   const now = new Date();
   document.getElementById('jamSekarang').textContent = now.toLocaleTimeString('id-ID', {hour12: false});
@@ -107,7 +268,7 @@ setInterval(() => {
 }, 1000);
 
 // LOGIN
-document.getElementById('btnLogin').onclick = () => {
+document.getElementById('btnLogin').onclick = async () => {
   const user = document.getElementById('username').value.trim().toLowerCase();
   const pass = document.getElementById('password').value;
   const status = document.getElementById('loginStatus');
@@ -118,8 +279,9 @@ document.getElementById('btnLogin').onclick = () => {
     currentUser = karyawan;
     localStorage.setItem('user', JSON.stringify(karyawan));
     document.getElementById('namaKaryawan').textContent = karyawan.nama;
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('absenPage').classList.remove('hidden');
+    showPage('home');
+    document.getElementById('bottomNav').classList.remove('hidden');
+    loadProfil();
   } else {
     status.textContent = 'Username atau Password salah';
     status.className = 'status gagal';
@@ -127,32 +289,45 @@ document.getElementById('btnLogin').onclick = () => {
   }
 };
 
-// CEK LOGIN OTOMATIS
+// CEK LOGIN
 window.onload = () => {
   const saved = localStorage.getItem('user');
   if (saved) {
     currentUser = JSON.parse(saved);
     document.getElementById('namaKaryawan').textContent = currentUser.nama;
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('absenPage').classList.remove('hidden');
+    showPage('home');
+    document.getElementById('bottomNav').classList.remove('hidden');
+    loadProfil();
   }
 };
 
-// LOGOUT
-document.getElementById('btnLogout').onclick = () => {
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (page === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+  if (page === 'absensi') document.querySelectorAll('.nav-item')[1].classList.add('active');
+  if (page === 'rekap') {
+    document.querySelectorAll('.nav-item')[2].classList.add('active');
+    loadRekap();
+  }
+}
+
+function logout() {
   localStorage.removeItem('user');
   location.reload();
-};
+}
 
-// BUKA KAMERA MANUAL
+// ABSENSI
 document.getElementById('btnCheckIn').onclick = () => bukaKameraManual('in');
 document.getElementById('btnCheckOut').onclick = () => bukaKameraManual('out');
 
 async function bukaKameraManual(tipe) {
   tipeAbsen = tipe;
-  document.getElementById('tombolUtama').classList.add('hidden');
+  document.getElementById('tombolAbsen').classList.add('hidden');
   document.getElementById('kameraArea').classList.remove('hidden');
   document.getElementById('absenStatus').classList.add('hidden');
+  document.getElementById('preview').classList.add('hidden');
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
@@ -163,7 +338,6 @@ async function bukaKameraManual(tipe) {
   }
 }
 
-// TOMBOL AMBIL FOTO
 document.getElementById('btnAmbilFoto').onclick = () => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
@@ -176,7 +350,6 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   document.getElementById('preview').src = foto;
   document.getElementById('preview').classList.remove('hidden');
 
-  // Ambil GPS lalu kirim
   navigator.geolocation.getCurrentPosition(pos => {
     kirimAbsen(tipeAbsen, foto, pos.coords.latitude, pos.coords.longitude);
   }, err => {
@@ -184,13 +357,12 @@ document.getElementById('btnAmbilFoto').onclick = () => {
   });
 };
 
-// TOMBOL BATAL
 document.getElementById('btnBatalFoto').onclick = batalFoto;
 
 function batalFoto() {
   stopKamera();
   document.getElementById('kameraArea').classList.add('hidden');
-  document.getElementById('tombolUtama').classList.remove('hidden');
+  document.getElementById('tombolAbsen').classList.remove('hidden');
 }
 
 function stopKamera() {
@@ -208,6 +380,7 @@ async function kirimAbsen(tipe, foto, lat, lng) {
   document.getElementById('kameraArea').classList.add('hidden');
 
   const data = {
+    action: 'absen',
     nama: currentUser.nama,
     tipe: tipe,
     jam: new Date().toLocaleTimeString('id-ID', {hour12: false}),
@@ -226,6 +399,7 @@ async function kirimAbsen(tipe, foto, lat, lng) {
     if (hasil.status === 'sukses') {
       status.textContent = hasil.pesan;
       status.className = 'status sukses';
+      if (hasil.fotoUrl) document.getElementById('preview').src = hasil.fotoUrl;
     } else {
       status.textContent = hasil.pesan;
       status.className = 'status gagal';
@@ -234,8 +408,154 @@ async function kirimAbsen(tipe, foto, lat, lng) {
     status.textContent = 'Gagal kirim: ' + err.message;
     status.className = 'status gagal';
   } finally {
-    document.getElementById('tombolUtama').classList.remove('hidden');
+    document.getElementById('tombolAbsen').classList.remove('hidden');
   }
+}
+
+// REKAP
+async function loadRekap() {
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'rekap', nama: currentUser.nama })
+  });
+  const hasil = await res.json();
+
+  const list = document.getElementById('rekapList');
+  if (hasil.status === 'sukses') {
+    list.innerHTML = hasil.data.map(d => `
+      <div class="rekap-item">
+        <div>
+          <div class="rekap-tgl">${d.tanggal}</div>
+          <div class="rekap-jam">Masuk: ${d.masuk} | Pulang: ${d.pulang}</div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    list.innerHTML = `<p style="text-align:center;color:#666">Gagal load rekap</p>`;
+  }
+}
+
+// GANTI PASSWORD
+document.getElementById('btnGantiPass').onclick = async () => {
+  const lama = document.getElementById('passLama').value;
+  const baru = document.getElementById('passBaru').value;
+  const baru2 = document.getElementById('passBaru2').value;
+  const status = document.getElementById('passStatus');
+
+  if (!lama ||!baru ||!baru2) {
+    status.textContent = 'Semua field wajib diisi';
+    status.className = 'status gagal';
+    status.classList.remove('hidden');
+    return;
+  }
+  if (baru!== baru2) {
+    status.textContent = 'Password baru tidak sama';
+    status.className = 'status gagal';
+    status.classList.remove('hidden');
+    return;
+  }
+  if (baru.length < 5) {
+    status.textContent = 'Password minimal 5 karakter';
+    status.className = 'status gagal';
+    status.classList.remove('hidden');
+    return;
+  }
+
+  status.textContent = 'Menyimpan...';
+  status.className = 'status loading';
+  status.classList.remove('hidden');
+
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'gantiPassword',
+      nama: currentUser.nama,
+      passwordLama: lama,
+      passwordBaru: baru
+    })
+  });
+  const hasil = await res.json();
+  status.textContent = hasil.pesan;
+  status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
+
+  if (hasil.status === 'sukses') {
+    document.getElementById('passLama').value = '';
+    document.getElementById('passBaru').value = '';
+    document.getElementById('passBaru2').value = '';
+    // Update local storage
+    currentUser.password = baru;
+    localStorage.setItem('user', JSON.stringify(currentUser));
+  }
+};
+
+// FOTO PROFIL PREVIEW
+document.getElementById('inputFotoProfil').onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      document.getElementById('profilPreview').src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// SIMPAN PROFIL
+document.getElementById('btnSimpanProfil').onclick = async () => {
+  const status = document.getElementById('profilStatus');
+  status.textContent = 'Menyimpan...';
+  status.className = 'status loading';
+  status.classList.remove('hidden');
+
+  const fileInput = document.getElementById('inputFotoProfil');
+  let fotoBase64 = '';
+  if (fileInput.files[0]) {
+    fotoBase64 = await toBase64(fileInput.files[0]);
+  }
+
+  const data = {
+    action: 'updateProfil',
+    nama: currentUser.nama,
+    fotoProfil: fotoBase64,
+    noHp: document.getElementById('noHp').value,
+    alamat: document.getElementById('alamat').value
+  };
+
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+  const hasil = await res.json();
+  status.textContent = hasil.pesan;
+  status.className = hasil.status === 'sukses'? 'status sukses' : 'status gagal';
+
+  if (hasil.status === 'sukses' && hasil.fotoUrl) {
+    document.getElementById('fotoProfil').src = hasil.fotoUrl;
+  }
+};
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// LOAD PROFIL
+async function loadProfil() {
+  const res = await fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getProfil', nama: currentUser.nama })
+  });
+  const hasil = await res.json();
+  if (hasil.status === 'sukses' && hasil.data.fotoProfil) {
+    document.getElementById('fotoProfil').src = hasil.data.fotoProfil;
+    document.getElementById('profilPreview').src = hasil.data.fotoProfil;
+  }
+  if (hasil.data.noHp) document.getElementById('noHp').value = hasil.data.noHp;
+  if (hasil.data.alamat) document.getElementById('alamat').value = hasil.data.alamat;
 }
 
 if ('serviceWorker' in navigator) {
