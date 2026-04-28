@@ -156,16 +156,17 @@
         </div>
         <div id="kameraArea" class="hidden">
           <div class="kamera-container-soft"><video id="video" autoplay playsinline></video>
-        <div id="watermarkLive" style="position:absolute;bottom:20px;left:16px;right:16px;pointer-events:none;font-family:'Roboto','Segoe UI',sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,1)">
-          <div id="wmJamBox" style="display:inline-block;background:#F5F5F5;color:#0D47A1;padding:6px 14px;border-radius:6px;font-weight:700;font-size:32px;line-height:1;letter-spacing:1px;margin-bottom:10px;font-family:'Arial Black',sans-serif">00:00</div>
-          <div style="display:flex;gap:10px;align-items:flex-start">
-            <div style="width:4px;background:#FFC107;border-radius:1px;align-self:stretch;margin-top:2px"></div>
-            <div style="padding-left:2px">
-              <div id="wmTanggal" style="font-size:18px;font-weight:600;margin-bottom:4px;letter-spacing:0.2px">Rabu, 29 April 2026</div>
-              <div id="wmAlamat" style="font-size:16px;line-height:1.35;max-width:320px;font-weight:400">Alamat</div>
-              <div id="wmGps" style="font-size:15px;margin-top:4px;font-weight:400;opacity:0.95">0.000000°S, 0.000000°E</div>
+        <div id="watermarkLive" style="position:absolute;bottom:8px;left:8px;max-width:68%;pointer-events:none;font-family:'Roboto','Segoe UI',sans-serif;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.95)">
+          <div id="wmJamBox" style="display:inline-block;background:#fff;color:#0D47A1;padding:2px 7px;border-radius:4px;font-weight:800;font-size:clamp(14px,4.2vw,18px);line-height:1;letter-spacing:0.3px;margin-bottom:4px;font-family:'Arial',sans-serif">00.00</div>
+          <div style="display:flex;gap:5px;align-items:flex-start">
+            <div style="width:2px;background:#FFC107;border-radius:1px;flex-shrink:0;margin-top:1px"></div>
+            <div style="padding-left:1px">
+              <div id="wmTanggal" style="font-size:clamp(10px,2.8vw,11.5px);font-weight:600;margin-bottom:1px;line-height:1.2">Rabu, 29 April 2026</div>
+              <div id="wmAlamat" style="font-size:clamp(9px,2.5vw,10.5px);line-height:1.2;word-wrap:break-word;opacity:0.95;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">Alamat</div>
+              <div id="wmGps" style="font-size:clamp(8.5px,2.3vw,9.5px);margin-top:1px;font-weight:400;opacity:0.9">0.000000°S, 0.000000°E</div>
             </div>
           </div>
+        </div></div></div>
         </div></div>
           <canvas id="canvas" class="hidden"></canvas>
           <button class="btn-soft btn-foto-soft" id="btnAmbilFoto"><span class="material-icons-round">photo_camera</span> Ambil Foto</button>
@@ -255,7 +256,7 @@ async function cekStatusHariIni(){ const res=await fetch(WEB_APP_URL,{method:'PO
 document.getElementById('btnAksiUtama').onclick=()=>{ const t=document.getElementById('btnAksiUtama').dataset.tipe; if(t==='done')return; bukaKameraAbsen(t); };
 async function bukaKameraAbsen(t){ document.getElementById('tombolUtamaAbsen').classList.add('hidden'); document.getElementById('kameraArea').classList.remove('hidden'); document.getElementById('notifAbsen').classList.add('hidden'); document.getElementById('preview').classList.add('hidden'); try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false}); document.getElementById('video').srcObject=stream;
   // Watermark LIVE ala TimeMark asli - HANYA TAMPILAN, TIDAK DI-BURN
-  const upd=()=>{ const n=new Date(); document.getElementById('wmJamBox').textContent=n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',hour12:false}); document.getElementById('wmTanggal').textContent=n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); };
+  const upd=()=>{ const n=new Date(); document.getElementById('wmJamBox').textContent=n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',hour12:false}).replace(':','.'); document.getElementById('wmTanggal').textContent=n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); };
   upd(); window.wmInt=setInterval(upd,1000);
   navigator.geolocation.getCurrentPosition(async p=>{ const la=p.coords.latitude, lo=p.coords.longitude; document.getElementById('wmGps').textContent=`${Math.abs(la).toFixed(6)}°${la>=0?'N':'S'}, ${Math.abs(lo).toFixed(6)}°${lo>=0?'E':'W'}`; try{ const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${la}&lon=${lo}&zoom=18`,{headers:{'Accept-Language':'id'}}); const d=await r.json(); document.getElementById('wmAlamat').textContent=d.display_name||''; }catch{} },()=>{});
  }catch(e){ showNotif('Kamera error: '+e.message,true); batalFoto(); } }
