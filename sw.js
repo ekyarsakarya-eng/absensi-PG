@@ -1,51 +1,33 @@
-const CACHE_NAME = 'pamili-absen-v3'; // UBAH V2 JADI V3
+const CACHE_NAME = 'pamili-absen-v4';
 const URLS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/icon?family=Material+Icons+Round'
 ];
 
-// SISA KODE SW.JS SAMA PERSIS KAYA YANG TAK KASIH TADI
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(URLS_TO_CACHE);
-    })
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE)));
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key!== CACHE_NAME)
-           .map(key => caches.delete(key))
-      );
-    })
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  const url = event.request.url;
-  if (url.includes('script.google.com')) {
-    event.respondWith(fetch(event.request));
-    return;
+  if (event.request.url.includes('script.google.com')) {
+    return event.respondWith(fetch(event.request));
   }
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request).then(fetchRes => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, fetchRes.clone());
-          return fetchRes;
-        });
-      });
-    }).catch(() => {
-      if (event.request.mode === 'navigate') {
-        return caches.match('./index.html');
-      }
-    })
+    caches.match(event.request).then(res => res || fetch(event.request).then(f => {
+      return caches.open(CACHE_NAME).then(cache => { cache.put(event.request, f.clone()); return f; });
+    })).catch(() => event.request.mode === 'navigate' ? caches.match('./index.html') : null)
   );
+});
 });
