@@ -1,12 +1,13 @@
 {
-  "name": "Absensi Terpadu",
-  "short_name": "Absensi",
-  "description": "Sistem Absensi Karyawan",
-  "start_url": "./index.html",
+  "name": "Absensi Pamili Garmen",
+  "short_name": "Pamili",
+  "description": "Sistem Absensi Karyawan Pamili Garmen",
+  "start_url": "/absensi-PG/",
+  "scope": "/absensi-PG/",
   "display": "standalone",
-  "background_color": "#F8FAFC",
+  "orientation": "portrait",
+  "background_color": "#E3F2FD",
   "theme_color": "#1565C0",
-  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icon-192.png",
