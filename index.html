@@ -6,6 +6,10 @@
   <title>Absensi Pamili Garmen</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#E3F2FD">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pamili">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -258,8 +262,14 @@ function compressImage(file,maxW,q){return new Promise(r=>{const rd=new FileRead
 async function loadProfil(){ const res=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'getProfil',nama:currentUser.nama})}); const h=await res.json(); if(h.status==='sukses'){ if(h.data.fotoProfil){ const u=h.data.fotoProfil+'?t='+Date.now(); document.getElementById('fotoProfil').src=u; document.getElementById('profilPreview').src=u; } if(h.data.noHp)document.getElementById('noHp').value=h.data.noHp; if(h.data.alamat)document.getElementById('alamat').value=h.data.alamat; } }
 </script>
 <script>
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+// PWA: daftarkan service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker terdaftar'))
+      .catch(err => console.log('SW gagal:', err));
+  });
+}
 </script>
-</body>
 </body>
 </html>
