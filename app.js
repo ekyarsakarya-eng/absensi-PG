@@ -814,13 +814,18 @@ setInterval(()=>{
   }
 }, 60000);
 
-// === PATCH V7.2.1: AUTO LOGIN + REMEMBER PAGE + FIX NAV ===
+// === PATCH V7.2.3: FIX NAV ILANG + DEBUG STATUS ===
 window.addEventListener('load', ()=>{
+  console.log('=== APP LOAD ===');
   const saved = localStorage.getItem('currentUser');
+  
   if(saved){
     currentUser = JSON.parse(saved);
+    console.log('Auto login:', currentUser.nama);
+    
     document.getElementById('namaKaryawan').textContent = currentUser.nama;
     document.getElementById('namaAbsen').textContent = currentUser.nama;
+    
     if(currentUser.foto){
       document.getElementById('fotoProfil').src = currentUser.foto;
       document.getElementById('fotoProfil').style.display = 'block';
@@ -828,11 +833,66 @@ window.addEventListener('load', ()=>{
       document.getElementById('fotoProfilAbsen').style.display = 'block';
     }
 
+    // FIX #1: Paksa hapus active dari login + paksa show bottomNav
     document.getElementById('page-login').classList.remove('active');
+    document.getElementById('bottomNav').classList.remove('hidden');
+    console.log('Bottom nav dipaksa muncul');
 
     const lastPage = localStorage.getItem('lastPage');
-    showPage(lastPage && lastPage!== 'login'? lastPage : 'home');
+    const targetPage = lastPage && lastPage !== 'login' ? lastPage : 'home';
+    console.log('Target page:', targetPage);
+    showPage(targetPage);
   } else {
+    console.log('No saved user, show login');
     showPage('login');
   }
 });
+
+// === DEBUG: Tambah log di loadStatusHariIni ===
+async function loadStatusHariIni(){
+  if(!currentUser) return;
+  const today = new Date().toLocaleDateString('id-ID');
+  const key = `absen_${currentUser.username}_${today}`;
+  
+  const saved = localStorage.getItem(key);
+  if(saved){
+    statusHariIni = JSON.parse(saved);
+    console.log('Status dari localStorage:', statusHariIni);
+    updateStatusHome();
+    updateStatusAbsen();
+  }
+  
+  try{
+    console.log('Fetch status ke server untuk:', currentUser.nama);
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({
+        action:'cekStatusHariIni',
+        username:currentUser.username,
+        nama:currentUser.nama
+      })
+    });
+    const hasil = await res.json();
+    console.log('Response cekStatusHariIni:', hasil);
+    
+    if(hasil.status==='sukses'){
+      statusHariIni = {
+        masuk: hasil.data.masuk || '',
+        pulang: hasil.data.pulang || '',
+        tanggal: today,
+        sudahSelesai: !!(hasil.data.masuk && hasil.data.pulang)
+      };
+      localStorage.setItem(key, JSON.stringify(statusHariIni));
+      console.log('Status diupdate:', statusHariIni);
+    } else {
+      statusHariIni = {masuk:'', pulang:'', tanggal:today, sudahSelesai:false};
+    }
+  }catch(e){
+    console.error('Gagal load status server:', e);
+    if(!saved){
+      statusHariIni = {masuk:'', pulang:'', tanggal:today, sudahSelesai:false};
+    }
+  }
+  updateStatusHome();
+  updateStatusAbsen();
+}
