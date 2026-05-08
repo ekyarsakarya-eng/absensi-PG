@@ -398,7 +398,7 @@ function stopKamera(){
 }
 
 async function kirimAbsenCepat(tipe, foto){
-  showNotif('Mengirim...', false, true);
+  showNotif('Mengirim Foto...Stay Tuned...', false, true);
   document.getElementById('kameraArea').classList.add('hidden');
 
   const gps = await new Promise(r=>{
