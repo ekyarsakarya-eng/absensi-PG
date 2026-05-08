@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Absensi</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}
+    body{background:#f5f5f5;padding:20px}
+  .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+    h2{margin-bottom:16px;color:#0B63F3}
+    input,button,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;font-size:16px}
+    button{background:#0B63F3;color:#fff;border:none;cursor:pointer;font-weight:600}
+    button:hover{background:#0952cc}
+    button.danger{background:#dc3545}
+    button.danger:hover{background:#c82333}
+  .hidden{display:none}
+    #log{background:#1e1e1e;color:#0f0;padding:12px;border-radius:8px;font-family:monospace;font-size:12px;max-height:200px;overflow-y:auto}
+  .status{padding:12px;border-radius:8px;margin:12px 0}
+  .sukses{background:#d4edda;color:#155724}
+  .gagal{background:#f8d7da;color:#721c24}
+   ul{padding-left:20px}
+   li{margin:4px 0}
+  </style>
+</head>
+<body>
+  <div id="loginPage" class="card">
+    <h2>Login Admin</h2>
+    <input type="password" id="passAdmin" placeholder="Password Admin" value="admin123">
+    <button onclick="loginAdmin()">Masuk</button>
+    <div id="loginStatus" class="hidden"></div>
+  </div>
+
+  <div id="adminPage" class="hidden">
+    <div class="card">
+      <h2>Panel Admin Absensi Pamili</h2>
+      <p><b>Rekap Absensi</b> = bulan berjalan. Ganti periode akan arsipkan data lama ke sheet <code>Rekap_MMM_yyyy</code>.</p>
+
+      <h3 style="margin-top:20px">Ganti Periode Manual</h3>
+      <select id="bulan">
+        <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+        <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+        <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+        <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+      </select>
+      <input type="number" id="tahun" placeholder="Tahun">
+      <button onclick="gantiPeriode()">Ganti Periode Sekarang</button>
+      <button class="danger" onclick="logout()">Logout</button>
+      <div id="status" class="hidden"></div>
+    </div>
+
+    <div class="card">
+      <h3>Data Arsip Periode Lama</h3>
+      <button onclick="loadArsip()">Refresh List Arsip</button>
+      <div id="listArsip" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Log Aktivitas</h3>
+      <div id="log">Ready...</div>
+    </div>
+  </div>
+
+<script>
+  const GAS_URL = '<?= ScriptApp.getService().getUrl()?>';
+  let passAdmin = '';
+
+  function log(msg){
+    const l = document.getElementById('log');
+    l.innerHTML += new Date().toLocaleTimeString() + ' - ' + msg + '<br>';
+    l.scrollTop = l.scrollHeight;
+  }
+
+  async function loginAdmin(){
+    passAdmin = document.getElementById('passAdmin').value;
+    const st = document.getElementById('loginStatus');
+    st.className = '';
+    st.textContent = 'Loading...';
+    st.classList.remove('hidden');
+
+    try{
+      const res = await fetch(GAS_URL, {
+        method:'POST',
+        body: JSON.stringify({action:'adminLogin', password:passAdmin})
+      });
+      const h = await res.json();
+      if(h.status==='sukses'){
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('adminPage').classList.remove('hidden');
+        const now = new Date();
+        document.getElementById('bulan').value = now.getMonth() + 1;
+        document.getElementById('tahun').value = now.getFullYear();
+        log('Login admin berhasil');
+        loadArsip();
+      } else {
+        st.textContent = h.pesan;
+        st.className = 'status gagal';
+      }
+    }catch(e){
+      st.textContent = 'Error: ' + e;
+      st.className = 'status gagal';
+    }
+  }
+
+  async function gantiPeriode(){
+    if(!confirm('YAKIN? Data bulan ini akan diarsip dan diganti periode baru.')) return;
+
+    const st = document.getElementById('status');
+    st.textContent = 'Memproses ganti periode...';
+    st.className = 'status';
+    st.classList.remove('hidden');
+    log('Mulai ganti periode...');
+
+    try{
+      const res = await fetch(GAS_URL, {
+        method:'POST',
+        body: JSON.stringify({
+          action:'rebuildPeriode',
+          passwordAdmin: passAdmin,
+          bulan: parseInt(document.getElementById('bulan').value),
+          tahun: parseInt(document.getElementById('tahun').value)
+        })
+      });
+      const h = await res.json();
+      st.textContent = h.pesan;
+      st.className = h.status==='sukses'? 'status sukses' : 'status gagal';
+      log(h.pesan);
+      if(h.status==='sukses') loadArsip();
+    }catch(e){
+      st.textContent = 'Error: ' + e;
+      st.className = 'status gagal';
+      log('Error: ' + e);
+    }
+  }
+
+  async function loadArsip(){
+    try{
+      const res = await fetch(GAS_URL, {
+        method:'POST',
+        body: JSON.stringify({action:'getListArsip', passwordAdmin:passAdmin})
+      });
+      const h = await res.json();
+      if(h.status==='sukses'){
+        document.getElementById('listArsip').innerHTML = h.data.length?
+          '<ul>' + h.data.map(n=>'<li>'+n+'</li>').join('') + '</ul>' :
+          '<p>Belum ada arsip</p>';
+        log('List arsip dimuat: ' + h.data.length + ' sheet');
+      }
+    }catch(e){
+      log('Gagal load arsip: ' + e);
+    }
+  }
+
+  function logout(){
+    location.reload();
+  }
+</script>
+</body>
+</html>
