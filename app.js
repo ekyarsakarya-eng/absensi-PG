@@ -123,12 +123,12 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
         document.getElementById('fotoProfilAbsen').style.display = 'block';
       }
       const lastPage = localStorage.getItem('lastPage') || 'home';
-      showPage(lastPage);
-    } else {
-      status.textContent = hasil.message || hasil.pesan || 'Login gagal';
-      status.classList.remove('hidden');
-    }
-  }catch(e){
+    showPage(lastPage);
+  } else {
+    status.textContent = hasil.message || hasil.pesan || 'Login gagal';
+    status.classList.remove('hidden');
+  }
+}catch(e){
     showLoading(false);
     status.textContent = 'Koneksi error: '+e.message;
     status.classList.remove('hidden');
