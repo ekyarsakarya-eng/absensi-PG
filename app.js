@@ -27,11 +27,11 @@ async function showPage(page){
   
   if(page==='home'){
     updateJam();
-    await updateStatusHome(); // FIX: pake await
+    await updateStatusHome();
     checkOfflineData();
   }
   if(page==='absensi'){
-    await initAbsensi(); // FIX: pake await
+    await initAbsensi();
   }
   if(page==='rekap'){
     loadRekap();
@@ -39,6 +39,8 @@ async function showPage(page){
   if(page==='profil'){
     loadProfil();
   }
+  
+  if(page!=='login') localStorage.setItem('lastPage', page); // <-- TAMBAH INI DOANG
 }
 
 function updateJam(){
@@ -134,7 +136,7 @@ function logout(){
   currentUser = null;
   statusHariIni = {masuk:'', pulang:''};
   localStorage.removeItem('currentUser');
-  // FIX: hapus semua cache status
+  localStorage.removeItem('lastPage'); // <-- TAMBAH INI DOANG
   Object.keys(localStorage).forEach(k=>{
     if(k.startsWith('statusHariIni_')) localStorage.removeItem(k);
   });
@@ -798,13 +800,13 @@ async function updateDataPersonal(){
 }
 
 // Auto login jika ada session
+// Auto login + restore halaman terakhir
 window.addEventListener('load', ()=>{
   try{
     const saved = localStorage.getItem('currentUser');
     if(saved){
       currentUser = JSON.parse(saved);
       if(currentUser && currentUser.nama){
-        // FIX: load status cache dulu
         const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
         if(cached) statusHariIni = JSON.parse(cached);
         
@@ -816,12 +818,15 @@ window.addEventListener('load', ()=>{
           document.getElementById('fotoProfilAbsen').src = currentUser.foto;
           document.getElementById('fotoProfilAbsen').style.display = 'block';
         }
-        showPage('home');
+        
+        const lastPage = localStorage.getItem('lastPage') || 'home'; // <-- TAMBAH
+        showPage(lastPage); // <-- GANTI DARI showPage('home')
         return;
       }
     }
   }catch(e){
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('lastPage'); // <-- TAMBAH
   }
   showPage('login');
 });
