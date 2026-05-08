@@ -99,34 +99,28 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
     const hasil = await res.json();
     showLoading(false);
     
-if(hasil.status==='sukses'){
-  currentUser = {
-    nama: hasil.data.nama,
-    username: hasil.data.username,
-    foto: hasil.data.fotoProfil || hasil.data.foto || '', // HANDLE KEDUANYA
-    nohp: hasil.data.nohp || '',
-    alamat: hasil.data.alamat || '',
-    rekening: hasil.data.rekening || '',
-    ttl: hasil.data.ttl || ''
-  };
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  document.getElementById('namaKaryawan').textContent = currentUser.nama;
-  document.getElementById('namaAbsen').textContent = currentUser.nama;
-  if(currentUser.foto){
-    document.getElementById('fotoProfil').src = currentUser.foto;
-    document.getElementById('fotoProfil').style.display = 'block';
-    document.getElementById('fotoProfilAbsen').src = currentUser.foto;
-    document.getElementById('fotoProfilAbsen').style.display = 'block';
-  }
-       showPage('home');
-      return;
-    }
-  }
-}catch(e){ // <-- TAMBAH INI
-  localStorage.removeItem('currentUser');
-}
+    if(hasil.status==='sukses'){
+      currentUser = {
+        nama: hasil.data.nama,
+        username: hasil.data.username,
+        foto: hasil.data.fotoProfil || hasil.data.foto || '',
+        nohp: hasil.data.nohp || '',
+        alamat: hasil.data.alamat || '',
+        rekening: hasil.data.rekening || '',
+        ttl: hasil.data.ttl || ''
+      };
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      document.getElementById('namaKaryawan').textContent = currentUser.nama;
+      document.getElementById('namaAbsen').textContent = currentUser.nama;
+      if(currentUser.foto){
+        document.getElementById('fotoProfil').src = currentUser.foto;
+        document.getElementById('fotoProfil').style.display = 'block';
+        document.getElementById('fotoProfilAbsen').src = currentUser.foto;
+        document.getElementById('fotoProfilAbsen').style.display = 'block';
+      }
+      showPage('home');
     } else {
-      status.textContent = hasil.message || 'Login gagal';
+      status.textContent = hasil.message || hasil.pesan || 'Login gagal';
       status.classList.remove('hidden');
     }
   }catch(e){
