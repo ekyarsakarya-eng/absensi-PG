@@ -843,6 +843,10 @@ window.addEventListener('load', ()=>{
       localStorage.removeItem('currentUser');
       localStorage.removeItem('lastPage');
     }
+    document.body.classList.add('loaded'); // <-- TAMBAH INI DOANG
+    showPage('login');
+  }, 100);
+});
     showPage('login');
   }, 100);
 });
