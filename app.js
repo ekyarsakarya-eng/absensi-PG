@@ -399,7 +399,7 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
 
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
-  showNotif('Sabar ya, lagi upload muka ganteng...', false, true);
+  showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
   
   try{
     const res = await fetch(GAS_URL,{
