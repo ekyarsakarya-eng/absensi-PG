@@ -459,7 +459,16 @@ function showNotif(txt, err=false, load=false){
   const ic = document.getElementById('notifIcon');
   document.getElementById('notifText').textContent = txt;
   n.classList.remove('error');
-  ic.textContent = load?'hourglass_empty':err?'error':'check_circle';
+  
+  // Ganti icon text jadi emoji biar gak muncul hourglass_empty
+  if(load){
+    ic.textContent = '⏳'; // emoji jam pasir
+  } else if(err){
+    ic.textContent = '❌';
+  } else {
+    ic.textContent = '✅';
+  }
+  
   if(err) n.classList.add('error');
   n.classList.remove('hidden');
   if(!load) setTimeout(()=>n.classList.add('hidden'), 3000);
