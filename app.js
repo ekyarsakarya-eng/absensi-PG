@@ -26,7 +26,6 @@ function showPage(page){
     document.getElementById('bottomNav').classList.add('hidden');
   }
   
-  // PATCH V7.2: Simpan halaman terakhir
   localStorage.setItem('lastPage', page);
   
   if(page==='home'){
@@ -38,7 +37,7 @@ function showPage(page){
     initAbsensi();
   }
   if(page==='rekap'){
-    initRekapDropdown(); // PATCH: Init dropdown bulan/tahun
+    initRekapDropdown();
     loadRekap();
   }
   if(page==='profil'){
@@ -77,7 +76,6 @@ function toggleDarkMode(){
   }
 }
 
-// PATCH V7.2: Toggle Password Mata Intip
 function togglePassword(inputId, btn){
   const input = document.getElementById(inputId);
   const icon = btn.querySelector('.material-icons-outlined');
@@ -137,7 +135,6 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
         document.getElementById('fotoProfilAbsen').src = currentUser.foto;
         document.getElementById('fotoProfilAbsen').style.display = 'block';
       }
-      // PATCH V7.2: Cek last page, default ke home
       const lastPage = localStorage.getItem('lastPage');
       showPage(lastPage && lastPage !== 'login' ? lastPage : 'home');
     } else {
@@ -151,31 +148,12 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
   }
 });
 
-// === PATCH V7.2: AUTO LOGIN + REMEMBER PAGE ===
-window.addEventListener('load', ()=>{
-  const saved = localStorage.getItem('currentUser');
-  if(saved){
-    currentUser = JSON.parse(saved);
-    document.getElementById('namaKaryawan').textContent = currentUser.nama;
-    document.getElementById('namaAbsen').textContent = currentUser.nama;
-    if(currentUser.foto){
-      document.getElementById('fotoProfil').src = currentUser.foto;
-      document.getElementById('fotoProfil').style.display = 'block';
-      document.getElementById('fotoProfilAbsen').src = currentUser.foto;
-      document.getElementById('fotoProfilAbsen').style.display = 'block';
-    }
-    const lastPage = localStorage.getItem('lastPage');
-    showPage(lastPage && lastPage !== 'login' ? lastPage : 'home');
-  }
-});
-
-// === PATCH V7.2: LOAD STATUS HARI INI - DIPERKETAT ===
+// === LOAD STATUS HARI INI - DIPERKETAT ===
 async function loadStatusHariIni(){
   if(!currentUser) return;
   const today = new Date().toLocaleDateString('id-ID');
   const key = `absen_${currentUser.username}_${today}`;
   
-  // 1. Cek localStorage dulu
   const saved = localStorage.getItem(key);
   if(saved){
     statusHariIni = JSON.parse(saved);
@@ -183,12 +161,11 @@ async function loadStatusHariIni(){
     updateStatusAbsen();
   }
   
-  // 2. SELALU cek ke server untuk data terkini - FIX BUG REFRESH
   try{
     const res = await fetch(GAS_URL,{
       method:'POST',
       body:JSON.stringify({
-        action:'cekStatusHariIni', // ENDPOINT BARU di Code.gs
+        action:'cekStatusHariIni',
         username:currentUser.username,
         nama:currentUser.nama
       })
@@ -199,7 +176,7 @@ async function loadStatusHariIni(){
         masuk: hasil.data.masuk || '',
         pulang: hasil.data.pulang || '',
         tanggal: today,
-        sudahSelesai: (hasil.data.masuk && hasil.data.pulang)
+        sudahSelesai: !!(hasil.data.masuk && hasil.data.pulang)
       };
       localStorage.setItem(key, JSON.stringify(statusHariIni));
     } else {
@@ -207,7 +184,6 @@ async function loadStatusHariIni(){
     }
   }catch(e){
     console.log('Gagal load status server:', e);
-    // Tetap pake data localStorage kalau ada
     if(!saved){
       statusHariIni = {masuk:'', pulang:'', tanggal:today, sudahSelesai:false};
     }
@@ -220,7 +196,6 @@ function updateStatusHome(){
   document.getElementById('homeWaktuMasuk').textContent = statusHariIni.masuk || '-';
   document.getElementById('homeWaktuPulang').textContent = statusHariIni.pulang || '-';
   
-  // PATCH V7.2: Lock tombol absen kalau udah selesai
   const btnBuka = document.getElementById('btnBukaAbsen');
   if(statusHariIni.sudahSelesai){
     btnBuka.innerHTML = '<span class="material-icons-outlined">check_circle</span>ABSENSI SELESAI';
@@ -235,11 +210,10 @@ function updateStatusHome(){
   }
 }
 
-// === ABSENSI + KAMERA + GPS - FIX BUG TOMBOL ===
+// === ABSENSI + KAMERA + GPS ===
 async function initAbsensi(){
   await loadStatusHariIni();
 
-  // PATCH V7.2: Lock ketat kalau udah selesai absen hari ini
   if(statusHariIni.sudahSelesai){
     document.getElementById('tombolUtamaAbsen').classList.add('hidden');
     document.getElementById('aktivitasSelesaiCard').classList.remove('hidden');
@@ -250,8 +224,7 @@ async function initAbsensi(){
   document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
   document.getElementById('aktivitasSelesaiCard').classList.add('hidden');
 
-  // PATCH V7.2: FIX BUG TOMBOL GAK GANTI - Set tipe absen berdasarkan status
-  const tipe =!statusHariIni.masuk? 'in' : 'out';
+  const tipe = !statusHariIni.masuk ? 'in' : 'out';
   const btn = document.getElementById('btnAksiUtama');
   const icon = document.getElementById('iconAksi');
   const judul = document.getElementById('judulAksi');
@@ -291,7 +264,6 @@ function updateStatusAbsen(){
 }
 
 document.getElementById('btnAksiUtama').addEventListener('click', async ()=>{
-  // PATCH V7.2: Triple check lock sebelum buka kamera
   await loadStatusHariIni();
   if(statusHariIni.sudahSelesai){
     showNotif('Absensi hari ini sudah selesai. Silakan absen lagi besok.', 'error');
@@ -342,7 +314,6 @@ async function ambilGPS(){
     gpsData = {lat, lng};
     document.getElementById('wmGps').textContent = `${lat}, ${lng}`;
 
-    // Reverse geocoding pake Nominatim
     try{
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
       const data = await res.json();
@@ -369,7 +340,6 @@ document.getElementById('btnAmbilFoto').addEventListener('click', ()=>{
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0);
 
-  // Watermark - Warna Soft Dove Cerah V7.2
   ctx.fillStyle = 'rgba(90,79,69,0.92)';
   ctx.fillRect(10, canvas.height - 95, canvas.width - 20, 85);
 
@@ -408,7 +378,6 @@ async function kirimAbsen(){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   const foto = document.getElementById('preview').src;
 
-  // PATCH V7.2: Validasi lock ketat sebelum kirim
   await loadStatusHariIni();
   if(statusHariIni.sudahSelesai){
     showNotif('Absensi hari ini sudah selesai!', 'error');
@@ -416,7 +385,7 @@ async function kirimAbsen(){
     return;
   }
 
-  if(tipe === 'out' &&!statusHariIni.masuk){
+  if(tipe === 'out' && !statusHariIni.masuk){
     showNotif('Kamu belum absen masuk hari ini!', 'error');
     return;
   }
@@ -455,7 +424,6 @@ async function kirimAbsen(){
     showLoading(false);
 
     if(hasil.status==='sukses'){
-      // PATCH V7.2: Update status lokal langsung
       const today = new Date().toLocaleDateString('id-ID');
       if(tipe === 'in'){
         statusHariIni.masuk = jam;
@@ -468,24 +436,21 @@ async function kirimAbsen(){
 
       showNotif(`Absen ${tipe==='in'?'masuk':'pulang'} berhasil jam ${jam}!`, 'sukses');
 
-      // Reset UI
       document.getElementById('kameraArea').classList.add('hidden');
       document.getElementById('preview').classList.add('hidden');
       document.getElementById('btnAmbilFoto').innerHTML = '<span class="material-icons-outlined">camera_alt</span>AMBIL FOTO';
       document.getElementById('btnAmbilFoto').onclick = null;
 
-      // Refresh status
       await loadStatusHariIni();
       updateStatusAbsen();
       updateStatusHome();
 
-      // PATCH V7.2: Lock UI kalau udah selesai - FIX BUG TOMBOL
       if(statusHariIni.sudahSelesai){
         document.getElementById('tombolUtamaAbsen').classList.add('hidden');
         document.getElementById('aktivitasSelesaiCard').classList.remove('hidden');
       } else {
         document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
-        initAbsensi(); // FIX: Panggil initAbsensi() biar tombol ganti ke "Absen Pulang"
+        initAbsensi();
       }
     } else {
       showNotif('Gagal absen: ' + (hasil.message || hasil.pesan), 'error');
@@ -511,12 +476,11 @@ function showNotif(text, type='loading'){
   }
 }
 
-// === PATCH V7.2: REKAP + DROPDOWN BULAN/TAHUN ===
+// === REKAP + DROPDOWN BULAN/TAHUN ===
 function initRekapDropdown(){
   const selectTahun = document.getElementById('selectTahun');
   const tahunSekarang = new Date().getFullYear();
 
-  // Generate tahun: 2023 sampe tahun depan
   if(selectTahun.options.length === 0){
     for(let i = tahunSekarang + 1; i >= 2023; i--){
       const opt = document.createElement('option');
@@ -526,7 +490,6 @@ function initRekapDropdown(){
     }
   }
 
-  // Set default ke bulan & tahun sekarang
   document.getElementById('selectBulan').value = currentBulan + 1;
   document.getElementById('selectTahun').value = currentTahun;
 }
@@ -838,7 +801,6 @@ function logout(){
 }
 
 // === AUTO CHECK TANGGAL BARU ===
-// Reset status kalau ganti hari - FIX BUG REFRESH BISA ABSEN LAGI
 setInterval(()=>{
   const today = new Date().toLocaleDateString('id-ID');
   if(statusHariIni.tanggal && statusHariIni.tanggal!== today){
@@ -850,7 +812,7 @@ setInterval(()=>{
       initAbsensi();
     }
   }
-}, 60000); // Check tiap 1 menit
+}, 60000);
 
 // === PATCH V7.2.1: AUTO LOGIN + REMEMBER PAGE + FIX NAV ===
 window.addEventListener('load', ()=>{
@@ -865,12 +827,11 @@ window.addEventListener('load', ()=>{
       document.getElementById('fotoProfilAbsen').src = currentUser.foto;
       document.getElementById('fotoProfilAbsen').style.display = 'block';
     }
-    
-    // FIX: Hapus active dari login biar gak tabrakan sama home
+
     document.getElementById('page-login').classList.remove('active');
-    
+
     const lastPage = localStorage.getItem('lastPage');
-    showPage(lastPage && lastPage !== 'login' ? lastPage : 'home');
+    showPage(lastPage && lastPage!== 'login'? lastPage : 'home');
   } else {
     showPage('login');
   }
