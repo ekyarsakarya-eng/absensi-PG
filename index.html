@@ -27,6 +27,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .form-group label{display:block;font-size:14px;color:#666;margin-bottom:6px;font-weight:500}
 .form-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
 .form-group input:focus{outline:none;border-color:#0B63F3}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:40px}
+.toggle-pass{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;color:#999}
 .camera-container{position:relative;width:100%;max-width:400px;margin:0 auto}
 #video{width:100%;border-radius:12px;background:#000}
 #canvas{display:none}
@@ -65,6 +68,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .profil-info h2{font-size:18px;margin-bottom:4px}
 .profil-info p{font-size:14px;color:#666}
 .hidden{display:none!important}
+/* LOGIN PAGE KHUSUS */
+#loginPage{background:#f5f5f5;display:flex;align-items:center;justify-content:center}
+#loginPage .login-wrap{width:100%;max-width:360px;padding:20px}
+#loginPage .card{padding:32px 24px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+#loginPage h2{text-align:center;color:#0B63F3;font-size:24px;font-weight:700;margin-bottom:8px}
+#loginPage .subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:32px}
+#loginPage .form-group input{border:1px solid #E0E0E0;background:#FAFAFA}
+#loginPage .btn-primary{border-radius:8px;padding:16px;font-size:16px;font-weight:600}
 </style>
 </head>
 <body>
@@ -76,24 +87,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
   <!-- Login Page -->
   <div class="page active" id="loginPage">
-    <div class="header">
-      <h1>Absensi Pamili Garmen</h1>
-      <p>Silakan login untuk melanjutkan</p>
-    </div>
-    <div class="content">
+    <div class="login-wrap">
       <div class="card">
+        <h2>PAMILI GARMEN</h2>
+        <p class="subtitle">Sistem Absensi Karyawan</p>
         <form id="loginForm">
           <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="username" required autocomplete="username">
+            <div class="input-wrap">
+              <input type="text" id="username" placeholder="Username" required autocomplete="username">
+            </div>
           </div>
           <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password" required autocomplete="current-password">
+            <div class="input-wrap">
+              <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+              <span class="toggle-pass" id="togglePass">👁️‍🗨️</span>
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">Masuk</button>
+          <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <div id="loginAlert" class="alert alert-error hidden"></div>
+        <div id="loginAlert" class="alert alert-error hidden" style="margin-top:16px"></div>
       </div>
     </div>
   </div>
@@ -229,5 +241,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <script src="app.js"></script>
+<script>
+// Toggle password
+document.getElementById('togglePass').addEventListener('click',function(){
+  const pass=document.getElementById('password');
+  if(pass.type=='password'){pass.type='text';this.textContent='👁️'}
+  else{pass.type='password';this.textContent='👁️‍🗨️'}
+});
+</script>
 </body>
 </html>
