@@ -179,7 +179,10 @@ function showPage(page){
   if(el) el.classList.add('active');
 
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  if(page==='home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+  if(page==='home'){
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  updateStatusHome();
+}
   if(page==='absensi'){
     document.querySelectorAll('.nav-item')[1].classList.add('active');
     cekStatusHariIni();
@@ -190,6 +193,76 @@ function showPage(page){
   }
   
   if(page!== 'absensi') stopKamera();
+}
+
+async function updateStatusHome(){
+  if(!currentUser) return;
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:31})
+    });
+    const hasil = await res.json();
+    
+    const btn = document.getElementById('btnAbsenCepat');
+    const icon = document.getElementById('iconAbsenCepat');
+    const text = document.getElementById('textAbsenCepat');
+    const im = document.getElementById('homeItemMasuk');
+    const ip = document.getElementById('homeItemPulang');
+    
+    im.classList.remove('active','done');
+    ip.classList.remove('active','done');
+    btn.disabled = false;
+    
+    if(hasil.status==='sukses' && hasil.data.length > 0){
+      const tglHariIni = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const d = hasil.data.find(x => x.tanggal === tglHariIni);
+      
+      if(d && d.masuk!=='-'){
+        im.classList.add('done');
+        document.getElementById('homeWaktuMasuk').textContent = d.masuk;
+        if(d.pulang!=='-'){
+          ip.classList.add('done');
+          document.getElementById('homeWaktuPulang').textContent = d.pulang;
+          btn.disabled = true;
+          icon.textContent = 'check_circle';
+          text.textContent = 'ABSEN SELESAI';
+        } else {
+          ip.classList.add('active');
+          document.getElementById('homeWaktuPulang').textContent = '-';
+          icon.textContent = 'logout';
+          text.textContent = 'ABSEN PULANG';
+          btn.dataset.tipe = 'out';
+        }
+      } else {
+        im.classList.add('active');
+        document.getElementById('homeWaktuMasuk').textContent = '-';
+        document.getElementById('homeWaktuPulang').textContent = '-';
+        icon.textContent = 'login';
+        text.textContent = 'ABSEN MASUK';
+        btn.dataset.tipe = 'in';
+      }
+    } else {
+      im.classList.add('active');
+      document.getElementById('homeWaktuMasuk').textContent = '-';
+      document.getElementById('homeWaktuPulang').textContent = '-';
+      icon.textContent = 'login';
+      text.textContent = 'ABSEN MASUK';
+      btn.dataset.tipe = 'in';
+    }
+  }catch(e){
+    console.log('Update status home error:', e);
+  }
+}
+
+function absenCepatDariHome(){
+  const btn = document.getElementById('btnAbsenCepat');
+  if(btn.disabled) return;
+  showPage('absensi');
+  // Auto trigger absen setelah pindah page
+  setTimeout(()=>{
+    document.getElementById('btnAksiUtama').click();
+  }, 300);
 }
 
 async function cekStatusHariIni(){
