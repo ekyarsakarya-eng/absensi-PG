@@ -280,17 +280,119 @@ function showNotif(txt, err=false, load=false){
   if(!load) setTimeout(()=>n.classList.add('hidden'), 3000);
 }
 
-async function loadRekap(){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:28})
+function loadRekap(){
+  const d=hariFilter;
+  callAPI('rekap',{nama:user.nama,jumlahHari:d}).then(r=>{
+    if(r.status=='sukses'){
+      rekapCache=r.data;
+      let totalMasuk=0,totalPulang=0,totalHadir=0,totalMenitKerja=0;
+      
+      // Helper hitung durasi
+      function hitungDurasi(jamMasuk, jamPulang){
+        if(jamMasuk=='-' || jamPulang=='-') return '-';
+        const [h1,m1] = jamMasuk.split(':').map(Number);
+        const [h2,m2] = jamPulang.split(':').map(Number);
+        const menit1 = h1*60 + m1;
+        const menit2 = h2*60 + m2;
+        const selisih = menit2 - menit1;
+        if(selisih <= 0) return '-';
+        const jam = Math.floor(selisih/60);
+        const menit = selisih%60;
+        return `${jam}j ${menit}m`;
+      }
+      
+      function menitKeAngka(jamMasuk, jamPulang){
+        if(jamMasuk=='-' || jamPulang=='-') return 0;
+        const [h1,m1] = jamMasuk.split(':').map(Number);
+        const [h2,m2] = jamPulang.split(':').map(Number);
+        return (h2*60+m2) - (h1*60+m1);
+      }
+      
+      rekapCache.forEach(x=>{
+        if(x.masuk!='-') totalMasuk++;
+        if(x.pulang!='-') totalPulang++;
+        if(x.masuk!='-') totalHadir++;
+        totalMenitKerja += menitKeAngka(x.masuk, x.pulang);
+      });
+      
+      document.getElementById('totalMasuk').textContent=totalHadir;
+      document.getElementById('totalPulang').textContent=totalPulang;
+      
+      // Format total jam kerja
+      const totalJam = Math.floor(totalMenitKerja/60);
+      const sisaMenit = totalMenitKerja%60;
+      const rataMenit = totalHadir>0? Math.floor(totalMenitKerja/totalHadir) : 0;
+      const rataJam = Math.floor(rataMenit/60);
+      const rataMenitSisa = rataMenit%60;
+      
+      let html = `
+        <div style="background:#E8F5E9;border-radius:12px;padding:12px;margin:16px 0;text-align:center">
+          <div style="font-size:13px;color:#2E7D32;margin-bottom:4px">Total Jam Kerja</div>
+          <div style="font-size:24px;font-weight:700;color:#1B5E20">${totalJam}j ${sisaMenit}m</div>
+          <div style="font-size:12px;color:#388E3C;margin-top:4px">Rata-rata: ${rataJam}j ${rataMenitSisa}m/hari</div>
+        </div>
+        
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead>
+              <tr style="background:#0B63F3;color:#fff">
+                <th style="padding:12px;text-align:left;border-radius:8px 0 0 0">Tanggal</th>
+                <th style="padding:12px;text-align:center">Hari</th>
+                <th style="padding:12px;text-align:center">Masuk</th>
+                <th style="padding:12px;text-align:center">Pulang</th>
+                <th style="padding:12px;text-align:center;border-radius:0 8px 0 0">Durasi</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      
+      const hariList = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+      
+      rekapCache.forEach((x,i)=>{
+        const tgl = x.tanggal.split('/');
+        const date = new Date(tgl[2],tgl[1]-1,tgl[0]);
+        const hari = hariList[date.getDay()];
+        const isWeekend = date.getDay()==0;
+        const durasi = hitungDurasi(x.masuk, x.pulang);
+        
+        const bgColor = isWeekend? '#FFF3E0' : (i%2==0? '#fff' : '#F8F9FA');
+        const masukColor = x.masuk=='-'? '#999' : '#198754';
+        const pulangColor = x.pulang=='-'? '#999' : '#DC3545';
+        const durasiColor = durasi=='-'? '#999' : '#0B63F3';
+        
+        html += `
+          <tr style="background:${bgColor};border-bottom:1px solid #eee">
+            <td style="padding:12px;font-weight:600">${x.tanggal}</td>
+            <td style="padding:12px;text-align:center;color:${isWeekend?'#F57C00':'#666'}">${hari}</td>
+            <td style="padding:12px;text-align:center;font-weight:600;color:${masukColor}">
+              ${x.masuk=='-'? '-' : x.masuk}
+            </td>
+            <td style="padding:12px;text-align:center;font-weight:600;color:${pulangColor}">
+              ${x.pulang=='-'? '-' : x.pulang}
+            </td>
+            <td style="padding:12px;text-align:center;font-weight:700;color:${durasiColor}">
+              ${durasi}
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += `
+            </tbody>
+            <tfoot>
+              <tr style="background:#E3F2FD;font-weight:700">
+                <td colspan="4" style="padding:12px">Total Hadir: ${totalHadir} hari</td>
+                <td style="padding:12px;text-align:center">${totalJam}j ${sisaMenit}m</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `;
+      
+      document.getElementById('rekapGrid').innerHTML=html;
+    }
   });
-  const h = await res.json();
-  if(h.status==='sukses'){
-    tampilkanRekap(h.data);
-  }
 }
-
 function tampilkanRekap(data){
   const list = document.getElementById('rekapList');
   const empty = document.getElementById('rekapEmpty');
