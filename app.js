@@ -753,10 +753,11 @@ async function updateDataPersonal(){
 
 // Auto login jika ada session
 // Auto login jika ada session
+// Auto login jika ada session
 window.addEventListener('load', ()=>{
-  const saved = localStorage.getItem('currentUser');
-  if(saved){
-    try{
+  try{
+    const saved = localStorage.getItem('currentUser');
+    if(saved){
       currentUser = JSON.parse(saved);
       if(currentUser && currentUser.nama){
         document.getElementById('namaKaryawan').textContent = currentUser.nama;
@@ -770,9 +771,9 @@ window.addEventListener('load', ()=>{
         showPage('home');
         return;
       }
-    }catch(e){
-      localStorage.removeItem('currentUser');
     }
+  }catch(e){
+    localStorage.removeItem('currentUser');
   }
   showPage('login');
 });
