@@ -2,25 +2,97 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyQrjOZz_KQcPTSyUo8XOVo
 let currentUser = null;
 let stream = null;
 let rekapCache = [];
+let bulanAktif = new Date();
+let offlineQueue = JSON.parse(localStorage.getItem('offlineAbsen') || '[]');
 
+// 1. LOGOUT + 4. DARK MODE + 5. OFFLINE
 window.onload = () => {
+  initTheme();
+  checkOfflineStatus();
+  window.addEventListener('online', syncOfflineData);
+  window.addEventListener('offline', () => {
+    document.getElementById('offlineBadge').classList.add('active');
+  });
+  
   const savedUser = localStorage.getItem('userPamili');
   if(savedUser){
     currentUser = JSON.parse(savedUser);
     showPage('home');
     document.getElementById('namaKaryawan').textContent = currentUser.nama;
+    document.getElementById('namaAbsen').textContent = currentUser.nama;
     const fotoEl = document.getElementById('fotoProfil');
-    if(currentUser.fotoProfil && fotoEl){
-      fotoEl.src = currentUser.fotoProfil;
-      fotoEl.style.display = 'block';
+    const fotoAbsenEl = document.getElementById('fotoProfilAbsen');
+    if(currentUser.fotoProfil){
+      if(fotoEl){ fotoEl.src = currentUser.fotoProfil; fotoEl.style.display = 'block'; }
+      if(fotoAbsenEl){ fotoAbsenEl.src = currentUser.fotoProfil; fotoAbsenEl.style.display = 'block'; }
     }
     document.getElementById('bottomNav').classList.remove('hidden');
     loadProfil();
+    updateSyncCard();
   } else {
     showPage('login');
   }
   updateJam();
   setInterval(updateJam, 1000);
+}
+
+function initTheme(){
+  const theme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('btnDarkMode');
+  if(btn) btn.textContent = theme === 'dark'? '☀️' : '🌙';
+}
+
+function toggleDarkMode(){
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark'? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('btnDarkMode').textContent = next === 'dark'? '☀️' : '🌙';
+}
+
+function checkOfflineStatus(){
+  if(!navigator.onLine) document.getElementById('offlineBadge').classList.add('active');
+  else document.getElementById('offlineBadge').classList.remove('active');
+}
+
+function updateSyncCard(){
+  const card = document.getElementById('syncCard');
+  const text = document.getElementById('syncText');
+  if(offlineQueue.length > 0){
+    card.style.display = 'block';
+    text.textContent = `Ada ${offlineQueue.length} data offline`;
+  } else {
+    card.style.display = 'none';
+  }
+}
+
+async function syncOfflineData(){
+  if(offlineQueue.length === 0) return;
+  document.getElementById('offlineBadge').classList.remove('active');
+  showLoading(true);
+  
+  let sukses = 0;
+  for(let i = offlineQueue.length - 1; i >= 0; i--){
+    try{
+      const res = await fetch(GAS_URL, {method:'POST', body:JSON.stringify(offlineQueue[i])});
+      const h = await res.json();
+      if(h.status === 'sukses'){
+        offlineQueue.splice(i, 1);
+        sukses++;
+      }
+    }catch(e){
+      console.log('Sync gagal:', e);
+    }
+  }
+  
+  localStorage.setItem('offlineAbsen', JSON.stringify(offlineQueue));
+  updateSyncCard();
+  showLoading(false);
+  if(sukses > 0){
+    showNotif(`${sukses} data offline berhasil disync`, false);
+    playTing();
+  }
 }
 
 function updateJam(){
@@ -49,6 +121,7 @@ document.getElementById('btnLogin').onclick = async () => {
     return;
   }
 
+  showLoading(true);
   btn.disabled = true;
   btn.textContent = 'Memproses...';
   status.classList.add('hidden');
@@ -64,10 +137,12 @@ document.getElementById('btnLogin').onclick = async () => {
       currentUser = hasil.data;
       localStorage.setItem('userPamili', JSON.stringify(currentUser));
       document.getElementById('namaKaryawan').textContent = currentUser.nama;
+      document.getElementById('namaAbsen').textContent = currentUser.nama;
       const fotoEl = document.getElementById('fotoProfil');
-      if(currentUser.fotoProfil && fotoEl){
-        fotoEl.src = currentUser.fotoProfil;
-        fotoEl.style.display = 'block';
+      const fotoAbsenEl = document.getElementById('fotoProfilAbsen');
+      if(currentUser.fotoProfil){
+        if(fotoEl){ fotoEl.src = currentUser.fotoProfil; fotoEl.style.display = 'block'; }
+        if(fotoAbsenEl){ fotoAbsenEl.src = currentUser.fotoProfil; fotoAbsenEl.style.display = 'block'; }
       }
       showPage('home');
       document.getElementById('bottomNav').classList.remove('hidden');
@@ -80,15 +155,22 @@ document.getElementById('btnLogin').onclick = async () => {
     status.className = 'status gagal';
     status.classList.remove('hidden');
   } finally {
+    showLoading(false);
     btn.disabled = false;
     btn.textContent = 'Login';
   }
 };
 
+function showLoading(show){
+  document.getElementById('loadingOverlay').classList.toggle('active', show);
+}
+
 function logout(){
-  localStorage.removeItem('userPamili');
-  currentUser = null;
-  location.reload();
+  if(confirm('Yakin mau logout?')){
+    localStorage.removeItem('userPamili');
+    currentUser = null;
+    location.reload();
+  }
 }
 
 function showPage(page){
@@ -104,62 +186,68 @@ function showPage(page){
   }
   if(page==='rekap'){
     document.querySelectorAll('.nav-item')[2].classList.add('active');
-    loadRekap();
+    loadRekapBulanan();
   }
+  
+  if(page!== 'absensi') stopKamera();
 }
 
 async function cekStatusHariIni(){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:31})
-  });
-  const hasil = await res.json();
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:31})
+    });
+    const hasil = await res.json();
 
-  const btn = document.getElementById('btnAksiUtama');
-  const im = document.getElementById('itemMasuk');
-  const ip = document.getElementById('itemPulang');
+    const btn = document.getElementById('btnAksiUtama');
+    const im = document.getElementById('itemMasuk');
+    const ip = document.getElementById('itemPulang');
 
-  im.classList.remove('active','done');
-  ip.classList.remove('active','done');
-  btn.disabled = false;
+    im.classList.remove('active','done');
+    ip.classList.remove('active','done');
+    btn.disabled = false;
 
-  if(hasil.status==='sukses' && hasil.data.length > 0){
-    const tglHariIni = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
-    const d = hasil.data.find(x => x.tanggal === tglHariIni);
+    if(hasil.status==='sukses' && hasil.data.length > 0){
+      const tglHariIni = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const d = hasil.data.find(x => x.tanggal === tglHariIni);
 
-    if(d && d.masuk!=='-'){
-      im.classList.add('done');
-      document.getElementById('waktuMasuk').textContent = d.masuk;
-      if(d.pulang!=='-'){
-        ip.classList.add('done');
-        document.getElementById('waktuPulang').textContent = d.pulang;
-        btn.disabled = true;
-        document.getElementById('judulAksi').textContent = 'SELESAI';
-        document.getElementById('subAksi').textContent = 'Absen hari ini lengkap';
-        document.getElementById('iconAksi').textContent = 'check_circle';
-        btn.dataset.tipe = 'done';
+      if(d && d.masuk!=='-'){
+        im.classList.add('done');
+        document.getElementById('waktuMasuk').textContent = d.masuk;
+        if(d.pulang!=='-'){
+          ip.classList.add('done');
+          document.getElementById('waktuPulang').textContent = d.pulang;
+          btn.disabled = true;
+          document.getElementById('judulAksi').textContent = 'SELESAI';
+          document.getElementById('subAksi').textContent = 'Absen hari ini lengkap';
+          document.getElementById('iconAksi').textContent = 'check_circle';
+          btn.dataset.tipe = 'done';
+        } else {
+          ip.classList.add('active');
+          btn.dataset.tipe = 'out';
+          document.getElementById('judulAksi').textContent = 'PULANG';
+          document.getElementById('subAksi').textContent = 'Tap untuk absen pulang';
+          document.getElementById('iconAksi').textContent = 'logout';
+        }
       } else {
-        ip.classList.add('active');
-        btn.dataset.tipe = 'out';
-        document.getElementById('judulAksi').textContent = 'PULANG';
-        document.getElementById('subAksi').textContent = 'Tap untuk absen pulang';
-        document.getElementById('iconAksi').textContent = 'logout';
+        im.classList.add('active');
+        document.getElementById('waktuMasuk').textContent = 'Belum absen';
+        document.getElementById('waktuPulang').textContent = 'Belum absen';
+        btn.dataset.tipe = 'in';
+        document.getElementById('judulAksi').textContent = 'MASUK';
+        document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
+        document.getElementById('iconAksi').textContent = 'login';
       }
     } else {
       im.classList.add('active');
-      document.getElementById('waktuMasuk').textContent = 'Belum absen';
-      document.getElementById('waktuPulang').textContent = 'Belum absen';
       btn.dataset.tipe = 'in';
       document.getElementById('judulAksi').textContent = 'MASUK';
       document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
       document.getElementById('iconAksi').textContent = 'login';
     }
-  } else {
-    im.classList.add('active');
-    btn.dataset.tipe = 'in';
-    document.getElementById('judulAksi').textContent = 'MASUK';
-    document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
-    document.getElementById('iconAksi').textContent = 'login';
+  }catch(e){
+    console.error('Cek status error:', e);
   }
 }
 
@@ -191,8 +279,8 @@ async function bukaKameraAbsen(tipe){
 function startWatermark(){
   const updateWM = () => {
     const n = new Date();
-    document.getElementById('wmJamBox').textContent = n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}).replace(':','.');
-    document.getElementById('wmTanggal').textContent = n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('wmJamBox').textContent = n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}).replace(':','.');
+    document.getElementById('wmTanggal').textContent = n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Jakarta'});
   };
   updateWM();
   window.wmInterval = setInterval(updateWM, 1000);
@@ -200,8 +288,8 @@ function startWatermark(){
   navigator.geolocation.getCurrentPosition(p=>{
     document.getElementById('wmGps').textContent = `${Math.abs(p.coords.latitude).toFixed(6)}°S, ${Math.abs(p.coords.longitude).toFixed(6)}°E`;
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`)
- .then(r=>r.json())
- .then(d=>{document.getElementById('wmAlamat').textContent = d.display_name||''});
+.then(r=>r.json())
+.then(d=>{document.getElementById('wmAlamat').textContent = d.display_name||''});
   });
 }
 
@@ -252,11 +340,25 @@ async function kirimAbsenCepat(tipe, foto){
     action:'absen',
     nama:currentUser.nama,
     tipe,
-    jam:new Date().toLocaleTimeString('id-ID',{hour12:false}),
+    jam:new Date().toLocaleTimeString('id-ID',{hour12:false,timeZone:'Asia/Jakarta'}),
     lat:gps.lat,
     lng:gps.lng,
     foto
   };
+
+  if(!navigator.onLine){
+    offlineQueue.push({...data, timestamp: Date.now()});
+    localStorage.setItem('offlineAbsen', JSON.stringify(offlineQueue));
+    updateSyncCard();
+    showNotif('Disimpan offline. Akan dikirim otomatis saat online', false);
+    document.getElementById('offlineBadge').classList.add('active');
+    setTimeout(()=>{
+      cekStatusHariIni();
+      document.getElementById('tombolUtamaAbsen').classList.remove('hidden');
+      document.getElementById('preview').classList.add('hidden');
+    }, 800);
+    return;
+  }
 
   try{
     const res = await fetch(GAS_URL,{method:'POST', body:JSON.stringify(data)});
@@ -290,195 +392,122 @@ function showNotif(txt, err=false, load=false){
   if(!load) setTimeout(()=>n.classList.add('hidden'), 3000);
 }
 
-function loadRekap(){
-  const d=7;
-  callAPI('rekap',{nama:currentUser.nama,jumlahHari:d}).then(r=>{
-    if(r.status=='sukses'){
-      rekapCache=r.data;
-      let totalMasuk=0,totalPulang=0,totalHadir=0,totalMenitKerja=0;
-      
-      function hitungDurasi(jamMasuk, jamPulang){
-        if(jamMasuk=='-' || jamPulang=='-') return '-';
-        const [h1,m1] = jamMasuk.split(':').map(Number);
-        const [h2,m2] = jamPulang.split(':').map(Number);
-        const menit1 = h1*60 + m1;
-        const menit2 = h2*60 + m2;
-        const selisih = menit2 - menit1;
-        if(selisih <= 0) return '-';
-        const jam = Math.floor(selisih/60);
-        const menit = selisih%60;
-        return `${jam}j ${menit}m`;
-      }
-      
-      function menitKeAngka(jamMasuk, jamPulang){
-        if(jamMasuk=='-' || jamPulang=='-') return 0;
-        const [h1,m1] = jamMasuk.split(':').map(Number);
-        const [h2,m2] = jamPulang.split(':').map(Number);
-        return (h2*60+m2) - (h1*60+m1);
-      }
-      
-      rekapCache.forEach(x=>{
-        if(x.masuk!='-') totalMasuk++;
-        if(x.pulang!='-') totalPulang++;
-        if(x.masuk!='-') totalHadir++;
-        totalMenitKerja += menitKeAngka(x.masuk, x.pulang);
-      });
-      
-      document.getElementById('totalMasuk').textContent=totalHadir;
-      document.getElementById('totalPulang').textContent=totalPulang;
-      
-      const totalJam = Math.floor(totalMenitKerja/60);
-      const sisaMenit = totalMenitKerja%60;
-      const rataMenit = totalHadir>0? Math.floor(totalMenitKerja/totalHadir) : 0;
-      const rataJam = Math.floor(rataMenit/60);
-      const rataMenitSisa = rataMenit%60;
-      
-      let html = `
-        <div style="background:#E8F5E9;border-radius:12px;padding:12px;margin:16px 0;text-align:center">
-          <div style="font-size:13px;color:#2E7D32;margin-bottom:4px">Total Jam Kerja</div>
-          <div style="font-size:24px;font-weight:700;color:#1B5E20">${totalJam}j ${sisaMenit}m</div>
-          <div style="font-size:12px;color:#388E3C;margin-top:4px">Rata-rata: ${rataJam}j ${rataMenitSisa}m/hari</div>
-        </div>
-        
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <thead>
-              <tr style="background:#0B63F3;color:#fff">
-                <th style="padding:12px;text-align:left;border-radius:8px 0 0 0">Tanggal</th>
-                <th style="padding:12px;text-align:center">Hari</th>
-                <th style="padding:12px;text-align:center">Masuk</th>
-                <th style="padding:12px;text-align:center">Pulang</th>
-                <th style="padding:12px;text-align:center;border-radius:0 8px 0 0">Durasi</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
-      
-      const hariList = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-      
-      rekapCache.forEach((x,i)=>{
-        const tgl = x.tanggal.split('/');
-        const date = new Date(tgl[2],tgl[1]-1,tgl[0]);
-        const hari = hariList[date.getDay()];
-        const isWeekend = date.getDay()==0;
-        const durasi = hitungDurasi(x.masuk, x.pulang);
-        
-        const bgColor = isWeekend? '#FFF3E0' : (i%2==0? '#fff' : '#F8F9FA');
-        const masukColor = x.masuk=='-'? '#999' : '#198754';
-        const pulangColor = x.pulang=='-'? '#999' : '#DC3545';
-        const durasiColor = durasi=='-'? '#999' : '#0B63F3';
-        
-        html += `
-          <tr style="background:${bgColor};border-bottom:1px solid #eee">
-            <td style="padding:12px;font-weight:600">${x.tanggal}</td>
-            <td style="padding:12px;text-align:center;color:${isWeekend?'#F57C00':'#666'}">${hari}</td>
-            <td style="padding:12px;text-align:center;font-weight:600;color:${masukColor}">
-              ${x.masuk=='-'? '-' : x.masuk}
-            </td>
-            <td style="padding:12px;text-align:center;font-weight:600;color:${pulangColor}">
-              ${x.pulang=='-'? '-' : x.pulang}
-            </td>
-            <td style="padding:12px;text-align:center;font-weight:700;color:${durasiColor}">
-              ${durasi}
-            </td>
-          </tr>
-        `;
-      });
-      
-      html += `
-            </tbody>
-            <tfoot>
-              <tr style="background:#E3F2FD;font-weight:700">
-                <td colspan="4" style="padding:12px">Total Hadir: ${totalHadir} hari</td>
-                <td style="padding:12px;text-align:center">${totalJam}j ${sisaMenit}m</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      `;
-      
-      document.getElementById('rekapGrid').innerHTML=html;
-      tampilkanRekap(rekapCache);
-    }
-  });
+// REKAP BULANAN - GANTI 7/14/30 HARI
+function gantiBulan(delta){
+  bulanAktif.setMonth(bulanAktif.getMonth() + delta);
+  loadRekapBulanan();
 }
 
-function tampilkanRekap(data){
-  const list = document.getElementById('rekapList');
-  const empty = document.getElementById('rekapEmpty');
-  if(!data.length){
-    list.innerHTML = '';
-    empty.classList.remove('hidden');
-    document.getElementById('totalMasuk').textContent = '0';
-    document.getElementById('totalPulang').textContent = '0';
-    return;
+async function loadRekapBulanan(){
+  showLoading(true);
+  const tahun = bulanAktif.getFullYear();
+  const bulan = bulanAktif.getMonth();
+  const namaBulan = bulanAktif.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  document.getElementById('namaBulan').textContent = namaBulan;
+  
+  const hariDalamBulan = new Date(tahun, bulan + 1, 0).getDate();
+  
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:60})
+    });
+    const h = await res.json();
+    
+    if(h.status=='sukses'){
+      rekapCache = h.data;
+      renderTabelBulanan(tahun, bulan, hariDalamBulan);
+    }
+  }catch(e){
+    console.error('Load rekap error:', e);
+    document.getElementById('rekapEmpty').classList.remove('hidden');
+  }finally{
+    showLoading(false);
   }
-  empty.classList.add('hidden');
-  let m = 0, p = 0;
-  data.forEach(d=>{
-    if(d.masuk!=='-') m++;
-    if(d.pulang!=='-') p++;
-  });
-  document.getElementById('totalMasuk').textContent = m;
-  document.getElementById('totalPulang').textContent = p;
+}
 
-  list.innerHTML = data.map(d=>{
-    const lengkap = d.masuk!=='-' && d.pulang!=='-';
-    const setengah = d.masuk!=='-' && d.pulang==='-';
-    const cls = lengkap?'lengkap':setengah?'setengah':'';
-    return `<div class="rekap-item-soft">
-      <div>
-        <div class="rekap-tgl-soft">Tanggal ${d.tanggal}</div>
-        <div class="rekap-jam-soft">
-          <div class="jam-badge in"><span class="material-icons-round">login</span>${d.masuk}</div>
-          <div class="jam-badge out"><span class="material-icons-round">logout</span>${d.pulang}</div>
-        </div>
-      </div>
-      <div class="status-hari ${cls}"></div>
-    </div>`;
-  }).join('');
+function renderTabelBulanan(tahun, bulan, jumlahHari){
+  const tbody = document.getElementById('rekapBody');
+  const hariList = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  let html = '';
+  let totalHadir = 0;
+  let totalMenitKerja = 0;
+  
+  for(let tgl = 1; tgl <= jumlahHari; tgl++){
+    const date = new Date(tahun, bulan, tgl);
+    const tglStr = `${String(tgl).padStart(2,'0')}/${String(bulan+1).padStart(2,'0')}/${tahun}`;
+    const hari = hariList[date.getDay()];
+    const isWeekend = date.getDay() === 0;
+    
+    const data = rekapCache.find(x => x.tanggal === tglStr) || {masuk:'-', pulang:'-'};
+    const durasi = hitungDurasi(data.masuk, data.pulang);
+    
+    if(data.masuk!== '-') totalHadir++;
+    totalMenitKerja += menitKeAngka(data.masuk, data.pulang);
+    
+    const rowClass = isWeekend? 'weekend' : '';
+    const hariClass = isWeekend? 'hari-min' : '';
+    
+    html += `
+      <tr class="${rowClass}">
+        <td>${tglStr}</td>
+        <td class="${hariClass}">${hari}</td>
+        <td style="color:${data.masuk==='-'?'var(--text2)':'#198754'};font-weight:600">${data.masuk}</td>
+        <td style="color:${data.pulang==='-'?'var(--text2)':'#DC3545'};font-weight:600">${data.pulang}</td>
+        <td style="color:${durasi==='-'?'var(--text2)':'var(--primary)'};font-weight:700">${durasi}</td>
+      </tr>
+    `;
+  }
+  
+  tbody.innerHTML = html;
+  
+  const totalJam = Math.floor(totalMenitKerja/60);
+  const sisaMenit = totalMenitKerja%60;
+  document.getElementById('totalMasuk').textContent = totalHadir;
+  document.getElementById('totalJam').textContent = `${totalJam}j ${sisaMenit}m`;
+  
+  document.getElementById('rekapEmpty').classList.toggle('hidden', totalHadir > 0);
+}
+
+function hitungDurasi(jamMasuk, jamPulang){
+  if(jamMasuk=='-' || jamPulang=='-') return '-';
+  const [h1,m1] = jamMasuk.split(':').map(Number);
+  const [h2,m2] = jamPulang.split(':').map(Number);
+  const menit1 = h1*60 + m1;
+  const menit2 = h2*60 + m2;
+  const selisih = menit2 - menit1;
+  if(selisih <= 0) return '-';
+  const jam = Math.floor(selisih/60);
+  const menit = selisih%60;
+  return `${jam}j ${menit}m`;
+}
+
+function menitKeAngka(jamMasuk, jamPulang){
+  if(jamMasuk=='-' || jamPulang=='-') return 0;
+  const [h1,m1] = jamMasuk.split(':').map(Number);
+  const [h2,m2] = jamPulang.split(':').map(Number);
+  return (h2*60+m2) - (h1*60+m1);
 }
 
 async function loadProfil(){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'getProfil', nama:currentUser.nama})
-  });
-  const h = await res.json();
-  if(h.status==='sukses'){
-    const fotoEl = document.getElementById('fotoProfil');
-    if(h.data.fotoProfil && fotoEl){
-      const u = h.data.fotoProfil + '?t=' + Date.now();
-      fotoEl.src = u;
-      fotoEl.style.display = 'block';
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'getProfil', nama:currentUser.nama})
+    });
+    const h = await res.json();
+    if(h.status==='sukses'){
+      const fotoEl = document.getElementById('fotoProfil');
+      const fotoAbsenEl = document.getElementById('fotoProfilAbsen');
+      if(h.data.fotoProfil){
+        const u = h.data.fotoProfil + '?t=' + Date.now();
+        if(fotoEl){ fotoEl.src = u; fotoEl.style.display = 'block'; }
+        if(fotoAbsenEl){ fotoAbsenEl.src = u; fotoAbsenEl.style.display = 'block'; }
+      }
     }
+  }catch(e){
+    console.error('Load profil error:', e);
   }
-}
-
-async function callAPI(action,data){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action,...data})
-  });
-  return await res.json();
-}
-
-document.querySelectorAll('.filter-btn').forEach(b=>{
-  b.onclick = () => {
-    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const hari = parseInt(b.dataset.range);
-    loadRekapCustom(hari);
-  };
-});
-
-async function loadRekapCustom(hari){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:hari})
-  });
-  const h = await res.json();
-  if(h.status==='sukses') tampilkanRekap(h.data);
 }
 
 function playTing(){
