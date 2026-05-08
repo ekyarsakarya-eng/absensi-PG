@@ -2,364 +2,266 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#C4A98A">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B63F3">
 <title>Absensi Pamili Garmen</title>
-<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAVklEQVQ4jWNgGAXDFmzatMmKAQ38P8OQhEMw/v//P4zJgFmQ5z8DA4N/BhJg/2HwD0L4HxAwP5zAmDABiI2ZgYQJw/8PAyDD/8OEAYf/4yAFAwMDAwMDAK3hBzX5xO3QAAAAAElFTkSuQmCC">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  /* SOFT DOVE CERAH MATTE V7.2 */
-  --primary:#C4A98A;--primary-light:#D9C4A9;--primary-dark:#A68B6C;
-  --secondary:#C9D4B8;--accent:#E4D4C0;--dove:#F0E6D9;--sage:#D9E4C9;
-  --cream:#FDFBF8;--sand:#F5EDE3;
-  --danger:#E09A89;--warning:#EDC48E;--success:#AAB89D;
-  --bg:#FEFCFA;--surface:#FFFFFF;--surface-alt:#FAF7F4;
-  --text:#5A4F45;--text-light:#8A7F73;--border:#EDE5DD;
-  --shadow:rgba(196,169,138,.14);--radius:20px;--radius-sm:16px
+  --bg:#f5f5f5;--card:#fff;--text:#222;--text2:#666;--border:#E0E0E0;--primary:#0B63F3;--shadow:0 2px 8px rgba(0,0,0,.08);
 }
 [data-theme="dark"]{
-  --bg:#332E29;--surface:#403931;--surface-alt:#4A423A;
-  --text:#F8F5F1;--text-light:#D4CCC2;--border:#5A5147;
-  --shadow:rgba(0,0,0,.35);--primary:#D9C4A9;--primary-light:#E4D4C0
+  --bg:#121212;--card:#1e1e1e;--text:#eee;--text2:#aaa;--border:#333;--primary:#4A90E2;--shadow:0 2px 8px rgba(0,0,0,.3);
 }
-html,body{height:100%;overflow-x:hidden;font-family:'Poppins','Inter',sans-serif;background:var(--bg);color:var(--text);transition:.4s}
-body{font-size:14px;line-height:1.6;letter-spacing:.2px}
-.app-container{max-width:480px;margin:0 auto;min-height:100vh;background:var(--surface);position:relative;box-shadow:0 4px 24px var(--shadow)}
-.header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 16px var(--shadow)}
-.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:19px;color:white;letter-spacing:1px}
-.logo img{width:40px;height:40px;border-radius:14px;background:white;padding:6px;box-shadow:0 3px 10px rgba(0,0,0,.2)}
-.header-actions{display:flex;gap:10px}
-.icon-btn{width:46px;height:46px;border-radius:16px;border:none;background:rgba(255,255,255,.2);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.3s;backdrop-filter:blur(12px)}
-.icon-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.08) rotate(8deg)}
-.icon-btn:active{transform:scale(.95)}
-.page{display:none;min-height:calc(100vh - 80px - 75px);padding-bottom:95px;animation:fadeInUp.5s ease}
-.page.active{display:block}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.content{padding:24px}
-.card{background:var(--surface);border-radius:var(--radius);padding:26px;margin-bottom:22px;box-shadow:0 4px 16px var(--shadow);border:1px solid var(--border);transition:.4s}
-.card:hover{box-shadow:0 8px 28px var(--shadow);transform:translateY(-4px)}
-.card-accent{background:linear-gradient(135deg,var(--dove) 0%,var(--sand) 100%);border:none}
-.btn{width:100%;padding:18px 28px;border:none;border-radius:var(--radius-sm);font-family:'Poppins';font-size:14px;font-weight:700;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:12px;text-transform:uppercase;letter-spacing:1.2px;position:relative;overflow:hidden}
-.btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.3);transform:translate(-50%,-50%);transition:.7s}
-.btn:active::before{width:400px;height:400px}
-.btn:disabled{opacity:.3;cursor:not-allowed}
-.btn-primary{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:white;box-shadow:0 6px 20px rgba(196,169,138,.4)}
-.btn-primary:hover:not(:disabled){box-shadow:0 10px 30px rgba(196,169,138,.5);transform:translateY(-4px)}
-.btn-success{background:linear-gradient(135deg,var(--success) 0%,var(--sage) 100%);color:white;box-shadow:0 6px 20px rgba(170,184,157,.4)}
-.btn-danger{background:linear-gradient(135deg,var(--danger) 0%,#E8A99A 100%);color:white}
-.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
-.btn-outline:hover{background:var(--surface-alt)}
-.input-group{margin-bottom:22px;position:relative}
-.input-group label{display:block;font-size:11px;font-weight:700;color:var(--text-light);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.3px}
-.input-field{width:100%;padding:16px 22px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--surface-alt);color:var(--text);transition:.3s;font-weight:500}
-.input-field:focus{outline:none;border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 6px rgba(196,169,138,.15)}
-.input-field::placeholder{color:var(--text-light);opacity:.5}
-.input-wrapper{position:relative}
-.input-wrapper .input-field{padding-right:55px}
-.eye-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-light);cursor:pointer;padding:10px;display:flex;align-items:center;justify-content:center;transition:.2s;border-radius:10px}
-.eye-toggle:hover{background:var(--surface);color:var(--primary)}
-.eye-toggle .material-icons-outlined{font-size:23px}
-.select-wrapper{position:relative}
-.select-field{width:100%;padding:14px 45px 14px 18px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:'Poppins';background:var(--surface-alt);color:var(--text);transition:.3s;font-weight:600;appearance:none;cursor:pointer}
-.select-field:focus{outline:none;border-color:var(--primary);background:var(--surface)}
-.select-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none}
-.status{display:flex;align-items:center;gap:12px;padding:16px 22px;border-radius:var(--radius-sm);font-size:13px;margin:18px 0;font-weight:600;animation:slideIn.4s}
-@keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
-.status.loading{background:rgba(196,169,138,.18);color:var(--primary);border-left:4px solid var(--primary)}
-.status.sukses{background:rgba(170,184,157,.18);color:var(--success);border-left:4px solid var(--success)}
-.status.error{background:rgba(224,154,137,.18);color:var(--danger);border-left:4px solid var(--danger)}
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:14px 0;z-index:100;backdrop-filter:blur(24px);box-shadow:0 -4px 20px var(--shadow)}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;padding:8px;color:var(--text-light);cursor:pointer;transition:.3s;text-decoration:none;border:none;background:none;position:relative}
-.nav-item::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:4px;background:var(--primary);border-radius:0 0 5px 5px;transition:.3s}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background.3s,color.3s}
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);position:relative}
+.page{display:none!important;min-height:100vh;width:100%;position:absolute;top:0;left:0;background:var(--card)}
+.page.active{display:block!important}
+.header{background:linear-gradient(135deg,var(--primary),#4A90E2);color:#fff;padding:16px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;font-weight:600}
+.header p{font-size:13px;opacity:.9;margin-top:2px}
+.header-actions{display:flex;gap:12px;align-items:center}
+.icon-btn{background:rgba(255,255,255,.2);border:none;width:36px;height:36px;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.icon-btn:active{transform:scale(.9)}
+.content{padding:16px;padding-bottom:80px}
+.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:#28a745;color:#fff}
+.btn-danger{background:#dc3545;color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.form-group{margin-bottom:16px}
+.form-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:var(--bg);color:var(--text)}
+.form-group input:focus{outline:none;border-color:var(--primary);background:var(--card)}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:45px}
+.toggle-pass{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:22px;color:var(--text2);user-select:none}
+.camera-container{position:relative;width:100%;max-width:400px;margin:0 auto}
+#video{width:100%;border-radius:12px;background:#000}
+#canvas{display:none}
+.camera-controls{display:flex;gap:12px;margin-top:16px}
+.camera-controls button{flex:1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:16px;border-radius:12px}
+.stat-card.blue{background:linear-gradient(135deg,var(--primary),#4A90E2)}
+.stat-card.green{background:linear-gradient(135deg,#28a745,#20c997)}
+.stat-label{font-size:12px;opacity:.9}
+.stat-value{font-size:28px;font-weight:700;margin-top:4px}
+.status{padding:12px;border-radius:8px;margin-top:16px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.status.gagal{background:#F8D7DA;color:#721C24}
+.status.sukses{background:#D4EDDA;color:#155724}
+.status.loading{background:#D1ECF1;color:#0C5460}
+.status.error{background:#F8D7DA;color:#721C24}
+[data-theme="dark"].status.gagal{background:#3a1f1f;color:#ff8a8a}
+[data-theme="dark"].status.sukses{background:#1f3a2a;color:#8affb0}
+[data-theme="dark"].status.loading{background:#1f2f3a;color:#8adfff}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;max-width:480px;margin:0 auto;z-index:100}
+.nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;transition:all.3s}
 .nav-item.active{color:var(--primary)}
-.nav-item.active::before{width:50px}
-.nav-item .material-icons-outlined{font-size:28px;transition:.3s}
-.nav-item.active .material-icons-outlined{transform:scale(1.2)}
-.nav-item span{font-size:11px;font-weight:700;letter-spacing:.5px}
-.badge{position:absolute;top:4px;right:calc(50% - 26px);background:var(--danger);color:white;font-size:10px;padding:3px 8px;border-radius:14px;min-width:22px;text-align:center;font-weight:700}
-.profil-header{text-align:center;padding:40px 0;background:linear-gradient(135deg,var(--dove) 0%,var(--sand) 100%);margin:-26px -26px 26px;border-radius:var(--radius)}
-.profil-avatar{width:100px;height:100px;border-radius:50%;margin:0 auto 18px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:white;font-size:42px;font-weight:600;overflow:hidden;border:6px solid var(--surface);box-shadow:0 8px 24px var(--shadow)}
-.profil-avatar img{width:100%;height:100%;object-fit:cover}
-.profil-nama{font-size:26px;font-weight:700;margin-bottom:6px;color:var(--text)}
-.profil-username{font-size:14px;color:var(--text-light);font-weight:600}
-.info-row{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border)}
-.info-row:last-child{border-bottom:none}
-.info-label{font-size:12px;color:var(--text-light);font-weight:700;text-transform:uppercase;letter-spacing:.7px}
-.info-value{font-size:15px;color:var(--text);font-weight:600}
-.video-container{position:relative;width:100%;max-width:360px;margin:22px auto;border-radius:var(--radius);overflow:hidden;background:#000;box-shadow:0 8px 28px rgba(0,0,0,.3)}
-.video-container video{width:100%;display:block}
-.watermark-box{position:absolute;bottom:14px;left:14px;right:14px;background:rgba(90,79,69,.92);color:white;padding:14px;border-radius:14px;font-size:11px;line-height:1.7;backdrop-filter:blur(12px)}
-.watermark-row{display:flex;justify-content:space-between;margin:4px 0;font-weight:600}
-.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(90,79,69,.8);display:none;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(10px)}
-.loading-overlay.active{display:flex}
-.spinner{width:60px;height:60px;border:6px solid rgba(255,255,255,.2);border-top-color:var(--primary-light);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.rekap-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
-.rekap-table th{background:var(--surface-alt);padding:15px 12px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;color:var(--text-light);border-bottom:2px solid var(--border);letter-spacing:.7px}
-.rekap-table th:first-child{border-radius:12px 0 0 0}
-.rekap-table th:last-child{border-radius:0 12px 0 0}
-.rekap-table td{padding:15px 12px;border-bottom:1px solid var(--border);font-weight:600}
-.rekap-table tr:hover td{background:var(--surface-alt)}
-.rekap-table .weekend td{background:rgba(237,196,142,.12)}
-.rekap-table .hari-min td{background:rgba(224,154,137,.12)}
-.empty-state{text-align:center;padding:70px 20px;color:var(--text-light)}
-.empty-state .material-icons-outlined{font-size:90px;opacity:.12;margin-bottom:20px;color:var(--primary)}
+.nav-item:active{background:var(--bg)}
+.nav-icon{font-size:24px}
+.nav-label{font-size:11px;margin-top:2px}
 .hidden{display:none!important}
-.status-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:24px;font-size:12px;font-weight:700}
-.status-badge.sukses{background:rgba(170,184,157,.2);color:var(--success)}
-.status-badge.pending{background:rgba(237,196,142,.2);color:var(--warning)}
-.status-badge.locked{background:rgba(138,127,115,.2);color:var(--text-light)}
-.aktivitas-selesai{padding:40px;text-align:center}
-.aktivitas-selesai .material-icons-outlined{font-size:90px;color:var(--success);margin-bottom:20px;animation:bounce 1.3s}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
-.aktivitas-selesai h3{font-size:22px;margin-bottom:12px;color:var(--text);font-weight:700}
-.aktivitas-selesai p{color:var(--text-light);font-size:14px;line-height:1.8}
-@media (min-width:768px){
- .app-container{max-width:768px;box-shadow:0 8px 40px var(--shadow)}
- .content{padding:32px}
-}
+#page-login{background:var(--bg);display:flex;align-items:center;justify-content:center}
+#page-login.login-wrap{width:100%;max-width:360px;padding:20px}
+#page-login.card{padding:32px 24px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+#page-login h2{text-align:center;color:var(--primary);font-size:24px;font-weight:700;margin-bottom:8px}
+#page-login.subtitle{text-align:center;color:var(--text2);font-size:14px;margin-bottom:32px}
+#itemMasuk.active,#itemPulang.active,#homeItemMasuk.active,#homeItemPulang.active{border:2px solid var(--primary)}
+#itemMasuk.done,#itemPulang.done,#homeItemMasuk.done,#homeItemPulang.done{border:2px solid #28a745;background:#F0FFF4}
+[data-theme="dark"] #itemMasuk.done,[data-theme="dark"] #itemPulang.done,[data-theme="dark"] #homeItemMasuk.done,[data-theme="dark"] #homeItemPulang.done{background:#1f3a2a}
+.material-icons-round{font-family:'Material Icons Round';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
+.loading-overlay.active{display:flex}
+.spinner{width:40px;height:40px;border:4px solid #fff;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.offline-badge{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#ff9800;color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:200;display:none}
+.offline-badge.active{display:block}
+.rekap-table{width:100%;border-collapse:collapse;font-size:14px}
+.rekap-table thead tr{background:var(--primary);color:#fff}
+.rekap-table th{padding:12px;text-align:center}
+.rekap-table th:first-child{border-radius:8px 0 0 0;text-align:left}
+.rekap-table th:last-child{border-radius:0 8px 0 0}
+.rekap-table td{padding:12px;text-align:center;border-bottom:1px solid var(--border)}
+.rekap-table td:first-child{text-align:left;font-weight:600}
+.rekap-table tbody tr:nth-child(even){background:var(--bg)}
+.rekap-table.weekend{background:#FFF3E0}
+[data-theme="dark"].rekap-table.weekend{background:#3a2e1a}
+.rekap-table.hari-min{color:#F57C00;font-weight:600}
+.bulan-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.bulan-nav button{background:var(--primary);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
+.bulan-nav span{font-weight:600;font-size:16px}
 </style>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
-<div class="app-container">
-  <div class="header">
-    <div class="logo">
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23fff' d='M24 4L6 14v20l18 10 18-10V14L24 4z'/%3E%3Cpath fill='%23C4A98A' d='M24 12l-10 5.5v11L24 34l10-5.5v-11L24 12z'/%3E%3C/svg%3E" alt="Logo">
-      <span>PAMILI GARMEN</span>
-    </div>
-    <div class="header-actions">
-      <button class="icon-btn" id="btnDarkMode" onclick="toggleDarkMode()">
-        <span class="material-icons-outlined">dark_mode</span>
-      </button>
-    </div>
-  </div>
+<div class="offline-badge" id="offlineBadge">📡 Offline - Data akan disync otomatis</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
 
-  <!-- PAGE LOGIN -->
+<div id="app">
   <div class="page active" id="page-login">
-    <div class="content">
-      <div class="card" style="margin-top:70px">
-        <h2 style="margin-bottom:12px;font-weight:700;font-size:28px">Selamat Datang</h2>
-        <p style="color:var(--text-light);margin-bottom:36px;font-size:15px">Masuk untuk absen harian</p>
-        <div class="input-group">
-          <label>Username</label>
-          <input type="text" class="input-field" id="username" placeholder="Masukkan username" autocomplete="username">
-        </div>
-        <div class="input-group">
-          <label>Password</label>
-          <div class="input-wrapper">
-            <input type="password" class="input-field" id="password" placeholder="Masukkan password" autocomplete="current-password">
-            <button type="button" class="eye-toggle" onclick="togglePassword('password', this)">
-              <span class="material-icons-outlined">visibility_off</span>
-            </button>
+    <div class="login-wrap">
+      <div class="card">
+        <h2>PAMILI GARMEN</h2>
+        <p class="subtitle">SYSTEM ABSENSI KARYAWAN TERPADU</p>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="text" id="username" placeholder="Username" autocomplete="username">
           </div>
         </div>
-        <div class="status error hidden" id="loginStatus"></div>
-        <button class="btn btn-primary" id="btnLogin">
-          <span class="material-icons-outlined">login</span>
-          MASUK
-        </button>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+            <span class="toggle-pass" onclick="togglePassword()">👁️‍🗨️</span>
+          </div>
+        </div>
+        <button id="btnLogin" class="btn btn-primary">Login</button>
+        <div id="loginStatus" class="status gagal hidden"></div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE HOME -->
   <div class="page" id="page-home">
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <img id="fotoProfil" src="" style="width:48px;height:48px;border-radius:50%;background:#fff;display:none;object-fit:cover">
+        <div>
+          <h1>Halo, <span id="namaKaryawan">User</span>!</h1>
+          <p id="tglSekarang">Loading...</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="toggleDarkMode()" id="btnDarkMode">🌙</button>
+        <button class="icon-btn" onclick="showPage('profil')"><span class="material-icons-round">person</span></button>
+        <button class="icon-btn" onclick="logout()"><span class="material-icons-round">logout</span></button>
+      </div>
+    </div>
     <div class="content">
-      <div class="card card-accent">
-        <div style="display:flex;align-items:center;gap:18px;margin-bottom:22px">
-          <img id="fotoProfil" src="" style="width:70px;height:70px;border-radius:50%;display:none;object-fit:cover;border:4px solid var(--surface);box-shadow:0 4px 14px var(--shadow)">
-          <div style="flex:1">
-            <div style="font-size:12px;color:var(--text-light);font-weight:700;letter-spacing:1px">SELAMAT DATANG</div>
-            <div style="font-size:24px;font-weight:700" id="namaKaryawan">-</div>
-          </div>
-          <div id="offlineBadge" class="badge hidden" style="position:relative;top:0;right:0">Offline</div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px">
-          <div style="text-align:center;padding:18px;background:var(--surface);border-radius:var(--radius-sm);box-shadow:0 3px 10px var(--shadow)">
-            <div style="font-size:30px;font-weight:700;color:var(--primary)" id="jamSekarang">--:--:--</div>
-            <div style="font-size:10px;color:var(--text-light);margin-top:6px;font-weight:700;letter-spacing:.7px">JAM SEKARANG</div>
-          </div>
-          <div style="text-align:center;padding:18px;background:var(--surface);border-radius:var(--radius-sm);box-shadow:0 3px 10px var(--shadow)">
-            <div style="font-size:17px;font-weight:700" id="tglSekarang">-</div>
-            <div style="font-size:10px;color:var(--text-light);margin-top:6px;font-weight:700;letter-spacing:.7px">TANGGAL</div>
-          </div>
-        </div>
+      <div class="card">
+        <h3 style="margin-bottom:8px">Jam Sekarang</h3>
+        <div id="jamSekarang" style="font-size:48px;font-weight:700;text-align:center;margin:20px 0">--:--:--</div>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:22px;font-size:18px;font-weight:700">Aktivitas Hari Ini</h3>
-        <div id="aktivitasHariIni">
-          <div class="info-row">
-            <span class="info-label">Absen Masuk</span>
-            <span class="info-value" id="homeWaktuMasuk">-</span>
+        <h3 style="margin-bottom:12px">Status Hari Ini</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div id="homeItemMasuk" class="card" style="margin:0;padding:12px;text-align:center">
+            <div style="font-size:12px;color:var(--text2)">Masuk</div>
+            <div id="homeWaktuMasuk" style="font-weight:600;margin-top:4px;font-size:18px">-</div>
           </div>
-          <div class="info-row">
-            <span class="info-label">Absen Pulang</span>
-            <span class="info-value" id="homeWaktuPulang">-</span>
+          <div id="homeItemPulang" class="card" style="margin:0;padding:12px;text-align:center">
+            <div style="font-size:12px;color:var(--text2)">Pulang</div>
+            <div id="homeWaktuPulang" style="font-weight:600;margin-top:4px;font-size:18px">-</div>
           </div>
         </div>
-        <button class="btn btn-primary" style="margin-top:22px" id="btnBukaAbsen" onclick="showPage('absensi')">
-          <span class="material-icons-outlined">camera_alt</span>
-          BUKA ABSENSI
+        <button id="btnAbsenCepat" class="btn btn-primary" onclick="absenCepatDariHome()">
+          <span class="material-icons-round" id="iconAbsenCepat">login</span>
+          <span id="textAbsenCepat">ABSEN MASUK</span>
         </button>
       </div>
 
       <div class="card" id="syncCard" style="display:none">
-        <div style="display:flex;align-items:center;gap:18px">
-          <span class="material-icons-outlined" style="color:var(--warning);font-size:44px">cloud_off</span>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="material-icons-round" style="color:#ff9800">cloud_upload</span>
           <div style="flex:1">
-            <div style="font-weight:700;margin-bottom:6px;font-size:16px">Data Offline Tersimpan</div>
-            <div style="font-size:13px;color:var(--text-light)" id="syncText">-</div>
+            <div style="font-weight:600" id="syncText">Ada 0 data offline</div>
+            <div style="font-size:12px;color:var(--text2)">Klik untuk sync sekarang</div>
           </div>
+          <button class="btn btn-primary" style="width:auto;padding:8px 16px" onclick="syncOfflineData()">Sync</button>
         </div>
-        <button class="btn btn-outline" style="margin-top:18px" onclick="syncOfflineData()">
-          <span class="material-icons-outlined">sync</span>
-          SYNC SEKARANG
-        </button>
       </div>
     </div>
   </div>
-<!-- PAGE ABSENSI -->
+
   <div class="page" id="page-absensi">
+    <div class="header">
+      <h1>Absensi</h1>
+      <p id="tglAbsen">Loading...</p>
+    </div>
     <div class="content">
       <div class="card">
-        <div style="display:flex;align-items:center;gap:18px;margin-bottom:22px">
-          <img id="fotoProfilAbsen" src="" style="width:58px;height:58px;border-radius:50%;display:none;object-fit:cover;border:3px solid var(--border)">
-          <div style="flex:1">
-            <div style="font-size:13px;color:var(--text-light);font-weight:600">Absen untuk</div>
-            <div style="font-size:19px;font-weight:700" id="namaAbsen">-</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:26px;font-weight:700;color:var(--primary)" id="jamAbsen">--:--:--</div>
-            <div style="font-size:11px;color:var(--text-light);font-weight:600" id="tglAbsen">-</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+          <img id="fotoProfilAbsen" src="" style="width:56px;height:56px;border-radius:50%;background:var(--bg);display:none;object-fit:cover">
+          <div>
+            <div style="font-weight:600" id="namaAbsen">-</div>
+            <div style="font-size:13px;color:var(--text2)" id="jabatanAbsen">Karyawan</div>
           </div>
         </div>
-      </div>
-
-      <div class="card" id="cardStatusAbsen">
-        <h3 style="margin-bottom:22px;font-size:18px;font-weight:700">Status Absensi Hari Ini</h3>
-        <div id="statusAbsenHariIni">
-          <div class="info-row" id="itemMasuk">
-            <span class="info-label">
-              <span class="material-icons-outlined" style="font-size:21px;vertical-align:middle;margin-right:8px">login</span>
-              Masuk
-            </span>
-            <span class="info-value" id="waktuMasuk">Belum absen</span>
+        
+        <div id="tombolUtamaAbsen">
+          <div style="text-align:center;margin-bottom:20px">
+            <div id="iconAksi" class="material-icons-round" style="font-size:64px;color:var(--primary)">login</div>
+            <h3 id="judulAksi" style="margin:16px 0 8px">MASUK</h3>
+            <p id="subAksi" style="color:var(--text2);font-size:14px">Tap untuk absen masuk</p>
           </div>
-          <div class="info-row" id="itemPulang">
-            <span class="info-label">
-              <span class="material-icons-outlined" style="font-size:21px;vertical-align:middle;margin-right:8px">logout</span>
-              Pulang
-            </span>
-            <span class="info-value" id="waktuPulang">Belum absen</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" id="tombolUtamaAbsen">
-        <button class="btn btn-primary" id="btnAksiUtama" data-tipe="in">
-          <span class="material-icons-outlined" id="iconAksi">login</span>
-          <div style="text-align:left">
-            <div style="font-size:19px" id="judulAksi">ABSEN MASUK</div>
-            <div style="font-size:11px;opacity:.9;font-weight:500;text-transform:none" id="subAksi">Tap untuk mulai</div>
-          </div>
-        </button>
-      </div>
-
-      <div class="card hidden" id="aktivitasSelesaiCard">
-        <div class="aktivitas-selesai">
-          <span class="material-icons-outlined">task_alt</span>
-          <h3>Absensi Hari Ini Selesai</h3>
-          <p>Kamu sudah absen masuk & pulang hari ini.<br>Silakan absen lagi besok.</p>
-        </div>
-      </div>
-
-      <div class="card hidden" id="kameraArea">
-        <div class="video-container">
-          <video id="video" autoplay playsinline></video>
-          <canvas id="canvas" style="display:none"></canvas>
-          <div class="watermark-box">
-            <div class="watermark-row">
-              <span id="wmJamBox">--:--:--</span>
-              <span id="wmTanggal">-</span>
+          <div id="jamAbsen" style="text-align:center;font-size:32px;font-weight:700;margin-bottom:20px">--:--:--</div>
+          <button id="btnAksiUtama" class="btn btn-primary" data-tipe="in">ABSEN SEKARANG</button>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
+            <div id="itemMasuk" class="card" style="margin:0;padding:12px;text-align:center">
+              <div style="font-size:12px;color:var(--text2)">Masuk</div>
+              <div id="waktuMasuk" style="font-weight:600;margin-top:4px">Belum absen</div>
             </div>
-            <div class="watermark-row">
-              <span id="wmGps">Mencari GPS...</span>
-            </div>
-            <div class="watermark-row">
-              <span id="wmAlamat" style="font-size:10px">-</span>
+            <div id="itemPulang" class="card" style="margin:0;padding:12px;text-align:center">
+              <div style="font-size:12px;color:var(--text2)">Pulang</div>
+              <div id="waktuPulang" style="font-weight:600;margin-top:4px">Belum absen</div>
             </div>
           </div>
         </div>
-        <img id="preview" class="hidden" style="width:100%;border-radius:var(--radius-sm);margin-top:18px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px">
-          <button class="btn btn-outline" id="btnBatalFoto">
-            <span class="material-icons-outlined">close</span>
-            BATAL
-          </button>
-          <button class="btn btn-success" id="btnAmbilFoto">
-            <span class="material-icons-outlined">camera_alt</span>
-            AMBIL FOTO
-          </button>
+        
+        <div id="kameraArea" class="hidden">
+          <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;padding:8px;border-radius:6px;font-size:11px;line-height:1.4">
+              <div id="wmJamBox" style="font-weight:700;font-size:13px">00.00</div>
+              <div id="wmTanggal"></div>
+              <div id="wmGps"></div>
+              <div id="wmAlamat" style="max-width:200px"></div>
+            </div>
+          </div>
+          <div class="camera-controls">
+            <button id="btnAmbilFoto" class="btn btn-success">Ambil Foto</button>
+            <button id="btnBatalFoto" class="btn btn-danger">Batal</button>
+          </div>
         </div>
-      </div>
-
-      <div class="status hidden" id="notifAbsen">
-        <span class="material-icons-outlined" id="notifIcon">info</span>
-        <span id="notifText">-</span>
+        
+        <img id="preview" class="hidden" style="width:100%;border-radius:12px;margin-top:16px">
+        <div id="notifAbsen" class="status hidden">
+          <span id="notifIcon"></span> <span id="notifText"></span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE REKAP -->
   <div class="page" id="page-rekap">
+    <div class="header">
+      <h1>Rekap Absensi</h1>
+    </div>
     <div class="content">
       <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap">
-          <h3 style="font-size:18px;font-weight:700">Rekap Absensi</h3>
-          <div style="display:flex;gap:10px;align-items:center">
-            <div class="select-wrapper" style="min-width:140px">
-              <select class="select-field" id="selectBulan" onchange="gantiBulanTahun()">
-                <option value="1">Januari</option>
-                <option value="2">Februari</option>
-                <option value="3">Maret</option>
-                <option value="4">April</option>
-                <option value="5">Mei</option>
-                <option value="6">Juni</option>
-                <option value="7">Juli</option>
-                <option value="8">Agustus</option>
-                <option value="9">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-              </select>
-              <span class="material-icons-outlined select-icon">expand_more</span>
-            </div>
-            <div class="select-wrapper" style="min-width:100px">
-              <select class="select-field" id="selectTahun" onchange="gantiBulanTahun()"></select>
-              <span class="material-icons-outlined select-icon">expand_more</span>
-            </div>
+        <div class="bulan-nav">
+          <button onclick="gantiBulan(-1)">‹</button>
+          <span id="namaBulan">Oktober 2025</span>
+          <button onclick="gantiBulan(1)">›</button>
+        </div>
+        
+        <div class="stats">
+          <div class="stat-card blue">
+            <div class="stat-label">Total Hadir</div>
+            <div class="stat-value" id="totalMasuk">0</div>
+            <div style="font-size:12px;margin-top:4px">Hari</div>
           </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px">
-          <div style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--success) 0%,var(--sage) 100%);border-radius:var(--radius-sm);color:white;box-shadow:0 5px 16px rgba(170,184,157,.35)">
-            <div style="font-size:32px;font-weight:700" id="totalMasuk">0</div>
-            <div style="font-size:10px;margin-top:6px;font-weight:700;letter-spacing:.7px;opacity:.95">HARI MASUK</div>
-          </div>
-          <div style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);border-radius:var(--radius-sm);color:white;box-shadow:0 5px 16px rgba(196,169,138,.35)">
-            <div style="font-size:32px;font-weight:700" id="totalJam">0j</div>
-            <div style="font-size:10px;margin-top:6px;font-weight:700;letter-spacing:.7px;opacity:.95">TOTAL JAM</div>
+          <div class="stat-card green">
+            <div class="stat-label">Total Jam</div>
+            <div class="stat-value" id="totalJam">0j</div>
+            <div style="font-size:12px;margin-top:4px">Kerja</div>
           </div>
         </div>
-      </div>
-
-      <div class="card" style="padding:0;overflow:hidden">
+        
         <div style="overflow-x:auto">
-          <table class="rekap-table">
+          <table class="rekap-table" id="rekapTable">
             <thead>
               <tr>
                 <th>Tanggal</th>
@@ -369,139 +271,115 @@ body{font-size:14px;line-height:1.6;letter-spacing:.2px}
                 <th>Durasi</th>
               </tr>
             </thead>
-            <tbody id="rekapBody">
-              <tr><td colspan="5" style="text-align:center;padding:60px;color:var(--text-light)">Memuat data...</td></tr>
-            </tbody>
+            <tbody id="rekapBody"></tbody>
           </table>
         </div>
-        <div class="empty-state hidden" id="rekapEmpty">
-          <span class="material-icons-outlined">inbox</span>
-          <div>Belum ada data absensi</div>
-        </div>
+        
+        <div id="rekapEmpty" class="hidden" style="text-align:center;padding:40px;color:var(--text2)">Belum ada data</div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE PROFIL -->
   <div class="page" id="page-profil">
+    <div class="header">
+      <h1>Profil Saya</h1>
+      <button class="icon-btn" onclick="showPage('home')"><span class="material-icons-round">close</span></button>
+    </div>
     <div class="content">
-      <div class="profil-header">
-        <div class="profil-avatar">
-          <img id="profilFotoBesar" src="" style="width:100px;height:100px;border-radius:50%;object-fit:cover;display:none">
-          <span class="material-icons-outlined" id="profilIconDefault" style="font-size:48px">person</span>
-        </div>
-        <div class="profil-nama" id="profilNama">-</div>
-        <div class="profil-username" id="profilUsername">-</div>
+      <div class="card" style="text-align:center">
+        <img id="profilFotoBesar" src="" style="width:120px;height:120px;border-radius:50%;object-fit:cover;background:var(--bg);margin:0 auto 16px">
+        <h3 id="profilNama">-</h3>
+        <p style="color:var(--text2);font-size:14px" id="profilUsername">@username</p>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:22px;font-size:18px;font-weight:700">Foto Profil</h3>
+        <h3 style="margin-bottom:16px">Ganti Foto Profil</h3>
         <input type="file" id="inputFotoProfil" accept="image/*" style="display:none">
-        <button class="btn btn-outline" onclick="document.getElementById('inputFotoProfil').click()">
-          <span class="material-icons-outlined">photo_camera</span>
-          GANTI FOTO
+        <button class="btn btn-primary" onclick="document.getElementById('inputFotoProfil').click()">
+          <span class="material-icons-round">photo_camera</span>
+          PILIH FOTO BARU
         </button>
-        <div class="status hidden" id="notifFoto"></div>
+        <div id="notifFoto" class="status hidden" style="margin-top:12px"></div>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:22px;font-size:18px;font-weight:700">Ganti Password</h3>
-        <div class="input-group">
-          <label>Password Lama</label>
-          <div class="input-wrapper">
-            <input type="password" class="input-field" id="passLama" placeholder="Masukkan password lama">
-            <button type="button" class="eye-toggle" onclick="togglePassword('passLama', this)">
-              <span class="material-icons-outlined">visibility_off</span>
-            </button>
+        <h3 style="margin-bottom:16px">Ganti Password</h3>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="password" id="passLama" placeholder="Password Lama">
           </div>
         </div>
-        <div class="input-group">
-          <label>Password Baru</label>
-          <div class="input-wrapper">
-            <input type="password" class="input-field" id="passBaru" placeholder="Minimal 5 karakter">
-            <button type="button" class="eye-toggle" onclick="togglePassword('passBaru', this)">
-              <span class="material-icons-outlined">visibility_off</span>
-            </button>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="password" id="passBaru" placeholder="Password Baru">
           </div>
         </div>
-        <div class="input-group">
-          <label>Ulangi Password Baru</label>
-          <div class="input-wrapper">
-            <input type="password" class="input-field" id="passBaru2" placeholder="Ketik ulang password baru">
-            <button type="button" class="eye-toggle" onclick="togglePassword('passBaru2', this)">
-              <span class="material-icons-outlined">visibility_off</span>
-            </button>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="password" id="passBaru2" placeholder="Ulangi Password Baru">
           </div>
         </div>
         <button class="btn btn-primary" onclick="gantiPassword()">
-          <span class="material-icons-outlined">lock</span>
-          SIMPAN PASSWORD
+          <span class="material-icons-round">lock</span>
+          UPDATE PASSWORD
         </button>
-        <div class="status hidden" id="notifPass"></div>
+        <div id="notifPass" class="status hidden" style="margin-top:12px"></div>
       </div>
 
       <div class="card">
-        <h3 style="margin-bottom:22px;font-size:18px;font-weight:700">Data Personal</h3>
-        <div class="input-group">
-          <label>No HP</label>
-          <input type="tel" class="input-field" id="inputNoHP" placeholder="08xxxxxxxxxx">
+        <h3 style="margin-bottom:16px">Data Personal</h3>
+        <div class="form-group">
+          <label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">No HP</label>
+          <input type="tel" id="inputNoHP" placeholder="08xxxxxxxxxx">
         </div>
-        <div class="input-group">
-          <label>Alamat</label>
-          <textarea class="input-field" id="inputAlamat" rows="3" placeholder="Alamat lengkap"></textarea>
+        <div class="form-group">
+          <label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">Alamat</label>
+          <input type="text" id="inputAlamat" placeholder="Alamat lengkap">
         </div>
-        <div class="input-group">
-          <label>No Rekening</label>
-          <input type="text" class="input-field" id="inputRekening" placeholder="Bank - No Rekening">
+        <div class="form-group">
+          <label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">No Rekening</label>
+          <input type="text" id="inputRekening" placeholder="Bank - No Rekening">
         </div>
-        <div class="input-group">
-          <label>Tempat, Tanggal Lahir</label>
-          <input type="text" class="input-field" id="inputTTL" placeholder="Jakarta, 01 Januari 1990">
+        <div class="form-group">
+          <label style="font-size:13px;color:var(--text2);margin-bottom:6px;display:block">Tempat, Tanggal Lahir</label>
+          <input type="text" id="inputTTL" placeholder="Jakarta, 01-01-1990">
         </div>
         <button class="btn btn-primary" onclick="updateDataPersonal()">
-          <span class="material-icons-outlined">save</span>
+          <span class="material-icons-round">save</span>
           SIMPAN DATA
         </button>
-        <div class="status hidden" id="notifData"></div>
-      </div>
-
-      <div class="card">
-        <button class="btn btn-danger" onclick="logout()">
-          <span class="material-icons-outlined">logout</span>
-          KELUAR
-        </button>
+        <div id="notifData" class="status hidden" style="margin-top:12px"></div>
       </div>
     </div>
   </div>
-<!-- BOTTOM NAV -->
+
   <div class="bottom-nav hidden" id="bottomNav">
-    <button class="nav-item active" onclick="showPage('home')">
-      <span class="material-icons-outlined">home</span>
-      <span>Home</span>
-    </button>
-    <button class="nav-item" onclick="showPage('absensi')">
-      <span class="material-icons-outlined">camera_alt</span>
-      <span>Absen</span>
-    </button>
-    <button class="nav-item" onclick="showPage('rekap')">
-      <span class="material-icons-outlined">calendar_month</span>
-      <span>Rekap</span>
-    </button>
-    <button class="nav-item" onclick="showPage('profil')">
-      <span class="material-icons-outlined">person</span>
-      <span>Profil</span>
-    </button>
+    <div class="nav-item active" onclick="showPage('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" onclick="showPage('absensi')">
+      <div class="nav-icon">📷</div>
+      <div class="nav-label">Absen</div>
+    </div>
+    <div class="nav-item" onclick="showPage('rekap')">
+      <div class="nav-icon">📊</div>
+      <div class="nav-label">Rekap</div>
+    </div>
   </div>
 </div>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-</div>
-
-<audio id="audioTing" preload="auto">
-  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
-</audio>
+<canvas id="canvas" style="display:none"></canvas>
+<audio id="audioTing" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
 
 <script src="app.js"></script>
+<script>
+function togglePassword(){
+  const i = document.getElementById('password');
+  const ic = event.target;
+  if(i.type=='password'){i.type='text';ic.textContent='👁️'}
+  else{i.type='password';ic.textContent='👁️‍🗨️'}
+}
+</script>
 </body>
 </html>
