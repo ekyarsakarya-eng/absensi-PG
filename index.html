@@ -14,7 +14,7 @@
   --bg:#121212;--card:#1e1e1e;--text:#eee;--text2:#aaa;--border:#333;--primary:#4A90E2;--shadow:0 2px 8px rgba(0,0,0,.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background .3s,color .3s}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background.3s,color.3s}
 #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);position:relative}
 .page{display:none!important;min-height:100vh;width:100%;position:absolute;top:0;left:0;background:var(--card)}
 .page.active{display:block!important}
@@ -26,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .icon-btn:active{transform:scale(.9)}
 .content{padding:16px;padding-bottom:80px}
 .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.98)}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-success{background:#28a745;color:#fff}
@@ -55,11 +55,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .status.sukses{background:#D4EDDA;color:#155724}
 .status.loading{background:#D1ECF1;color:#0C5460}
 .status.error{background:#F8D7DA;color:#721C24}
-[data-theme="dark"] .status.gagal{background:#3a1f1f;color:#ff8a8a}
-[data-theme="dark"] .status.sukses{background:#1f3a2a;color:#8affb0}
-[data-theme="dark"] .status.loading{background:#1f2f3a;color:#8adfff}
+[data-theme="dark"].status.gagal{background:#3a1f1f;color:#ff8a8a}
+[data-theme="dark"].status.sukses{background:#1f3a2a;color:#8affb0}
+[data-theme="dark"].status.loading{background:#1f2f3a;color:#8adfff}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;max-width:480px;margin:0 auto;z-index:100}
-.nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;transition:all .3s}
+.nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;transition:all.3s}
 .nav-item.active{color:var(--primary)}
 .nav-item:active{background:var(--bg)}
 .nav-icon{font-size:24px}
@@ -70,9 +70,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 #page-login.card{padding:32px 24px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
 #page-login h2{text-align:center;color:var(--primary);font-size:24px;font-weight:700;margin-bottom:8px}
 #page-login.subtitle{text-align:center;color:var(--text2);font-size:14px;margin-bottom:32px}
-#itemMasuk.active,#itemPulang.active{border:2px solid var(--primary)}
-#itemMasuk.done,#itemPulang.done{border:2px solid #28a745;background:#F0FFF4}
-[data-theme="dark"] #itemMasuk.done,[data-theme="dark"] #itemPulang.done{background:#1f3a2a}
+#itemMasuk.active,#itemPulang.active,#homeItemMasuk.active,#homeItemPulang.active{border:2px solid var(--primary)}
+#itemMasuk.done,#itemPulang.done,#homeItemMasuk.done,#homeItemPulang.done{border:2px solid #28a745;background:#F0FFF4}
+[data-theme="dark"] #itemMasuk.done,[data-theme="dark"] #itemPulang.done,[data-theme="dark"] #homeItemMasuk.done,[data-theme="dark"] #homeItemPulang.done{background:#1f3a2a}
 .material-icons-round{font-family:'Material Icons Round';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
 .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
 .loading-overlay.active{display:flex}
@@ -88,9 +88,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .rekap-table td{padding:12px;text-align:center;border-bottom:1px solid var(--border)}
 .rekap-table td:first-child{text-align:left;font-weight:600}
 .rekap-table tbody tr:nth-child(even){background:var(--bg)}
-.rekap-table .weekend{background:#FFF3E0}
-[data-theme="dark"] .rekap-table .weekend{background:#3a2e1a}
-.rekap-table .hari-min{color:#F57C00;font-weight:600}
+.rekap-table.weekend{background:#FFF3E0}
+[data-theme="dark"].rekap-table.weekend{background:#3a2e1a}
+.rekap-table.hari-min{color:#F57C00;font-weight:600}
 .bulan-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .bulan-nav button{background:var(--primary);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
 .bulan-nav span{font-weight:600;font-size:16px}
@@ -106,7 +106,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="login-wrap">
       <div class="card">
         <h2>PAMILI GARMEN</h2>
-        <p class="subtitle">Sistem Absensi Karyawan Terpadu</p>
+        <p class="subtitle">Sistem Absensi Karyawan</p>
         <div class="form-group">
           <div class="input-wrap">
             <input type="text" id="username" placeholder="Username" autocomplete="username">
@@ -143,6 +143,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <h3 style="margin-bottom:8px">Jam Sekarang</h3>
         <div id="jamSekarang" style="font-size:48px;font-weight:700;text-align:center;margin:20px 0">--:--:--</div>
       </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:12px">Status Hari Ini</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div id="homeItemMasuk" class="card" style="margin:0;padding:12px;text-align:center">
+            <div style="font-size:12px;color:var(--text2)">Masuk</div>
+            <div id="homeWaktuMasuk" style="font-weight:600;margin-top:4px;font-size:18px">-</div>
+          </div>
+          <div id="homeItemPulang" class="card" style="margin:0;padding:12px;text-align:center">
+            <div style="font-size:12px;color:var(--text2)">Pulang</div>
+            <div id="homeWaktuPulang" style="font-weight:600;margin-top:4px;font-size:18px">-</div>
+          </div>
+        </div>
+        <button id="btnAbsenCepat" class="btn btn-primary" onclick="absenCepatDariHome()">
+          <span class="material-icons-round" id="iconAbsenCepat">login</span>
+          <span id="textAbsenCepat">ABSEN MASUK</span>
+        </button>
+      </div>
+
       <div class="card" id="syncCard" style="display:none">
         <div style="display:flex;align-items:center;gap:12px">
           <span class="material-icons-round" style="color:#ff9800">cloud_upload</span>
