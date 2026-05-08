@@ -68,85 +68,124 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .profil-info h2{font-size:18px;margin-bottom:4px}
 .profil-info p{font-size:14px;color:#666}
 .hidden{display:none!important}
-/* LOGIN PAGE KHUSUS */
-#loginPage{background:#f5f5f5;display:flex;align-items:center;justify-content:center}
-#loginPage .login-wrap{width:100%;max-width:360px;padding:20px}
-#loginPage .card{padding:32px 24px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
-#loginPage h2{text-align:center;color:#0B63F3;font-size:24px;font-weight:700;margin-bottom:8px}
-#loginPage .subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:32px}
-#loginPage .form-group input{border:1px solid #E0E0E0;background:#FAFAFA}
-#loginPage .btn-primary{border-radius:8px;padding:16px;font-size:16px;font-weight:600}
+#page-login{background:#f5f5f5;display:flex;align-items:center;justify-content:center}
+#page-login .login-wrap{width:100%;max-width:360px;padding:20px}
+#page-login .card{padding:32px 24px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+#page-login h2{text-align:center;color:#0B63F3;font-size:24px;font-weight:700;margin-bottom:8px}
+#page-login .subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:32px}
+#page-login .form-group input{border:1px solid #E0E0E0;background:#FAFAFA}
+#page-login .btn-primary{border-radius:8px;padding:16px;font-size:16px;font-weight:600}
+.status{padding:12px;border-radius:8px;margin-top:16px;text-align:center;font-size:14px}
+.status.gagal{background:#F8D7DA;color:#721C24}
+.status.sukses{background:#D4EDDA;color:#155724}
+.status.loading{background:#D1ECF1;color:#0C5460}
 </style>
 </head>
 <body>
 <div id="app">
-  <!-- Loading -->
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-  </div>
-
   <!-- Login Page -->
-  <div class="page active" id="loginPage">
+  <div class="page active" id="page-login">
     <div class="login-wrap">
       <div class="card">
         <h2>PAMILI GARMEN</h2>
         <p class="subtitle">Sistem Absensi Karyawan</p>
-        <form id="loginForm">
-          <div class="form-group">
-            <div class="input-wrap">
-              <input type="text" id="username" placeholder="Username" required autocomplete="username">
-            </div>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="text" id="username" placeholder="Username" autocomplete="username">
           </div>
-          <div class="form-group">
-            <div class="input-wrap">
-              <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-              <span class="toggle-pass" id="togglePass">👁️‍🗨️</span>
-            </div>
+        </div>
+        <div class="form-group">
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+            <span class="toggle-pass" onclick="togglePassword()">👁️‍🗨️</span>
           </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <div id="loginAlert" class="alert alert-error hidden" style="margin-top:16px"></div>
+        </div>
+        <button id="btnLogin" class="btn btn-primary">Login</button>
+        <div id="loginStatus" class="status gagal hidden"></div>
       </div>
     </div>
   </div>
 
-  <!-- Main App -->
-  <div class="page" id="mainPage">
+  <!-- Home Page -->
+  <div class="page" id="page-home">
     <div class="header">
-      <h1>Halo, <span id="namaUser">User</span>!</h1>
-      <p id="tanggalHari">Loading...</p>
+      <h1>Halo, <span id="namaKaryawan">User</span>!</h1>
+      <p id="tglSekarang">Loading...</p>
     </div>
-    
-    <!-- Absen Page -->
-    <div class="content" id="absenPage">
+    <div class="content">
       <div class="card">
-        <h3 style="margin-bottom:16px">Absensi Hari Ini</h3>
-        <div id="statusAbsen" class="alert alert-warning">
-          ⏰ Belum absen masuk
+        <h3>Jam Sekarang</h3>
+        <div id="jamSekarang" style="font-size:48px;font-weight:700;text-align:center;margin:20px 0">--:--:--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Absensi Page -->
+  <div class="page" id="page-absensi">
+    <div class="header">
+      <h1>Absensi</h1>
+      <p id="tglAbsen">Loading...</p>
+    </div>
+    <div class="content">
+      <div class="card">
+        <div id="tombolUtamaAbsen">
+          <div style="text-align:center;margin-bottom:20px">
+            <div id="iconAksi" class="material-icons-round" style="font-size:64px;color:#0B63F3">login</div>
+            <h3 id="judulAksi" style="margin:16px 0 8px">MASUK</h3>
+            <p id="subAksi" style="color:#666;font-size:14px">Tap untuk absen masuk</p>
+          </div>
+          <div id="jamAbsen" style="text-align:center;font-size:32px;font-weight:700;margin-bottom:20px">--:--:--</div>
+          <button id="btnAksiUtama" class="btn btn-primary" data-tipe="in">ABSEN SEKARANG</button>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
+            <div id="itemMasuk" class="card" style="margin:0;padding:12px;text-align:center">
+              <div style="font-size:12px;color:#666">Masuk</div>
+              <div id="waktuMasuk" style="font-weight:600;margin-top:4px">Belum absen</div>
+            </div>
+            <div id="itemPulang" class="card" style="margin:0;padding:12px;text-align:center">
+              <div style="font-size:12px;color:#666">Pulang</div>
+              <div id="waktuPulang" style="font-weight:600;margin-top:4px">Belum absen</div>
+            </div>
+          </div>
         </div>
-        <div class="camera-container">
-          <video id="video" autoplay playsinline></video>
-          <canvas id="canvas"></canvas>
-          <div class="camera-overlay"></div>
+        
+        <div id="kameraArea" class="hidden">
+          <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <div class="camera-overlay"></div>
+            <div style="position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;padding:8px;border-radius:6px;font-size:11px">
+              <div id="wmJamBox">00.00</div>
+              <div id="wmTanggal"></div>
+              <div id="wmGps"></div>
+              <div id="wmAlamat" style="max-width:200px"></div>
+            </div>
+          </div>
+          <div class="camera-controls">
+            <button id="btnAmbilFoto" class="btn btn-success">Ambil Foto</button>
+            <button id="btnBatalFoto" class="btn btn-danger">Batal</button>
+          </div>
         </div>
-        <div id="locationInfo" class="location-info hidden"></div>
-        <div class="camera-controls">
-          <button class="btn btn-success" id="btnMasuk">✓ Masuk</button>
-          <button class="btn btn-danger" id="btnPulang">✗ Pulang</button>
+        
+        <img id="preview" class="hidden" style="width:100%;border-radius:12px;margin-top:16px">
+        <div id="notifAbsen" class="status hidden" style="margin-top:16px">
+          <span id="notifIcon"></span> <span id="notifText"></span>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Rekap Page -->
-    <div class="content hidden" id="rekapPage">
+  <!-- Rekap Page -->
+  <div class="page" id="page-rekap">
+    <div class="header">
+      <h1>Rekap Absensi</h1>
+    </div>
+    <div class="content">
       <div class="card">
-        <h3 style="margin-bottom:16px">📊 Rekap Absensi</h3>
         <div class="tabs">
-          <div class="tab active" data-hari="7">7 Hari</div>
-          <div class="tab" data-hari="14">14 Hari</div>
-          <div class="tab" data-hari="30">30 Hari</div>
+          <div class="filter-btn tab active" data-range="7">7 Hari</div>
+          <div class="filter-btn tab" data-range="14">14 Hari</div>
+          <div class="filter-btn tab" data-range="30">30 Hari</div>
         </div>
-        
         <div class="stats">
           <div class="stat-card blue">
             <div class="stat-label">Total Hadir</div>
@@ -159,95 +198,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
             <div style="font-size:12px;margin-top:4px">Kali</div>
           </div>
         </div>
-        
         <div id="rekapGrid"></div>
+        <div id="rekapList"></div>
+        <div id="rekapEmpty" class="hidden" style="text-align:center;padding:40px;color:#999">Belum ada data</div>
       </div>
     </div>
+  </div>
 
-    <!-- Profil Page -->
-    <div class="content hidden" id="profilPage">
-      <div class="card">
-        <div class="profil-header">
-          <div class="profil-foto" id="profilFoto">👤</div>
-          <div class="profil-info">
-            <h2 id="profilNama">Loading...</h2>
-            <p id="profilUsername">@username</p>
-          </div>
-        </div>
-        <button class="btn btn-primary" id="btnEditProfil">Edit Profil</button>
-        <button class="btn" style="background:#6c757d;color:#fff;margin-top:8px" id="btnGantiPass">Ganti Password</button>
-        <button class="btn btn-danger" style="margin-top:8px" id="btnLogout">Keluar</button>
-      </div>
+  <!-- Bottom Nav -->
+  <div class="bottom-nav hidden" id="bottomNav">
+    <div class="nav-item active" onclick="showPage('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
     </div>
-
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-      <div class="nav-item active" data-page="absen">
-        <div class="nav-icon">📷</div>
-        <div class="nav-label">Absen</div>
-      </div>
-      <div class="nav-item" data-page="rekap">
-        <div class="nav-icon">📊</div>
-        <div class="nav-label">Rekap</div>
-      </div>
-      <div class="nav-item" data-page="profil">
-        <div class="nav-icon">👤</div>
-        <div class="nav-label">Profil</div>
-      </div>
+    <div class="nav-item" onclick="showPage('absensi')">
+      <div class="nav-icon">📷</div>
+      <div class="nav-label">Absen</div>
+    </div>
+    <div class="nav-item" onclick="showPage('rekap')">
+      <div class="nav-icon">📊</div>
+      <div class="nav-label">Rekap</div>
     </div>
   </div>
 </div>
 
-<!-- Modal Edit Profil -->
-<div class="page" id="editProfilPage" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:12px;padding:20px;max-width:400px;width:90%;max-height:90vh;overflow-y:auto">
-    <h3 style="margin-bottom:16px">Edit Profil</h3>
-    <div class="form-group">
-      <label>Foto Profil</label>
-      <input type="file" id="inputFotoProfil" accept="image/*">
-    </div>
-    <div class="form-group">
-      <label>No HP</label>
-      <input type="tel" id="inputNoHp" placeholder="08xxxxxxxxxx">
-    </div>
-    <div class="form-group">
-      <label>Alamat</label>
-      <input type="text" id="inputAlamat" placeholder="Alamat lengkap">
-    </div>
-    <button class="btn btn-primary" id="btnSimpanProfil">Simpan</button>
-    <button class="btn" style="background:#6c757d;color:#fff;margin-top:8px" id="btnBatalProfil">Batal</button>
-  </div>
-</div>
-
-<!-- Modal Ganti Password -->
-<div class="page" id="gantiPassPage" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:12px;padding:20px;max-width:400px;width:90%">
-    <h3 style="margin-bottom:16px">Ganti Password</h3>
-    <div class="form-group">
-      <label>Password Lama</label>
-      <input type="password" id="passLama">
-    </div>
-    <div class="form-group">
-      <label>Password Baru</label>
-      <input type="password" id="passBaru">
-    </div>
-    <div class="form-group">
-      <label>Konfirmasi Password Baru</label>
-      <input type="password" id="passBaru2">
-    </div>
-    <button class="btn btn-primary" id="btnSimpanPass">Simpan</button>
-    <button class="btn" style="background:#6c757d;color:#fff;margin-top:8px" id="btnBatalPass">Batal</button>
-  </div>
-</div>
+<canvas id="canvas" style="display:none"></canvas>
+<audio id="audioTing" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
 
 <script src="app.js"></script>
 <script>
-// Toggle password
-document.getElementById('togglePass').addEventListener('click',function(){
-  const pass=document.getElementById('password');
-  if(pass.type=='password'){pass.type='text';this.textContent='👁️'}
-  else{pass.type='password';this.textContent='👁️‍🗨️'}
-});
+function togglePassword(){
+  const i = document.getElementById('password');
+  const ic = event.target;
+  if(i.type=='password'){i.type='text';ic.textContent='👁️'}
+  else{i.type='password';ic.textContent='👁️‍🗨️'}
+}
 </script>
 </body>
 </html>
