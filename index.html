@@ -156,10 +156,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
             <div id="homeWaktuPulang" style="font-weight:600;margin-top:4px;font-size:18px">-</div>
           </div>
         </div>
-        <button id="btnAbsenCepat" class="btn btn-primary" onclick="absenCepatDariHome()">
-          <span class="material-icons-round" id="iconAbsenCepat">login</span>
-          <span id="textAbsenCepat">ABSEN MASUK</span>
-        </button>
+       <button id="btnAbsenCepat" class="btn btn-primary" onclick="absenCepatDariHome()" disabled>
+  <span class="material-icons-round" id="iconAbsenCepat">hourglass_empty</span>
+  <span id="textAbsenCepat">Cek status...</span>
+</button>
       </div>
 
       <div class="card" id="syncCard" style="display:none">
@@ -197,7 +197,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
             <p id="subAksi" style="color:var(--text2);font-size:14px">Tap untuk absen masuk</p>
           </div>
           <div id="jamAbsen" style="text-align:center;font-size:32px;font-weight:700;margin-bottom:20px">--:--:--</div>
-          <button id="btnAksiUtama" class="btn btn-primary" data-tipe="in">ABSEN SEKARANG</button>
+          <button id="btnAksiUtama" class="btn btn-primary" data-tipe="in" disabled>CEK STATUS...</button>
           
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
             <div id="itemMasuk" class="card" style="margin:0;padding:12px;text-align:center">
