@@ -179,55 +179,58 @@ async function syncOfflineData(){
 
 async function updateStatusHome(){
   if(!currentUser) return;
-  
-  // FIX: disable tombol dulu sampai status keload
+
   const btn = document.getElementById('btnAbsenCepat');
+  const icon = document.getElementById('iconAbsenCepat');
+  const text = document.getElementById('textAbsenCepat');
+
+  // FORCE DISABLE DULU SAMPE SELESAI CEK
   btn.disabled = true;
-  document.getElementById('textAbsenCepat').textContent = 'Loading...';
-  
+  text.textContent = 'Cek status...';
+  icon.textContent = 'hourglass_empty';
+
   try{
     const res = await fetch(GAS_URL,{
       method:'POST',
-      body:JSON.stringify({action:'rekap',nama:currentUser.nama,jumlahHari:1})
+      body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama})
     });
     const hasil = await res.json();
-    if(hasil.status==='sukses' && hasil.data.length>0){
-      // FIX: format dd/MM/yyyy konsisten
-      const now = new Date();
-      const today = String(now.getDate()).padStart(2,'0') + '/' +
-                    String(now.getMonth()+1).padStart(2,'0') + '/' +
-                    now.getFullYear();
 
-      const dataToday = hasil.data.find(d=>d.tanggal===today);
-      if(dataToday){
-        statusHariIni.masuk = dataToday.masuk!=='-'?dataToday.masuk:'';
-        statusHariIni.pulang = dataToday.pulang!=='-'?dataToday.pulang:'';
-        // FIX: simpen ke localStorage biar gak hilang pas refresh
-        localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify(statusHariIni));
-      }
+    if(hasil.status==='sukses'){
+      statusHariIni.masuk = hasil.data.masuk || '';
+      statusHariIni.pulang = hasil.data.pulang || '';
+      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
+       ...statusHariIni,
+        tgl: hasil.data.tanggal
+      }));
     }
   }catch(e){
-    // FIX: kalau offline, ambil dari cache
     const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
-    if(cached) statusHariIni = JSON.parse(cached);
+    if(cached) {
+      const c = JSON.parse(cached);
+      // Cek cache masih hari ini gak
+      const today = new Date();
+      const todayStr = String(today.getDate()).padStart(2,'0') + '/' +
+                       String(today.getMonth()+1).padStart(2,'0') + '/' +
+                       today.getFullYear();
+      if(c.tgl === todayStr) statusHariIni = c;
+    }
   }
-  
+
   document.getElementById('homeWaktuMasuk').textContent = statusHariIni.masuk || '-';
   document.getElementById('homeWaktuPulang').textContent = statusHariIni.pulang || '-';
-  
+
   const itemM = document.getElementById('homeItemMasuk');
   const itemP = document.getElementById('homeItemPulang');
-  const icon = document.getElementById('iconAbsenCepat');
-  const text = document.getElementById('textAbsenCepat');
-  
+
   itemM.classList.remove('active','done');
   itemP.classList.remove('active','done');
-  
+
   if(statusHariIni.masuk){
     itemM.classList.add('done');
     if(statusHariIni.pulang){
       itemP.classList.add('done');
-      btn.disabled = true;
+      btn.disabled = true; // KUNCI TOTAL
       icon.textContent = 'check_circle';
       text.textContent = 'SUDAH ABSEN LENGKAP';
     } else {
@@ -241,6 +244,59 @@ async function updateStatusHome(){
     btn.disabled = false;
     icon.textContent = 'login';
     text.textContent = 'ABSEN MASUK';
+  }
+}
+
+async function cekStatusHariIni(){
+  if(!currentUser) return;
+
+  const btn = document.getElementById('btnAksiUtama');
+  btn.disabled = true; // FORCE DISABLE
+
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama})
+    });
+    const hasil = await res.json();
+
+    if(hasil.status==='sukses'){
+      statusHariIni.masuk = hasil.data.masuk || '';
+      statusHariIni.pulang = hasil.data.pulang || '';
+      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
+       ...statusHariIni,
+        tgl: hasil.data.tanggal
+      }));
+    }
+  }catch(e){
+    const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
+    if(cached) {
+      const c = JSON.parse(cached);
+      const today = new Date();
+      const todayStr = String(today.getDate()).padStart(2,'0') + '/' +
+                       String(today.getMonth()+1).padStart(2,'0') + '/' +
+                       today.getFullYear();
+      if(c.tgl === todayStr) statusHariIni = c;
+    }
+  }
+
+  document.getElementById('waktuMasuk').textContent = statusHariIni.masuk || 'Belum absen';
+  document.getElementById('waktuPulang').textContent = statusHariIni.pulang || 'Belum absen';
+
+  const itemM = document.getElementById('itemMasuk');
+  const itemP = document.getElementById('itemPulang');
+  itemM.classList.remove('active','done');
+  itemP.classList.remove('active','done');
+
+  if(statusHariIni.masuk){
+    itemM.classList.add('done');
+    if(statusHariIni.pulang){
+      itemP.classList.add('done');
+    } else {
+      itemP.classList.add('active');
+    }
+  } else {
+    itemM.classList.add('active');
   }
 }
 
@@ -292,51 +348,6 @@ async function getAlamat(){
   }catch(e){
     alamatData = 'Gagal ambil alamat';
     document.getElementById('wmAlamat').textContent = alamatData;
-  }
-}
-
-async function cekStatusHariIni(){
-  try{
-    const res = await fetch(GAS_URL,{
-      method:'POST',
-      body:JSON.stringify({action:'rekap',nama:currentUser.nama,jumlahHari:1})
-    });
-    const hasil = await res.json();
-    if(hasil.status==='sukses' && hasil.data.length>0){
-      const now = new Date();
-      const today = String(now.getDate()).padStart(2,'0') + '/' +
-                    String(now.getMonth()+1).padStart(2,'0') + '/' +
-                    now.getFullYear();
-
-      const dataToday = hasil.data.find(d=>d.tanggal===today);
-      if(dataToday){
-        statusHariIni.masuk = dataToday.masuk!=='-'?dataToday.masuk:'';
-        statusHariIni.pulang = dataToday.pulang!=='-'?dataToday.pulang:'';
-        localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify(statusHariIni));
-      }
-    }
-  }catch(e){
-    const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
-    if(cached) statusHariIni = JSON.parse(cached);
-  }
-  
-  document.getElementById('waktuMasuk').textContent = statusHariIni.masuk || 'Belum absen';
-  document.getElementById('waktuPulang').textContent = statusHariIni.pulang || 'Belum absen';
-  
-  const itemM = document.getElementById('itemMasuk');
-  const itemP = document.getElementById('itemPulang');
-  itemM.classList.remove('active','done');
-  itemP.classList.remove('active','done');
-  
-  if(statusHariIni.masuk){
-    itemM.classList.add('done');
-    if(statusHariIni.pulang){
-      itemP.classList.add('done');
-    } else {
-      itemP.classList.add('active');
-    }
-  } else {
-    itemM.classList.add('active');
   }
 }
 
