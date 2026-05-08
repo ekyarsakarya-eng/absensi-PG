@@ -3,7 +3,6 @@ let currentUser = null;
 let stream = null;
 let rekapCache = [];
 
-// Cek login waktu buka app
 window.onload = () => {
   const savedUser = localStorage.getItem('userPamili');
   if(savedUser){
@@ -201,8 +200,8 @@ function startWatermark(){
   navigator.geolocation.getCurrentPosition(p=>{
     document.getElementById('wmGps').textContent = `${Math.abs(p.coords.latitude).toFixed(6)}°S, ${Math.abs(p.coords.longitude).toFixed(6)}°E`;
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`)
-    .then(r=>r.json())
-    .then(d=>{document.getElementById('wmAlamat').textContent = d.display_name||''});
+   .then(r=>r.json())
+   .then(d=>{document.getElementById('wmAlamat').textContent = d.display_name||''});
   });
 }
 
@@ -379,118 +378,4 @@ function loadRekap(){
             <td style="padding:12px;text-align:center;font-weight:600;color:${pulangColor}">
               ${x.pulang=='-'? '-' : x.pulang}
             </td>
-            <td style="padding:12px;text-align:center;font-weight:700;color:${durasiColor}">
-              ${durasi}
-            </td>
-          </tr>
-        `;
-      });
-      
-      html += `
-            </tbody>
-            <tfoot>
-              <tr style="background:#E3F2FD;font-weight:700">
-                <td colspan="4" style="padding:12px">Total Hadir: ${totalHadir} hari</td>
-                <td style="padding:12px;text-align:center">${totalJam}j ${sisaMenit}m</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      `;
-      
-      document.getElementById('rekapGrid').innerHTML=html;
-      tampilkanRekap(rekapCache);
-    }
-  });
-}
-
-function tampilkanRekap(data){
-  const list = document.getElementById('rekapList');
-  const empty = document.getElementById('rekapEmpty');
-  if(!data.length){
-    list.innerHTML = '';
-    empty.classList.remove('hidden');
-    document.getElementById('totalMasuk').textContent = '0';
-    document.getElementById('totalPulang').textContent = '0';
-    return;
-  }
-  empty.classList.add('hidden');
-  let m = 0, p = 0;
-  data.forEach(d=>{
-    if(d.masuk!=='-') m++;
-    if(d.pulang!=='-') p++;
-  });
-  document.getElementById('totalMasuk').textContent = m;
-  document.getElementById('totalPulang').textContent = p;
-
-  list.innerHTML = data.map(d=>{
-    const lengkap = d.masuk!=='-' && d.pulang!=='-';
-    const setengah = d.masuk!=='-' && d.pulang==='-';
-    const cls = lengkap?'lengkap':setengah?'setengah':'';
-    return `<div class="rekap-item-soft">
-      <div>
-        <div class="rekap-tgl-soft">Tanggal ${d.tanggal}</div>
-        <div class="rekap-jam-soft">
-          <div class="jam-badge in"><span class="material-icons-round">login</span>${d.masuk}</div>
-          <div class="jam-badge out"><span class="material-icons-round">logout</span>${d.pulang}</div>
-        </div>
-      </div>
-      <div class="status-hari ${cls}"></div>
-    </div>`;
-  }).join('');
-}
-
-async function loadProfil(){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'getProfil', nama:currentUser.nama})
-  });
-  const h = await res.json();
-  if(h.status==='sukses'){
-    const fotoEl = document.getElementById('fotoProfil');
-    if(h.data.fotoProfil && fotoEl){
-      const u = h.data.fotoProfil + '?t=' + Date.now();
-      fotoEl.src = u;
-      fotoEl.style.display = 'block';
-    }
-  }
-}
-
-async function callAPI(action,data){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action,...data})
-  });
-  return await res.json();
-}
-
-document.querySelectorAll('.filter-btn').forEach(b=>{
-  b.onclick = () => {
-    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    const hari = parseInt(b.dataset.range);
-    loadRekapCustom(hari);
-  };
-});
-
-async function loadRekapCustom(hari){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:hari})
-  });
-  const h = await res.json();
-  if(h.status==='sukses') tampilkanRekap(h.data);
-}
-
-function playTing(){
-  const a = document.getElementById('audioTing');
-  a.currentTime = 0;
-  a.play().catch(()=>{});
-}
-
-function togglePassword(){
-  const i = document.getElementById('password');
-  const ic = event.target;
-  if(i.type=='password'){i.type='text';ic.textContent='👁️'}
-  else{i.type='password';ic.textContent='👁️‍🗨️'}
-}
+            <td style="padding:12px;text-align:center;font-weight:700;color:${durasi
