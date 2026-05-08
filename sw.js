@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pamili-absen-v5';
+const CACHE_NAME = 'ABSENSI PAMILI GARMEN - V7.1 FINAL';
 const URLS_TO_CACHE = [
   './',
   './index.html',
