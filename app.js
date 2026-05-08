@@ -99,11 +99,11 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
     const hasil = await res.json();
     showLoading(false);
     
-    if(hasil.status==='sukses'){
+if(hasil.status==='sukses'){
   currentUser = {
     nama: hasil.data.nama,
     username: hasil.data.username,
-    foto: hasil.data.foto || '',
+    foto: hasil.data.fotoProfil || hasil.data.foto || '', // HANDLE KEDUANYA
     nohp: hasil.data.nohp || '',
     alamat: hasil.data.alamat || '',
     rekening: hasil.data.rekening || '',
