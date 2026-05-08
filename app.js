@@ -118,11 +118,13 @@ if(hasil.status==='sukses'){
     document.getElementById('fotoProfilAbsen').src = currentUser.foto;
     document.getElementById('fotoProfilAbsen').style.display = 'block';
   }
-  showPage('home');
+       showPage('home');
       return;
     }
   }
-}catch(e){
+}catch(e){ // <-- TAMBAH INI
+  localStorage.removeItem('currentUser');
+}
     } else {
       status.textContent = hasil.message || 'Login gagal';
       status.classList.remove('hidden');
