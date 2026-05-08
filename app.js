@@ -851,3 +851,27 @@ setInterval(()=>{
     }
   }
 }, 60000); // Check tiap 1 menit
+
+// === PATCH V7.2.1: AUTO LOGIN + REMEMBER PAGE + FIX NAV ===
+window.addEventListener('load', ()=>{
+  const saved = localStorage.getItem('currentUser');
+  if(saved){
+    currentUser = JSON.parse(saved);
+    document.getElementById('namaKaryawan').textContent = currentUser.nama;
+    document.getElementById('namaAbsen').textContent = currentUser.nama;
+    if(currentUser.foto){
+      document.getElementById('fotoProfil').src = currentUser.foto;
+      document.getElementById('fotoProfil').style.display = 'block';
+      document.getElementById('fotoProfilAbsen').src = currentUser.foto;
+      document.getElementById('fotoProfilAbsen').style.display = 'block';
+    }
+    
+    // FIX: Hapus active dari login biar gak tabrakan sama home
+    document.getElementById('page-login').classList.remove('active');
+    
+    const lastPage = localStorage.getItem('lastPage');
+    showPage(lastPage && lastPage !== 'login' ? lastPage : 'home');
+  } else {
+    showPage('login');
+  }
+});
