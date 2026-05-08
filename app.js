@@ -99,19 +99,24 @@ function showPage(page){
 async function cekStatusHariIni(){
   const res = await fetch(GAS_URL,{
     method:'POST',
-    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:1})
+    body:JSON.stringify({action:'rekap', nama:currentUser.nama, jumlahHari:31})
   });
   const hasil = await res.json();
+
+  const btn = document.getElementById('btnAksiUtama');
+  const im = document.getElementById('itemMasuk');
+  const ip = document.getElementById('itemPulang');
+
+  im.classList.remove('active','done');
+  ip.classList.remove('active','done');
+  btn.disabled = false;
+
   if(hasil.status==='sukses' && hasil.data.length > 0){
-    const d = hasil.data[0];
-    const btn = document.getElementById('btnAksiUtama');
-    const im = document.getElementById('itemMasuk');
-    const ip = document.getElementById('itemPulang');
+    // Cari data hari ini pake format dd/MM/yyyy
+    const tglHariIni = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const d = hasil.data.find(x => x.tanggal === tglHariIni);
 
-    im.classList.remove('active','done');
-    ip.classList.remove('active','done');
-
-    if(d.masuk!=='-'){
+    if(d && d.masuk!=='-'){
       im.classList.add('done');
       document.getElementById('waktuMasuk').textContent = d.masuk;
       if(d.pulang!=='-'){
@@ -121,6 +126,7 @@ async function cekStatusHariIni(){
         document.getElementById('judulAksi').textContent = 'SELESAI';
         document.getElementById('subAksi').textContent = 'Absen hari ini lengkap';
         document.getElementById('iconAksi').textContent = 'check_circle';
+        btn.dataset.tipe = 'done';
       } else {
         ip.classList.add('active');
         btn.dataset.tipe = 'out';
@@ -130,11 +136,19 @@ async function cekStatusHariIni(){
       }
     } else {
       im.classList.add('active');
+      document.getElementById('waktuMasuk').textContent = 'Belum absen';
+      document.getElementById('waktuPulang').textContent = 'Belum absen';
       btn.dataset.tipe = 'in';
       document.getElementById('judulAksi').textContent = 'MASUK';
       document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
       document.getElementById('iconAksi').textContent = 'login';
     }
+  } else {
+    im.classList.add('active');
+    btn.dataset.tipe = 'in';
+    document.getElementById('judulAksi').textContent = 'MASUK';
+    document.getElementById('subAksi').textContent = 'Tap untuk absen masuk';
+    document.getElementById('iconAksi').textContent = 'login';
   }
 }
 
