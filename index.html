@@ -109,8 +109,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <!-- Home Page -->
   <div class="page" id="page-home">
     <div class="header">
-      <h1>Halo, <span id="namaKaryawan">User</span>!</h1>
-      <p id="tglSekarang">Loading...</p>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img id="fotoProfil" src="" style="width:48px;height:48px;border-radius:50%;background:#fff;display:none">
+        <div>
+          <h1>Halo, <span id="namaKaryawan">User</span>!</h1>
+          <p id="tglSekarang">Loading...</p>
+        </div>
+      </div>
     </div>
     <div class="content">
       <div class="card">
@@ -130,7 +135,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="card">
         <div id="tombolUtamaAbsen">
           <div style="text-align:center;margin-bottom:20px">
-            <div id="iconAksi" class="material-icons-round" style="font-size:64px;color:#0B63F3">login</div>
+            <div id="iconAksi" style="font-size:64px;color:#0B63F3">login</div>
             <h3 id="judulAksi" style="margin:16px 0 8px">MASUK</h3>
             <p id="subAksi" style="color:#666;font-size:14px">Tap untuk absen masuk</p>
           </div>
