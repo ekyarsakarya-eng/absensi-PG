@@ -57,7 +57,11 @@ document.getElementById('btnLogin').onclick = async () => {
       currentUser = hasil.data;
       localStorage.setItem('userPamili', JSON.stringify(currentUser));
       document.getElementById('namaKaryawan').textContent = currentUser.nama;
-      if(currentUser.fotoProfil) document.getElementById('fotoProfil').src = currentUser.fotoProfil;
+      const fotoEl = document.getElementById('fotoProfil');
+if(currentUser.fotoProfil && fotoEl){
+  fotoEl.src = currentUser.fotoProfil;
+  fotoEl.style.display = 'block';
+}
       showPage('home');
       document.getElementById('bottomNav').classList.remove('hidden');
       playTing();
