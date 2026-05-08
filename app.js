@@ -441,7 +441,7 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
-  
+
   try{
     const res = await fetch(GAS_URL,{
       method:'POST',
@@ -455,17 +455,26 @@ async function kirimAbsenCepat(b64){
       })
     });
     const hasil = await res.json();
-    
+
     if(hasil.status==='sukses'){
       document.getElementById('audioTing').play();
       showNotif('✅ Absen berhasil jam '+hasil.jam, false, false);
-      
+
+      // FIX: langsung update dari response, gak nunggu fetch lagi
       if(tipe==='in'){
         statusHariIni.masuk = hasil.jam;
       } else {
         statusHariIni.pulang = hasil.jam;
       }
-      
+      const today = new Date();
+      const todayStr = String(today.getDate()).padStart(2,'0') + '/' +
+                       String(today.getMonth()+1).padStart(2,'0') + '/' +
+                       today.getFullYear();
+      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
+       ...statusHariIni,
+        tgl: todayStr
+      }));
+
       await cekStatusHariIni();
       updateTombolUtama();
       setTimeout(()=>{
@@ -473,25 +482,25 @@ async function kirimAbsenCepat(b64){
         document.getElementById('preview').classList.add('hidden');
       },2000);
     } else {
-  showNotif('❌ '+(hasil.message || hasil.pesan || 'Gagal absen'), true, false);
-  setTimeout(batalFoto, 2000);
-}
+      showNotif('❌ '+(hasil.message || hasil.pesan || 'Gagal absen'), true, false);
+      setTimeout(batalFoto, 2000);
+    }
   }catch(e){
-  // Simpan offline
-  const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
-  offline.push({
-    action:'absen',
-    nama:currentUser.nama,
-    tipe:tipe,
-    foto:b64,
-    gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
-    alamat: alamatData,
-    timestamp: Date.now()
-  });
-  localStorage.setItem('offlineAbsen', JSON.stringify(offline));
-  showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
-  setTimeout(batalFoto, 2000);
-}
+    // Simpan offline
+    const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
+    offline.push({
+      action:'absen',
+      nama:currentUser.nama,
+      tipe:tipe,
+      foto:b64,
+      gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
+      alamat: alamatData,
+      timestamp: Date.now()
+    });
+    localStorage.setItem('offlineAbsen', JSON.stringify(offline));
+    showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
+    setTimeout(batalFoto, 2000);
+  }
 }
 
 function showNotif(txt, err=false, load=false){
