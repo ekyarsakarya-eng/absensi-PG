@@ -470,12 +470,22 @@ function renderTabelBulanan(tahun, bulan, jumlahHari){
 }
 
 function hitungDurasi(jamMasuk, jamPulang){
-  if(jamMasuk=='-' || jamPulang=='-') return '-';
-  const [h1,m1] = jamMasuk.split(':').map(Number);
-  const [h2,m2] = jamPulang.split(':').map(Number);
+  if(!jamMasuk || !jamPulang || jamMasuk=='-' || jamPulang=='-') return '-';
+  
+  // Normalisasi format: ganti . jadi : dan ambil jam:menit aja
+  const normalJam = (j) => {
+    return j.replace(/\./g,':').split(':').slice(0,2).map(Number);
+  }
+  
+  const [h1,m1] = normalJam(jamMasuk);
+  const [h2,m2] = normalJam(jamPulang);
+  
+  if(isNaN(h1) || isNaN(m1) || isNaN(h2) || isNaN(m2)) return '-';
+  
   const menit1 = h1*60 + m1;
   const menit2 = h2*60 + m2;
   const selisih = menit2 - menit1;
+  
   if(selisih <= 0) return '-';
   const jam = Math.floor(selisih/60);
   const menit = selisih%60;
@@ -483,10 +493,19 @@ function hitungDurasi(jamMasuk, jamPulang){
 }
 
 function menitKeAngka(jamMasuk, jamPulang){
-  if(jamMasuk=='-' || jamPulang=='-') return 0;
-  const [h1,m1] = jamMasuk.split(':').map(Number);
-  const [h2,m2] = jamPulang.split(':').map(Number);
-  return (h2*60+m2) - (h1*60+m1);
+  if(!jamMasuk || !jamPulang || jamMasuk=='-' || jamPulang=='-') return 0;
+  
+  const normalJam = (j) => {
+    return j.replace(/\./g,':').split(':').slice(0,2).map(Number);
+  }
+  
+  const [h1,m1] = normalJam(jamMasuk);
+  const [h2,m2] = normalJam(jamPulang);
+  
+  if(isNaN(h1) || isNaN(m1) || isNaN(h2) || isNaN(m2)) return 0;
+  
+  const selisih = (h2*60+m2) - (h1*60+m1);
+  return selisih > 0 ? selisih : 0;
 }
 
 async function loadProfil(){
