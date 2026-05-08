@@ -100,25 +100,26 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
     showLoading(false);
     
     if(hasil.status==='sukses'){
-      currentUser = {
-        nama: hasil.data.nama,
-        username: hasil.data.username,
-        foto: hasil.data.foto,
-        nohp: hasil.data.nohp || '',
-        alamat: hasil.data.alamat || '',
-        rekening: hasil.data.rekening || '',
-        ttl: hasil.data.ttl || ''
-      };
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      document.getElementById('namaKaryawan').textContent = currentUser.nama;
-      document.getElementById('namaAbsen').textContent = currentUser.nama;
-      if(currentUser.foto){
-        document.getElementById('fotoProfil').src = currentUser.foto;
-        document.getElementById('fotoProfil').style.display = 'block';
-        document.getElementById('fotoProfilAbsen').src = currentUser.foto;
-        document.getElementById('fotoProfilAbsen').style.display = 'block';
-      }
-      showPage('home');
+  currentUser = {
+    nama: hasil.data.nama,
+    username: hasil.data.username,
+    foto: hasil.data.foto || '',
+    nohp: hasil.data.nohp || '',
+    alamat: hasil.data.alamat || '',
+    rekening: hasil.data.rekening || '',
+    ttl: hasil.data.ttl || ''
+  };
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  document.getElementById('namaKaryawan').textContent = currentUser.nama;
+  document.getElementById('namaAbsen').textContent = currentUser.nama;
+  if(currentUser.foto){
+    document.getElementById('fotoProfil').src = currentUser.foto;
+    document.getElementById('fotoProfil').style.display = 'block';
+    document.getElementById('fotoProfilAbsen').src = currentUser.foto;
+    document.getElementById('fotoProfilAbsen').style.display = 'block';
+  }
+  showPage('home');
+}
     } else {
       status.textContent = hasil.message || 'Login gagal';
       status.classList.remove('hidden');
@@ -494,10 +495,14 @@ async function loadRekap(){
     
     if(hasil.status==='sukses'){
       renderRekap(hasil.data);
+    } else {
+      document.getElementById('rekapEmpty').classList.remove('hidden');
+      document.getElementById('rekapEmpty').textContent = hasil.pesan || 'Gagal load rekap';
     }
   }catch(e){
     showLoading(false);
     document.getElementById('rekapEmpty').classList.remove('hidden');
+    document.getElementById('rekapEmpty').textContent = 'Koneksi error: '+e.message;
   }
 }
 
@@ -744,18 +749,27 @@ async function updateDataPersonal(){
 }
 
 // Auto login jika ada session
+// Auto login jika ada session
 window.addEventListener('load', ()=>{
   const saved = localStorage.getItem('currentUser');
   if(saved){
-    currentUser = JSON.parse(saved);
-    document.getElementById('namaKaryawan').textContent = currentUser.nama;
-    document.getElementById('namaAbsen').textContent = currentUser.nama;
-    if(currentUser.foto){
-      document.getElementById('fotoProfil').src = currentUser.foto;
-      document.getElementById('fotoProfil').style.display = 'block';
-      document.getElementById('fotoProfilAbsen').src = currentUser.foto;
-      document.getElementById('fotoProfilAbsen').style.display = 'block';
+    try{
+      currentUser = JSON.parse(saved);
+      if(currentUser && currentUser.nama){
+        document.getElementById('namaKaryawan').textContent = currentUser.nama;
+        document.getElementById('namaAbsen').textContent = currentUser.nama;
+        if(currentUser.foto){
+          document.getElementById('fotoProfil').src = currentUser.foto;
+          document.getElementById('fotoProfil').style.display = 'block';
+          document.getElementById('fotoProfilAbsen').src = currentUser.foto;
+          document.getElementById('fotoProfilAbsen').style.display = 'block';
+        }
+        showPage('home');
+        return;
+      }
+    }catch(e){
+      localStorage.removeItem('currentUser');
     }
-    showPage('home');
   }
+  showPage('login');
 });
