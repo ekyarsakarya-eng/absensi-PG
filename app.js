@@ -432,45 +432,50 @@ async function kirimAbsenCepat(b64){
         document.getElementById('preview').classList.add('hidden');
       },2000);
     } else {
-      showNotif('❌ '+hasil.message, true, false);
-      setTimeout(batalFoto, 2000);
-    }
+  showNotif('❌ '+(hasil.message || hasil.pesan || 'Gagal absen'), true, false);
+  setTimeout(batalFoto, 2000);
+}
   }catch(e){
-    // Simpan offline
-    const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
-    offline.push({
-      action:'absen',
-      nama:currentUser.nama,
-      tipe:tipe,
-      foto:b64,
-      gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
-      alamat: alamatData,
-      timestamp: Date.now()
-    });
-    localStorage.setItem('offlineAbsen', JSON.stringify(offline));
-    showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
-    setTimeout(batalFoto, 2000);
-  }
+  // Simpan offline
+  const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
+  offline.push({
+    action:'absen',
+    nama:currentUser.nama,
+    tipe:tipe,
+    foto:b64,
+    gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
+    alamat: alamatData,
+    timestamp: Date.now()
+  });
+  localStorage.setItem('offlineAbsen', JSON.stringify(offline));
+  showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
+  setTimeout(batalFoto, 2000);
+}
 }
 
 function showNotif(txt, err=false, load=false){
   const n = document.getElementById('notifAbsen');
   const ic = document.getElementById('notifIcon');
-  document.getElementById('notifText').textContent = txt;
+  
+  // Fix: kalau txt kosong/undefined, kasih default
+  const text = txt || (err ? 'Terjadi kesalahan' : 'Berhasil');
+  document.getElementById('notifText').textContent = text;
+  
   n.classList.remove('error');
   
   if(load){
     ic.textContent = '⏳';
   } else if(err){
     ic.textContent = '❌';
+    n.classList.add('error');
   } else {
     ic.textContent = '✅';
   }
   
-  if(err) n.classList.add('error');
   n.classList.remove('hidden');
   if(!load) setTimeout(()=>n.classList.add('hidden'), 3000);
 }
+
 async function loadRekap(){
   showLoading(true);
   try{
