@@ -119,7 +119,10 @@ if(hasil.status==='sukses'){
     document.getElementById('fotoProfilAbsen').style.display = 'block';
   }
   showPage('home');
-}
+      return;
+    }
+  }
+}catch(e){
     } else {
       status.textContent = hasil.message || 'Login gagal';
       status.classList.remove('hidden');
