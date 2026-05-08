@@ -1,7 +1,7 @@
 {
   "name": "Absensi Pamili Garmen",
-  "short_name": "Pamili",
-  "description": "Sistem Absensi Karyawan Pamili Garmen",
+  "short_name": "PG",
+  "description": "Sistem Absensi Karyawan Terpadu",
   "start_url": "/absensi-PG/",
   "scope": "/absensi-PG/",
   "display": "standalone",
