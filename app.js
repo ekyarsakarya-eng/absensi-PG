@@ -120,7 +120,9 @@ document.getElementById('btnLogin').addEventListener('click', async ()=>{
         document.getElementById('fotoProfilAbsen').src = currentUser.foto;
         document.getElementById('fotoProfilAbsen').style.display = 'block';
       }
-      showPage('home');
+      const lastPage = localStorage.getItem('lastPage') || 'home'; // <-- GANTI INI
+  showPage(lastPage); // <-- GANTI INI
+}
     } else {
       status.textContent = hasil.message || hasil.pesan || 'Login gagal';
       status.classList.remove('hidden');
