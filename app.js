@@ -181,7 +181,12 @@ async function updateStatusHome(){
     });
     const hasil = await res.json();
     if(hasil.status==='sukses' && hasil.data.length>0){
-      const today = new Date().toLocaleDateString('id-ID');
+      // FIX: bikin format dd/MM/yyyy pake padStart
+      const now = new Date();
+      const today = String(now.getDate()).padStart(2,'0') + '/' +
+                    String(now.getMonth()+1).padStart(2,'0') + '/' +
+                    now.getFullYear();
+
       const dataToday = hasil.data.find(d=>d.tanggal===today);
       if(dataToday){
         statusHariIni.masuk = dataToday.masuk!=='-'?dataToday.masuk:'';
@@ -189,19 +194,19 @@ async function updateStatusHome(){
       }
     }
   }catch(e){}
-  
+
   document.getElementById('homeWaktuMasuk').textContent = statusHariIni.masuk || '-';
   document.getElementById('homeWaktuPulang').textContent = statusHariIni.pulang || '-';
-  
+
   const itemM = document.getElementById('homeItemMasuk');
   const itemP = document.getElementById('homeItemPulang');
   const btn = document.getElementById('btnAbsenCepat');
   const icon = document.getElementById('iconAbsenCepat');
   const text = document.getElementById('textAbsenCepat');
-  
+
   itemM.classList.remove('active','done');
   itemP.classList.remove('active','done');
-  
+
   if(statusHariIni.masuk){
     itemM.classList.add('done');
     if(statusHariIni.pulang){
@@ -281,7 +286,12 @@ async function cekStatusHariIni(){
     });
     const hasil = await res.json();
     if(hasil.status==='sukses' && hasil.data.length>0){
-      const today = new Date().toLocaleDateString('id-ID');
+      // FIX: sama, pake padStart
+      const now = new Date();
+      const today = String(now.getDate()).padStart(2,'0') + '/' +
+                    String(now.getMonth()+1).padStart(2,'0') + '/' +
+                    now.getFullYear();
+
       const dataToday = hasil.data.find(d=>d.tanggal===today);
       if(dataToday){
         statusHariIni.masuk = dataToday.masuk!=='-'?dataToday.masuk:'';
@@ -289,15 +299,15 @@ async function cekStatusHariIni(){
       }
     }
   }catch(e){}
-  
+
   document.getElementById('waktuMasuk').textContent = statusHariIni.masuk || 'Belum absen';
   document.getElementById('waktuPulang').textContent = statusHariIni.pulang || 'Belum absen';
-  
+
   const itemM = document.getElementById('itemMasuk');
   const itemP = document.getElementById('itemPulang');
   itemM.classList.remove('active','done');
   itemP.classList.remove('active','done');
-  
+
   if(statusHariIni.masuk){
     itemM.classList.add('done');
     if(statusHariIni.pulang){
