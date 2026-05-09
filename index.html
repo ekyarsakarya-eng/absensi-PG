@@ -1,5 +1,44 @@
 <!DOCTYPE html>
 <html lang="id">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Absensi PG">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
+
+// PAKSA INSTALL: Begitu user buka, langsung tawarin install
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Tunggu 1 detik, langsung munculin prompt
+  setTimeout(() => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User install PWA');
+        }
+        deferredPrompt = null;
+      });
+    }
+  }, 1000);
+});
+
+// Kalau udah diinstall, jangan munculin lagi
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  console.log('PWA sudah terinstall');
+});
+</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
