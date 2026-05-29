@@ -887,39 +887,35 @@ async function showPage(page){
 
 async function loadSlipGaji(){
   if(!currentUser) return;
-  showLoading(true);
+  const container = document.getElementById('listSlipGaji');
+  const empty = document.getElementById('slipEmpty');
+  
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2)">Loading...</div>';
+  empty.classList.add('hidden');
 
   try{
     const res = await fetch(GAS_URL,{
       method:'POST',
-      body:JSON.stringify({
-        action:'getSlipGaji',
-        username: currentUser.username
-      })
+      headers: {'Content-Type': 'text/plain'},
+      body:JSON.stringify({action:'getSlipGaji', username: currentUser.username})
     });
     const hasil = await res.json();
-    showLoading(false);
 
-    const container = document.getElementById('listSlipGaji');
-    const empty = document.getElementById('slipEmpty');
-
-    if(hasil.status==='sukses' && hasil.data.length > 0){
+    if(hasil.status==='sukses' && hasil.data && hasil.data.length){
       empty.classList.add('hidden');
       container.innerHTML = hasil.data.map(s => `
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px">
             <div>
-              <div style="font-weight:700;font-size:16px">Slip Gaji</div>
-              <div style="font-size:13px;color:var(--text2);margin-top:4px">Periode: ${s.periode}</div>
-              <div style="font-size:11px;color:var(--text2);margin-top:2px">Dikirim: ${s.tglKirim}</div>
+              <div style="font-weight:700">Periode: ${s.periode}</div>
+              <div style="font-size:12px;color:var(--text2)">Dikirim: ${s.tglKirim}</div>
             </div>
             <div style="text-align:right">
-              <div style="font-size:24px;font-weight:700;color:var(--primary)">Rp ${formatRupiah(s.takeHome)}</div>
-              <div style="font-size:11px;color:var(--text2)">Take Home Pay</div>
+              <div style="font-size:20px;font-weight:700;color:var(--primary)">Rp ${formatRupiah(s.takeHome)}</div>
             </div>
-          <button class="btn btn-primary" onclick='downloadSlipKaryawan(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="width:auto;padding:10px 20px">
-            <span class="material-icons-round">download</span>
-            Download PDF
+          </div>
+          <button class="btn btn-primary" onclick='downloadSlipKaryawan(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
+            <span class="material-icons-round">download</span> Download PDF
           </button>
         </div>
       `).join('');
@@ -928,9 +924,9 @@ async function loadSlipGaji(){
       empty.classList.remove('hidden');
     }
   }catch(e){
-    showLoading(false);
-    document.getElementById('slipEmpty').classList.remove('hidden');
-    document.getElementById('slipEmpty').innerHTML = `<span class="material-icons-round" style="font-size:64px;opacity:.3">error</span><p style="margin-top:16px">Gagal load slip: ${e.message}</p>`;
+    container.innerHTML = '';
+    empty.classList.remove('hidden');
+    empty.innerHTML = 'Gagal load: '+e.message;
   }
 }
 
