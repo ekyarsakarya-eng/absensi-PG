@@ -851,3 +851,126 @@ window.addEventListener('load', ()=>{
   }
   showPage('login');
 });
+
+// ===== SLIP GAJI KARYAWAN =====
+async function showPage(page){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  if(page!=='login'){
+    document.getElementById('bottomNav').classList.remove('hidden');
+    const nav = document.querySelector(`.nav-item[onclick="showPage('${page}')"]`);
+    if(nav) nav.classList.add('active');
+  } else {
+    document.getElementById('bottomNav').classList.add('hidden');
+  }
+
+  if(page==='home'){
+    updateJam();
+    await updateStatusHome();
+    checkOfflineData();
+  }
+  if(page==='absensi'){
+    await initAbsensi();
+  }
+  if(page==='rekap'){
+    loadRekap();
+  }
+  if(page==='profil'){
+    loadProfil();
+  }
+  if(page==='slip'){
+    loadSlipGaji();
+  }
+}
+
+async function loadSlipGaji(){
+  if(!currentUser) return;
+  showLoading(true);
+
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({
+        action:'getSlipGaji',
+        username: currentUser.username
+      })
+    });
+    const hasil = await res.json();
+    showLoading(false);
+
+    const container = document.getElementById('listSlipGaji');
+    const empty = document.getElementById('slipEmpty');
+
+    if(hasil.status==='sukses' && hasil.data.length > 0){
+      empty.classList.add('hidden');
+      container.innerHTML = hasil.data.map(s => `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+            <div>
+              <div style="font-weight:700;font-size:16px">Slip Gaji</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:4px">Periode: ${s.periode}</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:2px">Dikirim: ${s.tglKirim}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:24px;font-weight:700;color:var(--primary)">Rp ${formatRupiah(s.takeHome)}</div>
+              <div style="font-size:11px;color:var(--text2)">Take Home Pay</div>
+            </div>
+          <button class="btn btn-primary" onclick='downloadSlipKaryawan(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="width:auto;padding:10px 20px">
+            <span class="material-icons-round">download</span>
+            Download PDF
+          </button>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '';
+      empty.classList.remove('hidden');
+    }
+  }catch(e){
+    showLoading(false);
+    document.getElementById('slipEmpty').classList.remove('hidden');
+    document.getElementById('slipEmpty').innerHTML = `<span class="material-icons-round" style="font-size:64px;opacity:.3">error</span><p style="margin-top:16px">Gagal load slip: ${e.message}</p>`;
+  }
+}
+
+function formatRupiah(angka) {
+  if (!angka) return '-';
+  return new Intl.NumberFormat('id-ID').format(angka);
+}
+
+function downloadSlipKaryawan(s){
+  const html = `
+<div style="font-family:Arial,sans-serif;max-width:800px;margin:auto;background:#fff;padding:20px">
+  <div style="background:#2563eb;color:white;padding:20px;text-align:center">
+    <h1 style="margin:0;font-size:20px">SLIP GAJI PAMILI GARMEN SEMARANG</h1>
+    <p style="margin:5px 0 0;font-size:12px">Jl. Semarang Indah Blok C.18 Nomer 8 Semarang</p>
+  </div>
+  <div style="padding:20px;border-bottom:1px solid #ddd">
+    <table style="width:100%">
+      <tr><td style="width:150px">Periode Gaji</td><td>: ${s.periode}</td></tr>
+      <tr><td>Nama Karyawan</td><td>: ${s.nama}</td></tr>
+    </table>
+  </div>
+  <table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:13px">
+    <tr style="background:#d1fae5"><th colspan="4" style="padding:8px;text-align:left;border:1px solid #000">PENGHASILAN</th></tr>
+    <tr style="background:#f0f0f0"><td style="padding:6px;border:1px solid #000;font-weight:bold">KETERANGAN</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">PER HARI</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JML HARI</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JUMLAH</td></tr>
+    <tr><td style="padding:6px;border:1px solid #000">THP Mingguan</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.gajiHari)}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.jmlHari}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalTHP)}</td></tr>
+    <tr><td style="padding:6px;border:1px solid #000">Tunjangan Tanggal Merah/Hari besar</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.tunjanganUpah?formatRupiah(s.tunjanganUpah):'-'}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.tunjanganHari||'-'}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalTunjangan)||'-'}</td></tr>
+    <tr style="background:#dbeafe"><th colspan="4" style="padding:8px;text-align:left;border:1px solid #000">LEMBUR & BONUS</th></tr>
+    <tr style="background:#f0f0f0"><td style="padding:6px;border:1px solid #000;font-weight:bold">KETERANGAN</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">LEMBUR/JAM</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JML LEMBUR</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JUMLAH</td></tr>
+    <tr><td style="padding:6px;border:1px solid #000">Lembur S-K</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.upahLembur)}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.jmlLembur}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalLembur)}</td></tr>
+    <tr style="background:#fef3c7"><th colspan="2" style="padding:8px;text-align:left;border:1px solid #000">POTONGAN</th><th colspan="2" style="padding:8px;text-align:right;border:1px solid #000">JUMLAH</th></tr>
+    <tr><td colspan="2" style="padding:6px;border:1px solid #000">Pinjaman koperasi${s.koperasiKet? ' - ' + s.koperasiKet : ''}</td><td colspan="2" style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.koperasi)||'-'}</td></tr>
+  </table>
+  <div style="background:#0f172a;color:white;padding:16px;display:flex;justify-content:space-between;margin:20px 0">
+    <div style="font-weight:700">TAKE HOME PAY</div>
+    <div style="font-size:22px;font-weight:700">Rp ${formatRupiah(s.takeHome)}</div>
+  </div>
+</div>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
