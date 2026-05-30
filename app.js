@@ -886,51 +886,32 @@ async function showPage(page){
 }
 
 let slipList = [];
-
 async function loadSlipGaji(){
-  if(!currentUser) return;
   const box = document.getElementById('listSlipGaji');
   const empty = document.getElementById('slipEmpty');
-  box.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text2)">Loading...</div>';
-  empty.classList.add('hidden');
-
-  try{
-    const res = await fetch(GAS_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'getSlipGaji', username: currentUser.username.toLowerCase()})
-    });
-    const j = await res.json();
-
-    if(j.status!=='sukses' ||!j.data || j.data.length===0){
-      box.innerHTML = '';
-      empty.classList.remove('hidden');
-      return;
-    }
-
-    slipList = j.data; // simpan global
-    box.innerHTML = slipList.map((s,i)=>`
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
-          <div>
-            <div style="font-weight:700;font-size:15px">${s.periode}</div>
-            <div style="font-size:12px;color:var(--text2)">Dikirim: ${s.tglKirim}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:20px;font-weight:700;color:var(--primary)">Rp ${formatRupiah(s.takeHome)}</div>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="downloadSlipKaryawan(${i})">
-          <span class="material-icons-round">download</span> Download PDF
-        </button>
-      </div>
-    `).join('');
-
-  }catch(e){
-    box.innerHTML = '';
-    empty.classList.remove('hidden');
-    empty.innerHTML = 'Gagal load: '+e.message;
+  box.innerHTML = '<div style="padding:30px;text-align:center">Loading...</div>';
+  
+  const res = await fetch(GAS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
+  });
+  const j = await res.json();
+  console.log('SLIP DARI SERVER:', j); // <-- biar kelihatan di console
+  
+  if(!j.data || j.data.length===0){
+    box.innerHTML = ''; empty.classList.remove('hidden'); return;
   }
+  slipList = j.data;
+  empty.classList.add('hidden');
+  box.innerHTML = slipList.map((s,i)=>`
+    <div class="card">
+      <b>Periode: ${s.periode}</b><br>
+      <small>Dikirim: ${s.tglKirim}</small>
+      <div style="font-size:22px;margin:8px 0;color:var(--primary);font-weight:700">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
+      <button class="btn btn-primary" onclick="downloadSlipKaryawan(${i})">Download PDF</button>
+    </div>
+  `).join('');
 }
 
 function formatRupiah(angka) {
