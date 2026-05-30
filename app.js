@@ -933,8 +933,10 @@ async function loadSlipGaji(){
 function refreshSlip(){
   const c = document.getElementById('slipListContainer');
   if(c) c.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Refresh...</div>';
+  // hapus cache DAN daftar sembunyikan
   localStorage.removeItem('slip_' + currentUser.username);
-  setTimeout(loadSlipGaji, 300); // ambil ulang dari Google
+  localStorage.removeItem('slip_hidden_' + currentUser.username);
+  setTimeout(loadSlipGaji, 300);
 }
 
 function hapusSlipTampilan(periode, ev){
