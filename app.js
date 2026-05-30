@@ -874,67 +874,78 @@ async function loadSlipGaji(){
   const overlay = document.createElement('div');
   overlay.id = 'slipOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto';
-  overlay.innerHTML = `<div style="background:#2563eb;color:white;padding:16px;position:sticky;top:0;z-index:10">
+  overlay.innerHTML = `<div style="background:#2563eb;color:white;padding:12px 16px;position:sticky;top:0;z-index:10">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
-      <button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px">×</button>
+      <div>
+        <button onclick="refreshSlip()" title="Refresh" style="background:rgba(255,255,255,.2);border:none;color:white;padding:6px 10px;border-radius:6px;margin-right:8px;font-size:16px">↻</button>
+        <button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px;line-height:1">×</button>
+      </div>
     </div>
-    <input id="cariSlip" oninput="renderSlipList(this.value)" placeholder="Cari periode..." style="width:100%;margin-top:12px;padding:10px;border:none;border-radius:8px;font-size:14px">
+    <input id="cariSlip" oninput="renderSlipList(this.value)" placeholder="Cari periode..." style="width:100%;margin-top:10px;padding:10px;border:none;border-radius:8px;font-size:14px">
   </div>
   <div id="slipListContainer" style="padding:8px"></div>`;
   document.body.appendChild(overlay);
 
   const cacheKey = 'slip_' + currentUser.username;
+  const hiddenKey = 'slip_hidden_' + currentUser.username;
   const container = document.getElementById('slipListContainer');
-
-  // fungsi urut tanggal
   const parseTgl = p => { const t = p.split(' - ')[0].split('/'); return new Date(t[2], t[1]-1, t[0]); };
 
   const tampilkan = (list) => {
-    // urutkan dari terkecil
-    list.sort((a,b) => parseTgl(a.periode) - parseTgl(b.periode));
-    slipList = list;
-
-    const total = list.reduce((s,x)=>s+Number(x.takeHome),0);
-    const terbaru = list.length-1;
-
-    container.innerHTML = `
-      <div style="padding:8px 16px;color:#64748b;font-size:12px">Total ${list.length} slip • Rp ${total.toLocaleString('id-ID')}</div>
-      ${list.map((s,i)=>`
-        <div onclick="bukaSlip(${i})" style="background:white;margin:8px 12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;transition:transform.1s" onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform='scale(1)'">
-          <div style="display:flex;justify-content:space-between;align-items:start">
-            <div>
-              <div style="font-weight:700;font-size:15px">${s.periode}</div>
-              <div style="font-size:12px;color:#64748b;margin:2px 0">Dikirim: ${s.tglKirim}</div>
-            </div>
-            ${i===terbaru?'<span style="background:#2563eb;color:white;font-size:10px;padding:3px 8px;border-radius:12px">TERBARU</span>':''}
-          </div>
-          <div style="color:#2563eb;font-weight:700;margin-top:8px;font-size:16px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
+    const hidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+    let data = list.filter(s =>!hidden.includes(s.periode));
+    data.sort((a,b) => parseTgl(a.periode) - parseTgl(b.periode));
+    slipList = data;
+    const total = data.reduce((s,x)=>s+Number(x.takeHome),0);
+    const terbaru = data.length-1;
+    container.innerHTML = `<div style="padding:8px 16px;color:#64748b;font-size:12px">Total ${data.length} slip • Rp ${total.toLocaleString('id-ID')}</div>` + data.map((s,i)=>`
+      <div style="background:white;margin:8px 12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);position:relative">
+        <button onclick="hapusSlipTampilan('${s.periode}',event)" title="Sembunyikan" style="position:absolute;top:8px;right:8px;background:#fee2e2;border:none;color:#dc2626;width:26px;height:26px;border-radius:50%;font-size:16px;line-height:1">×</button>
+        <div onclick="bukaSlip(${i})" style="cursor:pointer">
+          <div style="display:flex;justify-content:space-between"><div style="font-weight:700;font-size:15px;padding-right:30px">${s.periode}</div>${i===terbaru?'<span style="background:#2563eb;color:white;font-size:10px;padding:3px 8px;border-radius:12px;height:fit-content">TERBARU</span>':''}</div>
+          <div style="font-size:12px;color:#64748b;margin:2px 0">Dikirim: ${s.tglKirim}</div>
+          <div style="color:#2563eb;font-weight:700;margin-top:6px;font-size:16px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
         </div>
-      `).join('')}
-    `;
+      </div>`).join('');
   };
 
   window.renderSlipList = (q='') => {
-    const f = slipList.filter(s => s.periode.toLowerCase().includes(q.toLowerCase()));
+    const all = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+    const f = all.filter(s => s.periode.toLowerCase().includes(q.toLowerCase()));
     tampilkan(f);
   };
 
-  // 1. cache dulu
+  // cache dulu
   const cached = localStorage.getItem(cacheKey);
-  if(cached){ try{ tampilkan(JSON.parse(cached)); }catch(e){} }
-  else { container.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Memuat...</div>'; }
+  if(cached){ try{ tampilkan(JSON.parse(cached)); }catch(e){} } else { container.innerHTML = '<div style="padding:40px;text-align:center">Memuat...</div>'; }
 
-  // 2. update dari server
+  // update server
   try{
     const res = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getSlipGaji',username:currentUser.username})});
     const j = await res.json();
-    const fresh = j.data || [];
-    localStorage.setItem(cacheKey, JSON.stringify(fresh));
-    tampilkan(fresh);
+    localStorage.setItem(cacheKey, JSON.stringify(j.data||[]));
+    tampilkan(j.data||[]);
   }catch(e){}
 }
 
+// === TAMBAHKAN 2 FUNGSI INI DI BAWAHNYA ===
+function refreshSlip(){
+  const c = document.getElementById('slipListContainer');
+  if(c) c.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Refresh...</div>';
+  localStorage.removeItem('slip_' + currentUser.username);
+  setTimeout(loadSlipGaji, 300); // ambil ulang dari Google
+}
+
+function hapusSlipTampilan(periode, ev){
+  ev.stopPropagation();
+  if(!confirm('Sembunyikan slip '+periode+' dari HP ini?\n(Data di server TIDAK terhapus)')) return;
+  const hiddenKey = 'slip_hidden_' + currentUser.username;
+  const hidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+  if(!hidden.includes(periode)) hidden.push(periode);
+  localStorage.setItem(hiddenKey, JSON.stringify(hidden));
+  renderSlipList(document.getElementById('cariSlip').value);
+}
 function tutupSlip(){document.getElementById('slipOverlay')?.remove();showPage('home');}
 
 function bukaSlip(i){
