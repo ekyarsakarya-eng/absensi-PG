@@ -1,8 +1,9 @@
-const CACHE_NAME = 'ABSENSI-PG-V8';
+const CACHE_NAME = 'ABSENSI-PG-V9'; // naikkan dari V8 → V9
 const URLS_TO_CACHE = [
   '/absensi-PG/',
   '/absensi-PG/index.html',
   '/absensi-PG/app.js',
+  '/absensi-PG/slip-notif-v1.js', // <-- tambahan
   '/absensi-PG/manifest.json',
   '/absensi-PG/icon-192.png',
   '/absensi-PG/icon-512.png'
@@ -31,5 +32,18 @@ self.addEventListener('fetch', event => {
   }
   event.respondWith(
     caches.match(event.request).then(resp => resp || fetch(event.request))
+  );
+});
+
+// === TAMBAHAN UNTUK NOTIFIKASI ===
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({type:'window'}).then(list => {
+      for (const c of list) {
+        if (c.url.includes('/absensi-PG/') && 'focus' in c) return c.focus();
+      }
+      return clients.openWindow('/absensi-PG/');
+    })
   );
 });
