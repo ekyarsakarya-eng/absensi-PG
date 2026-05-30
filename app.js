@@ -991,35 +991,3 @@ function bukaSlip(i){
 }
 
 function downloadSlip(i){const el=document.getElementById('slipContent');const s=slipList[i];html2pdf().set({margin:10,filename:`Slip_${s.nama}.pdf`}).from(el).save();}
-
-function formatRupiah(angka) {
-  if (!angka) return '-';
-  return new Intl.NumberFormat('id-ID').format(angka);
-}
-
-function downloadSlipKaryawan(idx){
-  const s = slipList[idx];
-  if(!s) return;
-
-  const html = `<div style="font-family:Arial,sans-serif;max-width:800px;margin:auto;background:#fff;padding:20px">
-    <div style="background:#2563eb;color:#fff;padding:20px;text-align:center">
-      <h1 style="margin:0">SLIP GAJI PAMILI GARMEN</h1>
-      <p style="margin:5px 0 0;font-size:12px">Periode: ${s.periode} | ${s.nama}</p>
-    </div>
-    <div style="padding:20px">
-      <p><b>Take Home Pay: Rp ${formatRupiah(s.takeHome)}</b></p>
-      <p>Gaji Pokok: ${s.jmlHari} hari x Rp ${formatRupiah(s.gajiHari)} = Rp ${formatRupiah(s.totalTHP)}</p>
-      <p>Lembur: ${s.jmlLembur} jam x Rp ${formatRupiah(s.upahLembur)} = Rp ${formatRupiah(s.totalLembur)}</p>
-    </div>
-  </div>`;
-
-  const el = document.createElement('div');
-  el.innerHTML = html;
-
-  html2pdf().set({
-    margin:10,
-    filename: `Slip_${s.nama}_${s.periode.replace(/\//g,'-')}.pdf`,
-    html2canvas:{scale:2},
-    jsPDF:{unit:'mm',format:'a4'}
-  }).from(el.firstChild).save();
-}
