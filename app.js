@@ -939,13 +939,13 @@ function refreshSlip(){
 
 function hapusSlipTampilan(periode, ev){
   ev.stopPropagation();
-  if(!confirm('Sembunyikan slip '+periode+' dari HP ini?\n(Data di server TIDAK terhapus)')) return;
   const hiddenKey = 'slip_hidden_' + currentUser.username;
   const hidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
   if(!hidden.includes(periode)) hidden.push(periode);
   localStorage.setItem(hiddenKey, JSON.stringify(hidden));
   renderSlipList(document.getElementById('cariSlip').value);
 }
+
 function tutupSlip(){document.getElementById('slipOverlay')?.remove();showPage('home');}
 
 function bukaSlip(i){
