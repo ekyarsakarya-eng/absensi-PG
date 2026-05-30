@@ -874,35 +874,65 @@ async function loadSlipGaji(){
   const overlay = document.createElement('div');
   overlay.id = 'slipOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto';
-  overlay.innerHTML = `<div style="background:#2563eb;color:white;padding:16px;display:flex;justify-content:space-between"><h2 style="margin:0;font-size:18px">Slip Gaji</h2><button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px">×</button></div><div id="slipListContainer" style="padding:8px"></div>`;
+  overlay.innerHTML = `<div style="background:#2563eb;color:white;padding:16px;position:sticky;top:0;z-index:10">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
+      <button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px">×</button>
+    </div>
+    <input id="cariSlip" oninput="renderSlipList(this.value)" placeholder="Cari periode..." style="width:100%;margin-top:12px;padding:10px;border:none;border-radius:8px;font-size:14px">
+  </div>
+  <div id="slipListContainer" style="padding:8px"></div>`;
   document.body.appendChild(overlay);
 
   const cacheKey = 'slip_' + currentUser.username;
   const container = document.getElementById('slipListContainer');
 
-  // 1. TAMPILKAN CACHE DULU (0 detik)
-  const cached = localStorage.getItem(cacheKey);
-  if(cached){
-    try{
-      slipList = JSON.parse(cached);
-      container.innerHTML = slipList.map((s,i)=>`<div onclick="bukaSlip(${i})" style="background:white;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)"><div style="font-weight:700">${s.periode}</div><div style="font-size:12px;color:#666">Dikirim: ${s.tglKirim}</div><div style="color:#2563eb;font-weight:700;margin-top:6px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div></div>`).join('');
-    }catch(e){}
-  } else {
-    container.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Memuat...</div>';
-  }
+  // fungsi urut tanggal
+  const parseTgl = p => { const t = p.split(' - ')[0].split('/'); return new Date(t[2], t[1]-1, t[0]); };
 
-  // 2. AMBIL DATA BARU DI BELAKANG (update cache)
+  const tampilkan = (list) => {
+    // urutkan dari terkecil
+    list.sort((a,b) => parseTgl(a.periode) - parseTgl(b.periode));
+    slipList = list;
+
+    const total = list.reduce((s,x)=>s+Number(x.takeHome),0);
+    const terbaru = list.length-1;
+
+    container.innerHTML = `
+      <div style="padding:8px 16px;color:#64748b;font-size:12px">Total ${list.length} slip • Rp ${total.toLocaleString('id-ID')}</div>
+      ${list.map((s,i)=>`
+        <div onclick="bukaSlip(${i})" style="background:white;margin:8px 12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;transition:transform.1s" onmousedown="this.style.transform='scale(.98)'" onmouseup="this.style.transform='scale(1)'">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div>
+              <div style="font-weight:700;font-size:15px">${s.periode}</div>
+              <div style="font-size:12px;color:#64748b;margin:2px 0">Dikirim: ${s.tglKirim}</div>
+            </div>
+            ${i===terbaru?'<span style="background:#2563eb;color:white;font-size:10px;padding:3px 8px;border-radius:12px">TERBARU</span>':''}
+          </div>
+          <div style="color:#2563eb;font-weight:700;margin-top:8px;font-size:16px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
+        </div>
+      `).join('')}
+    `;
+  };
+
+  window.renderSlipList = (q='') => {
+    const f = slipList.filter(s => s.periode.toLowerCase().includes(q.toLowerCase()));
+    tampilkan(f);
+  };
+
+  // 1. cache dulu
+  const cached = localStorage.getItem(cacheKey);
+  if(cached){ try{ tampilkan(JSON.parse(cached)); }catch(e){} }
+  else { container.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Memuat...</div>'; }
+
+  // 2. update dari server
   try{
     const res = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getSlipGaji',username:currentUser.username})});
     const j = await res.json();
-    slipList = j.data || [];
-    localStorage.setItem(cacheKey, JSON.stringify(slipList)); // simpan
-
-    // update tampilan kalau ada perubahan
-    container.innerHTML = slipList.length ? slipList.map((s,i)=>`<div onclick="bukaSlip(${i})" style="background:white;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)"><div style="font-weight:700">${s.periode}</div><div style="font-size:12px;color:#666">Dikirim: ${s.tglKirim}</div><div style="color:#2563eb;font-weight:700;margin-top:6px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div></div>`).join('') : '<div style="padding:40px;text-align:center">Belum ada slip</div>';
-  }catch(e){
-    if(!cached) container.innerHTML = '<div style="padding:40px;color:red">Gagal load</div>';
-  }
+    const fresh = j.data || [];
+    localStorage.setItem(cacheKey, JSON.stringify(fresh));
+    tampilkan(fresh);
+  }catch(e){}
 }
 
 function tutupSlip(){document.getElementById('slipOverlay')?.remove();showPage('home');}
