@@ -886,50 +886,100 @@ async function showPage(page){
 }
 
 let slipList = [];
+
 async function loadSlipGaji(){
-  try{
-    const res = await fetch(GAS_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
-    });
-    const j = await res.json();
+  const res = await fetch(GAS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
+  });
+  const j = await res.json();
+  slipList = j.data || [];
 
-    // hapus overlay lama kalau ada
-    document.getElementById('slipOverlay')?.remove();
+  // hapus overlay lama
+  document.getElementById('slipOverlay')?.remove();
 
-    if(!j.data || j.data.length===0){
-      alert('Belum ada slip gaji');
-      return;
-    }
+  const overlay = document.createElement('div');
+  overlay.id = 'slipOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto';
 
-    const s = j.data[0]; // ambil slip terbaru
-
-    const div = document.createElement('div');
-    div.id = 'slipOverlay';
-    div.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto;padding:0';
-    div.innerHTML = `
-      <div style="background:#0B63F3;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center">
-        <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
-        <button onclick="document.getElementById('slipOverlay').remove()" style="background:none;border:none;color:white;font-size:24px">×</button>
-      </div>
-      <div style="padding:20px">
-        <div style="background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">
-          <h3 style="margin-top:0">${s.periode}</h3>
-          <p><b>Nama:</b> ${s.nama}</p>
-          <p><b>Tanggal Kirim:</b> ${s.tglKirim}</p>
-          <hr>
-          <p style="font-size:24px;color:#0B63F3;font-weight:bold">Take Home: Rp ${Number(s.takeHome).toLocaleString('id-ID')}</p>
-          <p>Gaji Pokok: ${s.jmlHari} hari × Rp ${Number(s.gajiHari).toLocaleString('id-ID')}</p>
-          <p>Lembur: ${s.jmlLembur} jam</p>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(div);
-
-  }catch(e){
-    alert('Error load slip: '+e.message);
+  if(slipList.length===0){
+    overlay.innerHTML = `<div style="padding:40px;text-align:center">Belum ada slip</div>`;
+    document.body.appendChild(overlay);
+    return;
   }
+
+  // daftar slip
+  let listHtml = slipList.map((s,i)=>`
+    <div onclick="bukaSlip(${i})" style="background:white;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1);cursor:pointer">
+      <div style="font-weight:700">${s.periode}</div>
+      <div style="font-size:12px;color:#666">Dikirim: ${s.tglKirim}</div>
+      <div style="color:#2563eb;font-weight:700;margin-top:6px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
+    </div>
+  `).join('');
+
+  overlay.innerHTML = `
+    <div style="background:#2563eb;color:white;padding:16px;position:sticky;top:0;display:flex;justify-content:space-between;align-items:center">
+      <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
+      <button onclick="document.getElementById('slipOverlay').remove()" style="background:none;border:none;color:white;font-size:28px;line-height:1">×</button>
+    </div>
+    <div style="padding:8px 0">${listHtml}</div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function bukaSlip(i){
+  const s = slipList[i];
+  const tunjHariTotal = Number(s.totalTunjangan) - Number(s.tunjanganUpah);
+  
+  const html = `
+  <div id="slipContent" style="font-family:Arial,sans-serif;max-width:800px;margin:0 auto;background:white">
+    <div style="background:#2563eb;color:white;padding:24px;text-align:center">
+      <h1 style="margin:0;font-size:22px">SLIP GAJI KARYAWAN</h1>
+      <p style="margin:8px 0 0;opacity:.9">PAMILI GARMEN</p>
+      <p style="margin:4px 0 0;font-size:14px">Periode: ${s.periode}</p>
+    </div>
+    <div style="padding:24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;font-size:14px">
+        <div><strong>Nama:</strong> ${s.nama}</div>
+        <div><strong>Jabatan:</strong> Karyawan</div>
+        <div><strong>Periode:</strong> ${s.periode}</div>
+        <div><strong>Tgl Cetak:</strong> ${new Date().toLocaleDateString('id-ID')}</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr style="background:#f8fafc"><th colspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0">PENGHASILAN</th></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0">Gaji Pokok (${s.jmlHari} hari)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalTHP).toLocaleString('id-ID')}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0">Tunjangan Upah</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.tunjanganUpah).toLocaleString('id-ID')}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0">Tunjangan Hari (${s.jmlHari} hari)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${tunjHariTotal.toLocaleString('id-ID')}</td></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0">Lembur (${s.jmlLembur} jam)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalLembur).toLocaleString('id-ID')}</td></tr>
+        <tr style="background:#f8fafc;font-weight:bold"><td style="padding:8px;border:1px solid #e2e8f0">Total Penghasilan</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalPenghasilan).toLocaleString('id-ID')}</td></tr>
+        <tr style="background:#f8fafc"><th colspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0">POTONGAN</th></tr>
+        <tr><td style="padding:8px;border:1px solid #e2e8f0">Koperasi ${s.koperasiKet?`(${s.koperasiKet})`:''}</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.koperasi).toLocaleString('id-ID')}</td></tr>
+      </table>
+      <div style="margin-top:20px;padding:16px;background:#2563eb;color:white;border-radius:8px;display:flex;justify-content:space-between;font-weight:bold;font-size:16px">
+        <span>TAKE HOME PAY</span><span>Rp ${Number(s.takeHome).toLocaleString('id-ID')}</span>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('slipOverlay').innerHTML = `
+    <div style="background:#2563eb;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0">
+      <button onclick="loadSlipGaji()" style="background:none;border:none;color:white">← Kembali</button>
+      <button onclick="downloadSlip(${i})" style="background:white;color:#2563eb;border:none;padding:6px 12px;border-radius:6px;font-weight:600">Download PDF</button>
+    </div>
+    <div style="padding:12px">${html}</div>
+  `;
+}
+
+function downloadSlip(i){
+  const el = document.getElementById('slipContent');
+  const s = slipList[i];
+  html2pdf().set({
+    margin:10,
+    filename:`Slip_${s.nama}_${s.periode.replace(/\//g,'-')}.pdf`,
+    html2canvas:{scale:2},
+    jsPDF:{unit:'mm',format:'a4'}
+  }).from(el).save();
 }
 
 function formatRupiah(angka) {
