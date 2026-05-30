@@ -3,7 +3,6 @@ const URLS_TO_CACHE = [
   '/absensi-PG/',
   '/absensi-PG/index.html',
   '/absensi-PG/app.js',
-  '/absensi-PG/slip-notif-v1.js', // <-- tambahan
   '/absensi-PG/manifest.json',
   '/absensi-PG/icon-192.png',
   '/absensi-PG/icon-512.png'
