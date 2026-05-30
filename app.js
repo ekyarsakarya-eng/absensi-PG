@@ -889,29 +889,38 @@ let slipList = [];
 async function loadSlipGaji(){
   const box = document.getElementById('listSlipGaji');
   const empty = document.getElementById('slipEmpty');
-  box.innerHTML = '<div style="padding:30px;text-align:center">Loading...</div>';
-  
+
+  // 1. Tampilkan loading
+  box.innerHTML = '<div style="padding:40px;text-align:center">Ambil data...</div>';
+  empty.style.display = 'none';
+
+  // 2. Ambil data
   const res = await fetch(GAS_URL,{
     method:'POST',
     headers:{'Content-Type':'text/plain'},
     body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
   });
   const j = await res.json();
-  console.log('SLIP DARI SERVER:', j); // <-- biar kelihatan di console
-  
-  if(!j.data || j.data.length===0){
-    box.innerHTML = ''; empty.classList.remove('hidden'); return;
+
+  console.log('CEK DATA:', j); // biar kelihatan
+
+  // 3. Tampilkan
+  if(j.data && j.data.length > 0){
+    const s = j.data[0]; // ambil slip pertama
+    box.innerHTML = `
+      <div style="background:white;padding:20px;margin:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+        <h3 style="margin:0 0 8px">Slip Gaji Ditemukan!</h3>
+        <p><b>Periode:</b> ${s.periode}</p>
+        <p><b>Nama:</b> ${s.nama}</p>
+        <p><b>Take Home:</b> Rp ${s.takeHome}</p>
+        <p><b>Dikirim:</b> ${s.tglKirim}</p>
+        <button onclick="alert('PDF nanti')" style="background:#0B63F3;color:white;padding:12px;border:none;border-radius:8px;width:100%;margin-top:12px">Download PDF</button>
+      </div>
+    `;
+  } else {
+    box.innerHTML = '';
+    empty.style.display = 'block';
   }
-  slipList = j.data;
-  empty.classList.add('hidden');
-  box.innerHTML = slipList.map((s,i)=>`
-    <div class="card">
-      <b>Periode: ${s.periode}</b><br>
-      <small>Dikirim: ${s.tglKirim}</small>
-      <div style="font-size:22px;margin:8px 0;color:var(--primary);font-weight:700">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
-      <button class="btn btn-primary" onclick="downloadSlipKaryawan(${i})">Download PDF</button>
-    </div>
-  `).join('');
 }
 
 function formatRupiah(angka) {
