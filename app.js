@@ -12,33 +12,14 @@ function showLoading(show){
   document.getElementById('loadingOverlay').classList.toggle('active', show);
 }
 
-async function showPage(page){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  if(page!=='login'){
-    document.getElementById('bottomNav').classList.remove('hidden');
-    const nav = document.querySelector(`.nav-item[onclick="showPage('${page}')"]`);
-    if(nav) nav.classList.add('active');
-  } else {
-    document.getElementById('bottomNav').classList.add('hidden');
-  }
-
-  if(page==='home'){
-    updateJam();
-    await updateStatusHome(); // FIX: pake await
-    checkOfflineData();
-  }
-  if(page==='absensi'){
-    await initAbsensi(); // FIX: pake await
-  }
-  if(page==='rekap'){
-    loadRekap();
-  }
-  if(page==='profil'){
-    loadProfil();
-  }
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`.nav-item[onclick="showPage('${page}')"]`)?.classList.add('active');
+  if(page === 'home') loadHomeData();
+  if(page === 'history') loadHistory();
+  if(page === 'slip') setTimeout(loadSlipGaji, 50); // <-- ini
 }
 
 function updateJam(){
@@ -930,47 +911,115 @@ async function loadSlipGaji(){
 
 function bukaSlip(i){
   const s = slipList[i];
-  const tunjHariTotal = Number(s.totalTunjangan) - Number(s.tunjanganUpah);
+  const fmt = n => Number(n||0).toLocaleString('id-ID');
   
   const html = `
-  <div id="slipContent" style="font-family:Arial,sans-serif;max-width:800px;margin:0 auto;background:white">
-    <div style="background:#2563eb;color:white;padding:24px;text-align:center">
-      <h1 style="margin:0;font-size:22px">SLIP GAJI KARYAWAN</h1>
-      <p style="margin:8px 0 0;opacity:.9">PAMILI GARMEN</p>
-      <p style="margin:4px 0 0;font-size:14px">Periode: ${s.periode}</p>
+  <div id="slipContent" style="font-family:Arial,sans-serif;max-width:800px;margin:0 auto;background:white;color:#111">
+    <!-- HEADER -->
+    <div style="background:#2563eb;color:white;padding:20px 24px">
+      <div style="font-weight:700;font-size:18px">SLIP GAJI PAMILI GARMEN SEMARANG</div>
+      <div style="font-size:12px;opacity:.9;margin-top:2px">Jl. Semarang Indah Blok C 16 Nomor 8 Semarang</div>
     </div>
-    <div style="padding:24px">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;font-size:14px">
-        <div><strong>Nama:</strong> ${s.nama}</div>
-        <div><strong>Jabatan:</strong> Karyawan</div>
-        <div><strong>Periode:</strong> ${s.periode}</div>
-        <div><strong>Tgl Cetak:</strong> ${new Date().toLocaleDateString('id-ID')}</div>
+    
+    <!-- INFO -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px;border-bottom:1px solid #eee;font-size:13px">
+      <div>
+        <div style="color:#64748b;font-size:11px">PERIODE GAJI</div>
+        <div style="font-weight:700">${s.periode}</div>
       </div>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">
-        <tr style="background:#f8fafc"><th colspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0">PENGHASILAN</th></tr>
-        <tr><td style="padding:8px;border:1px solid #e2e8f0">Gaji Pokok (${s.jmlHari} hari)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalTHP).toLocaleString('id-ID')}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e2e8f0">Tunjangan Upah</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.tunjanganUpah).toLocaleString('id-ID')}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e2e8f0">Tunjangan Hari (${s.jmlHari} hari)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${tunjHariTotal.toLocaleString('id-ID')}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #e2e8f0">Lembur (${s.jmlLembur} jam)</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalLembur).toLocaleString('id-ID')}</td></tr>
-        <tr style="background:#f8fafc;font-weight:bold"><td style="padding:8px;border:1px solid #e2e8f0">Total Penghasilan</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.totalPenghasilan).toLocaleString('id-ID')}</td></tr>
-        <tr style="background:#f8fafc"><th colspan="2" style="padding:10px;text-align:left;border:1px solid #e2e8f0">POTONGAN</th></tr>
-        <tr><td style="padding:8px;border:1px solid #e2e8f0">Koperasi ${s.koperasiKet?`(${s.koperasiKet})`:''}</td><td style="padding:8px;border:1px solid #e2e8f0;text-align:right">Rp ${Number(s.koperasi).toLocaleString('id-ID')}</td></tr>
+      <div>
+        <div style="color:#64748b;font-size:11px">NAMA KARYAWAN</div>
+        <div style="font-weight:700">${s.nama}</div>
+      </div>
+    </div>
+
+    <!-- PENGHASILAN -->
+    <div style="padding:0 16px;margin-top:12px">
+      <div style="background:#d1fae5;color:#065f46;padding:8px 12px;font-weight:700;font-size:13px;border-radius:6px 6px 0 0">PENGHASILAN</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <tr style="background:#f8fafc;color:#64748b">
+          <th style="text-align:left;padding:8px;border:1px solid #e5e7eb">KETERANGAN</th>
+          <th style="text-align:right;padding:8px;border:1px solid #e5e7eb">PER HARI</th>
+          <th style="text-align:center;padding:8px;border:1px solid #e5e7eb">JML. HARI</th>
+          <th style="text-align:right;padding:8px;border:1px solid #e5e7eb">JUMLAH</th>
+        </tr>
+        <tr>
+          <td style="padding:8px;border:1px solid #e5e7eb">THP Mingguan</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${fmt(s.gajiHari)}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">${s.jmlHari}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${fmt(s.totalTHP)}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px;border:1px solid #e5e7eb">Tunjangan Tanggal Merah/Hari besar</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${s.tunjanganHari>0?fmt(s.tunjanganHari):'-'}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">${s.tunjanganHari>0?s.jmlHari:'-'}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${(Number(s.totalTunjangan)-Number(s.tunjanganUpah))>0?fmt(Number(s.totalTunjangan)-Number(s.tunjanganUpah)):'-'}</td>
+        </tr>
       </table>
-      <div style="margin-top:20px;padding:16px;background:#2563eb;color:white;border-radius:8px;display:flex;justify-content:space-between;font-weight:bold;font-size:16px">
-        <span>TAKE HOME PAY</span><span>Rp ${Number(s.takeHome).toLocaleString('id-ID')}</span>
+    </div>
+
+    <!-- LEMBUR -->
+    <div style="padding:0 16px;margin-top:12px">
+      <div style="background:#dbeafe;color:#1e40af;padding:8px 12px;font-weight:700;font-size:13px;border-radius:6px 6px 0 0">LEMBUR & BONUS</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <tr style="background:#f8fafc;color:#64748b">
+          <th style="text-align:left;padding:8px;border:1px solid #e5e7eb">KETERANGAN</th>
+          <th style="text-align:right;padding:8px;border:1px solid #e5e7eb">LEMBUR/JAM</th>
+          <th style="text-align:center;padding:8px;border:1px solid #e5e7eb">JML. LEMBUR</th>
+          <th style="text-align:right;padding:8px;border:1px solid #e5e7eb">JUMLAH</th>
+        </tr>
+        <tr>
+          <td style="padding:8px;border:1px solid #e5e7eb">Lembur S-K</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${fmt(s.upahLembur)}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:center">${s.jmlLembur}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right">${fmt(s.totalLembur)}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- POTONGAN -->
+    <div style="padding:0 16px;margin-top:12px">
+      <div style="background:#fef3c7;color:#92400e;padding:8px 12px;font-weight:700;font-size:13px;border-radius:6px 6px 0 0">POTONGAN</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <tr>
+          <td style="padding:8px;border:1px solid #e5e7eb">Pinjaman koperasi ${s.koperasiKet?`(${s.koperasiKet})`:''}</td>
+          <td style="padding:8px;border:1px solid #e5e7eb;text-align:right;width:120px">${Number(s.koperasi)>0?fmt(s.koperasi):'-'}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TAKE HOME -->
+    <div style="margin:16px;background:#0f172a;color:white;padding:14px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">TAKE HOME PAY</div>
+      <div style="font-weight:700;font-size:18px">Rp ${fmt(s.takeHome)}</div>
+    </div>
+
+    <!-- TTD -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:20px 40px 40px;text-align:center;font-size:12px;color:#475569">
+      <div>
+        <div>Diterima Oleh</div>
+        <div style="height:60px"></div>
+        <div style="border-top:1px solid #cbd5e1;padding-top:4px;font-weight:600">${s.nama}</div>
+        <div>Karyawan</div>
+      </div>
+      <div>
+        <div>Hormat Kami</div>
+        <div style="height:60px"></div>
+        <div style="border-top:1px solid #cbd5e1;padding-top:4px;font-weight:600">HRD / Finance</div>
+        <div>Pamili Garmen Semarang</div>
       </div>
     </div>
   </div>`;
 
   document.getElementById('slipOverlay').innerHTML = `
-    <div style="background:#2563eb;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0">
-      <button onclick="loadSlipGaji()" style="background:none;border:none;color:white">← Kembali</button>
-      <button onclick="downloadSlip(${i})" style="background:white;color:#2563eb;border:none;padding:6px 12px;border-radius:6px;font-weight:600">Download PDF</button>
+    <div style="background:#2563eb;color:white;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10">
+      <button onclick="loadSlipGaji()" style="background:none;border:none;color:white;font-size:14px">← Kembali</button>
+      <div style="font-weight:600">Detail Slip</div>
+      <button onclick="downloadSlip(${i})" style="background:white;color:#2563eb;border:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px">PDF</button>
     </div>
-    <div style="padding:12px">${html}</div>
+    <div style="background:#f1f5f9;min-height:100vh;padding:12px 0">${html}</div>
   `;
 }
-
 function downloadSlip(i){
   const el = document.getElementById('slipContent');
   const s = slipList[i];
