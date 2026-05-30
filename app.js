@@ -936,37 +936,57 @@ function formatRupiah(angka) {
 }
 
 function downloadSlipKaryawan(s){
+  const periode = s.periode;
+  const nama = s.nama;
+
   const html = `
-<div style="font-family:Arial,sans-serif;max-width:800px;margin:auto;background:#fff;padding:20px">
-  <div style="background:#2563eb;color:white;padding:20px;text-align:center">
-    <h1 style="margin:0;font-size:20px">SLIP GAJI PAMILI GARMEN SEMARANG</h1>
-    <p style="margin:5px 0 0;font-size:12px">Jl. Semarang Indah Blok C.18 Nomer 8 Semarang</p>
+<div style="font-family:'Plus Jakarta Sans',sans-serif;max-width:800px;margin:auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,.15)">
+  <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:28px 32px;color:white">
+    <h1 style="margin:0;font-size:22px;font-weight:800;letter-spacing:.5px">SLIP GAJI PAMILI GARMEN SEMARANG</h1>
+    <p style="margin:4px 0 0;opacity:.8;font-size:13px">Jl. Semarang Indah Blok C.18 Nomer 8 Semarang</p>
   </div>
-  <div style="padding:20px;border-bottom:1px solid #ddd">
-    <table style="width:100%">
-      <tr><td style="width:150px">Periode Gaji</td><td>: ${s.periode}</td></tr>
-      <tr><td>Nama Karyawan</td><td>: ${s.nama}</td></tr>
+  <div style="display:grid;grid-template-columns:1fr 1fr;padding:20px 32px;border-bottom:1px solid #e5e7eb">
+    <div><div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:.5px">PERIODE GAJI</div><div style="font-weight:800;font-size:18px;margin-top:4px">${periode}</div></div>
+    <div><div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:.5px">NAMA KARYAWAN</div><div style="font-weight:800;font-size:18px;margin-top:4px">${nama}</div></div>
+  </div>
+  <div style="margin:20px 24px;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+    <div style="background:#d1fae5;padding:10px 16px;font-weight:800;color:#065f46;font-size:12px;letter-spacing:.5px">PENGHASILAN</div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="background:#f9fafb;color:#6b7280;font-size:11px"><th style="text-align:left;padding:10px 16px">KETERANGAN</th><th style="text-align:right;padding:10px">PER HARI</th><th style="text-align:right;padding:10px">JML. HARI</th><th style="text-align:right;padding:10px 16px">JUMLAH</th></tr>
+      <tr><td style="padding:12px 16px;font-weight:600;border-top:1px solid #e5e7eb">THP Mingguan</td><td style="text-align:right;padding:12px">${formatRupiah(s.gajiHari)}</td><td style="text-align:right;padding:12px">${s.jmlHari}</td><td style="text-align:right;padding:12px 16px;font-weight:700">${formatRupiah(s.totalTHP)}</td></tr>
+      <tr><td style="padding:12px 16px;font-weight:600;border-top:1px solid #e5e7eb">Tunjangan Tanggal Merah/Hari besar</td><td style="text-align:right;padding:12px">${s.tunjanganUpah?formatRupiah(s.tunjanganUpah):'-'}</td><td style="text-align:right;padding:12px">${s.tunjanganHari||'-'}</td><td style="text-align:right;padding:12px 16px;font-weight:700">${formatRupiah(s.totalTunjangan)||'-'}</td></tr>
     </table>
   </div>
-  <table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:13px">
-    <tr style="background:#d1fae5"><th colspan="4" style="padding:8px;text-align:left;border:1px solid #000">PENGHASILAN</th></tr>
-    <tr style="background:#f0f0f0"><td style="padding:6px;border:1px solid #000;font-weight:bold">KETERANGAN</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">PER HARI</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JML HARI</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JUMLAH</td></tr>
-    <tr><td style="padding:6px;border:1px solid #000">THP Mingguan</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.gajiHari)}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.jmlHari}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalTHP)}</td></tr>
-    <tr><td style="padding:6px;border:1px solid #000">Tunjangan Tanggal Merah/Hari besar</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.tunjanganUpah?formatRupiah(s.tunjanganUpah):'-'}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.tunjanganHari||'-'}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalTunjangan)||'-'}</td></tr>
-    <tr style="background:#dbeafe"><th colspan="4" style="padding:8px;text-align:left;border:1px solid #000">LEMBUR & BONUS</th></tr>
-    <tr style="background:#f0f0f0"><td style="padding:6px;border:1px solid #000;font-weight:bold">KETERANGAN</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">LEMBUR/JAM</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JML LEMBUR</td><td style="padding:6px;border:1px solid #000;text-align:right;font-weight:bold">JUMLAH</td></tr>
-    <tr><td style="padding:6px;border:1px solid #000">Lembur S-K</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.upahLembur)}</td><td style="text-align:right;padding:6px;border:1px solid #000">${s.jmlLembur}</td><td style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.totalLembur)}</td></tr>
-    <tr style="background:#fef3c7"><th colspan="2" style="padding:8px;text-align:left;border:1px solid #000">POTONGAN</th><th colspan="2" style="padding:8px;text-align:right;border:1px solid #000">JUMLAH</th></tr>
-    <tr><td colspan="2" style="padding:6px;border:1px solid #000">Pinjaman koperasi${s.koperasiKet? ' - ' + s.koperasiKet : ''}</td><td colspan="2" style="text-align:right;padding:6px;border:1px solid #000">${formatRupiah(s.koperasi)||'-'}</td></tr>
-  </table>
-  <div style="background:#0f172a;color:white;padding:16px;display:flex;justify-content:space-between;margin:20px 0">
-    <div style="font-weight:700">TAKE HOME PAY</div>
-    <div style="font-size:22px;font-weight:700">Rp ${formatRupiah(s.takeHome)}</div>
+  <div style="margin:20px 24px;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+    <div style="background:#dbeafe;padding:10px 16px;font-weight:800;color:#1e40af;font-size:12px;letter-spacing:.5px">LEMBUR & BONUS</div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="background:#f9fafb;color:#6b7280;font-size:11px"><th style="text-align:left;padding:10px 16px">KETERANGAN</th><th style="text-align:right;padding:10px">LEMBUR/JAM</th><th style="text-align:right;padding:10px">JML. LEMBUR</th><th style="text-align:right;padding:10px 16px">JUMLAH</th></tr>
+      <tr><td style="padding:12px 16px;font-weight:600;border-top:1px solid #e5e7eb">Lembur S-K</td><td style="text-align:right;padding:12px">${formatRupiah(s.upahLembur)}</td><td style="text-align:right;padding:12px">${s.jmlLembur}</td><td style="text-align:right;padding:12px 16px;font-weight:700">${formatRupiah(s.totalLembur)}</td></tr>
+    </table>
+  </div>
+  <div style="margin:20px 24px;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+    <div style="background:#fef3c7;padding:10px 16px;font-weight:800;color:#92400e;font-size:12px;letter-spacing:.5px">POTONGAN</div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr><td style="padding:12px 16px;font-weight:600">Pinjaman koperasi${s.koperasiKet?' - '+s.koperasiKet:''}</td><td style="text-align:right;padding:12px 16px;font-weight:700">${formatRupiah(s.koperasi)||'-'}</td></tr>
+    </table>
+  </div>
+  <div style="margin:20px 24px;background:#0f172a;color:white;border-radius:16px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-weight:800;letter-spacing:1px;font-size:13px">TAKE HOME PAY</div>
+    <div style="font-size:26px;font-weight:800">Rp ${formatRupiah(s.takeHome)}</div>
   </div>
 </div>`;
 
-  const w = window.open('', '_blank');
-  w.document.write(html);
-  w.document.close();
-  setTimeout(()=>w.print(), 500);
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = html;
+  const el = wrapper.firstElementChild;
+  
+  const fileName = `Slip Gaji ${nama} ${periode.replace(/\//g,'-')}.pdf`;
+  
+  html2pdf().set({
+    margin: 8,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(el).save();
 }
