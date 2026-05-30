@@ -868,50 +868,64 @@ async function showPage(page){
 
 let slipList = [];
 
+// === GANTI loadSlipGaji ===
 async function loadSlipGaji(){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
-  });
-  const j = await res.json();
-  slipList = j.data || [];
-
-  // hapus overlay lama
+  // 1. Tampilkan overlay langsung (biar tidak blank)
   document.getElementById('slipOverlay')?.remove();
-
   const overlay = document.createElement('div');
   overlay.id = 'slipOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto';
-
-  if(slipList.length===0){
-    overlay.innerHTML = `<div style="padding:40px;text-align:center">Belum ada slip</div>`;
-    document.body.appendChild(overlay);
-    return;
-  }
-
-  // daftar slip
-  let listHtml = slipList.map((s,i)=>`
-    <div onclick="bukaSlip(${i})" style="background:white;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1);cursor:pointer">
-      <div style="font-weight:700">${s.periode}</div>
-      <div style="font-size:12px;color:#666">Dikirim: ${s.tglKirim}</div>
-      <div style="color:#2563eb;font-weight:700;margin-top:6px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
-    </div>
-  `).join('');
-
   overlay.innerHTML = `
-    <div style="background:#2563eb;color:white;padding:16px;position:sticky;top:0;display:flex;justify-content:space-between;align-items:center">
+    <div style="background:#2563eb;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0">
       <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
-      <button onclick="document.getElementById('slipOverlay').remove()" style="background:none;border:none;color:white;font-size:28px;line-height:1">×</button>
+      <button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px;line-height:1">×</button>
     </div>
-    <div style="padding:8px 0">${listHtml}</div>
+    <div style="padding:40px;text-align:center;color:#64748b">Memuat data...</div>
   `;
   document.body.appendChild(overlay);
+
+  // 2. Ambil data
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
+    });
+    const j = await res.json();
+    slipList = j.data || [];
+
+    if(slipList.length===0){
+      overlay.querySelector('div:nth-child(2)').innerHTML = '<div style="padding:40px;text-align:center">Belum ada slip</div>';
+      return;
+    }
+
+    // 3. Tampilkan list
+    const listHtml = slipList.map((s,i)=>`
+      <div onclick="bukaSlip(${i})" style="background:white;margin:12px;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer">
+        <div style="font-weight:700;font-size:15px">${s.periode}</div>
+        <div style="font-size:12px;color:#64748b;margin:2px 0">Dikirim: ${s.tglKirim}</div>
+        <div style="color:#2563eb;font-weight:700;margin-top:6px">Rp ${Number(s.takeHome).toLocaleString('id-ID')}</div>
+      </div>
+    `).join('');
+
+    overlay.querySelector('div:nth-child(2)').outerHTML = `<div style="padding:8px 0">${listHtml}</div>`;
+
+  }catch(e){
+    overlay.querySelector('div:nth-child(2)').innerHTML = `<div style="padding:40px;color:red">Error: ${e.message}</div>`;
+  }
+}
+
+// === TAMBAHKAN fungsi tutup ===
+function tutupSlip(){
+  document.getElementById('slipOverlay')?.remove();
+  showPage('home'); // balik ke home, bukan blank
 }
 
 function bukaSlip(i){
+  function bukaSlip(i){
   const s = slipList[i];
   const fmt = n => Number(n||0).toLocaleString('id-ID');
+  const tunjHariTotal = Number(s.totalTunjangan) - Number(s.tunjanganUpah);
   
   const html = `
   <div id="slipContent" style="font-family:Arial,sans-serif;max-width:800px;margin:0 auto;background:white;color:#111">
@@ -1020,6 +1034,7 @@ function bukaSlip(i){
     <div style="background:#f1f5f9;min-height:100vh;padding:12px 0">${html}</div>
   `;
 }
+  
 function downloadSlip(i){
   const el = document.getElementById('slipContent');
   const s = slipList[i];
