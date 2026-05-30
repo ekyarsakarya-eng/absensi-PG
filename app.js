@@ -887,39 +887,48 @@ async function showPage(page){
 
 let slipList = [];
 async function loadSlipGaji(){
-  const box = document.getElementById('listSlipGaji');
-  const empty = document.getElementById('slipEmpty');
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
+    });
+    const j = await res.json();
 
-  // 1. Tampilkan loading
-  box.innerHTML = '<div style="padding:40px;text-align:center">Ambil data...</div>';
-  empty.style.display = 'none';
+    // hapus overlay lama kalau ada
+    document.getElementById('slipOverlay')?.remove();
 
-  // 2. Ambil data
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    headers:{'Content-Type':'text/plain'},
-    body: JSON.stringify({action:'getSlipGaji', username: currentUser.username})
-  });
-  const j = await res.json();
+    if(!j.data || j.data.length===0){
+      alert('Belum ada slip gaji');
+      return;
+    }
 
-  console.log('CEK DATA:', j); // biar kelihatan
+    const s = j.data[0]; // ambil slip terbaru
 
-  // 3. Tampilkan
-  if(j.data && j.data.length > 0){
-    const s = j.data[0]; // ambil slip pertama
-    box.innerHTML = `
-      <div style="background:white;padding:20px;margin:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">
-        <h3 style="margin:0 0 8px">Slip Gaji Ditemukan!</h3>
-        <p><b>Periode:</b> ${s.periode}</p>
-        <p><b>Nama:</b> ${s.nama}</p>
-        <p><b>Take Home:</b> Rp ${s.takeHome}</p>
-        <p><b>Dikirim:</b> ${s.tglKirim}</p>
-        <button onclick="alert('PDF nanti')" style="background:#0B63F3;color:white;padding:12px;border:none;border-radius:8px;width:100%;margin-top:12px">Download PDF</button>
+    const div = document.createElement('div');
+    div.id = 'slipOverlay';
+    div.style.cssText = 'position:fixed;inset:0;background:#f5f7fb;z-index:99999;overflow:auto;padding:0';
+    div.innerHTML = `
+      <div style="background:#0B63F3;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
+        <button onclick="document.getElementById('slipOverlay').remove()" style="background:none;border:none;color:white;font-size:24px">×</button>
+      </div>
+      <div style="padding:20px">
+        <div style="background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+          <h3 style="margin-top:0">${s.periode}</h3>
+          <p><b>Nama:</b> ${s.nama}</p>
+          <p><b>Tanggal Kirim:</b> ${s.tglKirim}</p>
+          <hr>
+          <p style="font-size:24px;color:#0B63F3;font-weight:bold">Take Home: Rp ${Number(s.takeHome).toLocaleString('id-ID')}</p>
+          <p>Gaji Pokok: ${s.jmlHari} hari × Rp ${Number(s.gajiHari).toLocaleString('id-ID')}</p>
+          <p>Lembur: ${s.jmlLembur} jam</p>
+        </div>
       </div>
     `;
-  } else {
-    box.innerHTML = '';
-    empty.style.display = 'block';
+    document.body.appendChild(div);
+
+  }catch(e){
+    alert('Error load slip: '+e.message);
   }
 }
 
