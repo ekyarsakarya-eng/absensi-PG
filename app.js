@@ -7,6 +7,7 @@ let jamInterval = null;
 let statusHariIni = {masuk:'', pulang:''};
 let currentBulan = new Date().getMonth();
 let currentTahun = new Date().getFullYear();
+let locationLockData = null; // TAMBAHAN: simpan data location lock
 
 function showLoading(show){
   document.getElementById('loadingOverlay').classList.toggle('active', show);
@@ -19,7 +20,7 @@ function showPage(page){
   document.querySelector(`.nav-item[onclick="showPage('${page}')"]`)?.classList.add('active');
   if(page === 'home') loadHomeData();
   if(page === 'history') loadHistory();
-  if(page === 'slip') setTimeout(loadSlipGaji, 50); // <-- ini
+  if(page === 'slip') setTimeout(loadSlipGaji, 50);
 }
 
 function updateJam(){
@@ -48,7 +49,7 @@ function toggleDarkMode(){
     localStorage.setItem('theme','light');
   } else {
     html.setAttribute('data-theme','dark');
-    btn.textContent = '☀';
+    btn.textContent = '';
     localStorage.setItem('theme','dark');
   }
 }
@@ -115,7 +116,6 @@ function logout(){
   currentUser = null;
   statusHariIni = {masuk:'', pulang:''};
   localStorage.removeItem('currentUser');
-  // FIX: hapus semua cache status
   Object.keys(localStorage).forEach(k=>{
     if(k.startsWith('statusHariIni_')) localStorage.removeItem(k);
   });
@@ -165,7 +165,6 @@ async function updateStatusHome(){
   const icon = document.getElementById('iconAbsenCepat');
   const text = document.getElementById('textAbsenCepat');
 
-  // FORCE DISABLE DULU SAMPE SELESAI CEK
   btn.disabled = true;
   text.textContent = 'Cek status...';
   icon.textContent = 'hourglass_empty';
@@ -181,7 +180,7 @@ async function updateStatusHome(){
       statusHariIni.masuk = hasil.data.masuk || '';
       statusHariIni.pulang = hasil.data.pulang || '';
       localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
-      ...statusHariIni,
+        ...statusHariIni,
         tgl: hasil.data.tanggal
       }));
     }
@@ -190,7 +189,6 @@ async function updateStatusHome(){
     const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
     if(cached) {
       const c = JSON.parse(cached);
-      // Cek cache masih hari ini gak
       const today = new Date();
       const todayStr = String(today.getDate()).padStart(2,'0') + '/' +
                        String(today.getMonth()+1).padStart(2,'0') + '/' +
@@ -212,7 +210,7 @@ async function updateStatusHome(){
     itemM.classList.add('done');
     if(statusHariIni.pulang){
       itemP.classList.add('done');
-      btn.disabled = true; // KUNCI TOTAL
+      btn.disabled = true;
       icon.textContent = 'check_circle';
       text.textContent = 'SUDAH ABSEN LENGKAP';
     } else {
@@ -233,7 +231,7 @@ async function cekStatusHariIni(){
   if(!currentUser) return;
 
   const btn = document.getElementById('btnAksiUtama');
-  btn.disabled = true; // FORCE DISABLE
+  btn.disabled = true;
 
   try{
     const res = await fetch(GAS_URL,{
@@ -246,7 +244,7 @@ async function cekStatusHariIni(){
       statusHariIni.masuk = hasil.data.masuk || '';
       statusHariIni.pulang = hasil.data.pulang || '';
       localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
-      ...statusHariIni,
+        ...statusHariIni,
         tgl: hasil.data.tanggal
       }));
     }
@@ -293,49 +291,86 @@ async function absenCepatDariHome(){
 async function initAbsensi(){
   await getGPS();
   await getAlamat();
-  await cekStatusHariIni(); // FIX: udah ada await, tapi pastiin urutan
+  await checkLocationLock(); // TAMBAHAN: cek location lock
+  await cekStatusHariIni();
   updateTombolUtama();
 }
 
+// === MODIFIKASI: getGPS dengan akurasi lebih tinggi ===
 async function getGPS(){
-  return new Promise((res)=>{
+  return new Promise((resolve)=>{
     if(!navigator.geolocation){
       gpsData = null;
-      document.getElementById('wmGps').textContent = 'GPS tidak support';
-      res();
+      const wmGps = document.getElementById('wmGps');
+      if(wmGps) wmGps.textContent = 'GPS tidak support';
+      resolve();
       return;
     }
-    navigator.geolocation.getCurrentPosition(pos=>{
-      gpsData = {lat:pos.coords.latitude, lng:pos.coords.longitude};
-      document.getElementById('wmGps').textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)}`;
-      res();
-    },err=>{
-      gpsData = null;
-      document.getElementById('wmGps').textContent = 'GPS error';
-      res();
-    },{enableHighAccuracy:true,timeout:5000});
+    
+    const wmGps = document.getElementById('wmGps');
+    if(wmGps) wmGps.textContent = 'Mencari GPS...';
+    
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>{
+        gpsData = {
+          lat: pos.coords.latitude, 
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        };
+        if(wmGps) {
+          wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (±${Math.round(gpsData.accuracy)}m)`;
+        }
+        resolve();
+      },
+      (err)=>{
+        gpsData = null;
+        let errorMsg = 'GPS error';
+        switch(err.code){
+          case err.PERMISSION_DENIED:
+            errorMsg = 'Izin GPS ditolak';
+            break;
+          case err.POSITION_UNAVAILABLE:
+            errorMsg = 'GPS tidak tersedia';
+            break;
+          case err.TIMEOUT:
+            errorMsg = 'GPS timeout';
+            break;
+        }
+        if(wmGps) wmGps.textContent = errorMsg;
+        resolve();
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+    );
   });
 }
 
 async function getAlamat(){
   if(!gpsData){
     alamatData = 'Alamat tidak tersedia';
-    document.getElementById('wmAlamat').textContent = alamatData;
+    const wmAlamat = document.getElementById('wmAlamat');
+    if(wmAlamat) wmAlamat.textContent = alamatData;
     return;
   }
   if(!navigator.onLine){
     alamatData = 'Offline';
-    document.getElementById('wmAlamat').textContent = alamatData;
+    const wmAlamat = document.getElementById('wmAlamat');
+    if(wmAlamat) wmAlamat.textContent = alamatData;
     return;
   }
   try{
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${gpsData.lat}&lon=${gpsData.lng}`);
     const data = await res.json();
     alamatData = data.display_name || 'Alamat tidak ditemukan';
-    document.getElementById('wmAlamat').textContent = alamatData;
+    const wmAlamat = document.getElementById('wmAlamat');
+    if(wmAlamat) wmAlamat.textContent = alamatData;
   }catch(e){
     alamatData = 'Gagal ambil alamat';
-    document.getElementById('wmAlamat').textContent = alamatData;
+    const wmAlamat = document.getElementById('wmAlamat');
+    if(wmAlamat) wmAlamat.textContent = alamatData;
   }
 }
 
@@ -409,7 +444,6 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   canvas.height = video.videoHeight || 480;
   ctx.drawImage(video,0,0,canvas.width,canvas.height);
 
-  // Watermark
   ctx.fillStyle = 'rgba(0,0,0,0.7)';
   ctx.fillRect(10, canvas.height-80, 250, 70);
   ctx.fillStyle = '#fff';
@@ -433,9 +467,15 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   await kirimAbsenCepat(b64);
 });
 
+// === MODIFIKASI: kirimAbsenCepat dengan Location Lock ===
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
+
+  // PASTIKAN GPS SUDAH DIAMBIL
+  if(!gpsData){
+    await getGPS();
+  }
 
   try{
     const res = await fetch(GAS_URL,{
@@ -445,7 +485,9 @@ async function kirimAbsenCepat(b64){
         nama:currentUser.nama,
         tipe:tipe,
         foto:b64,
-        gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
+        // KIRIM LAT/LNG TERPISAH (sesuai backend)
+        lat: gpsData? gpsData.lat.toString() : '',
+        lng: gpsData? gpsData.lng.toString() : '',
         alamat: alamatData
       })
     });
@@ -455,7 +497,6 @@ async function kirimAbsenCepat(b64){
       document.getElementById('audioTing').play();
       showNotif('✅ Absen berhasil jam '+hasil.jam, false, false);
 
-      // FIX: langsung update dari response, gak nunggu fetch lagi
       if(tipe==='in'){
         statusHariIni.masuk = hasil.jam;
       } else {
@@ -466,7 +507,7 @@ async function kirimAbsenCepat(b64){
                        String(today.getMonth()+1).padStart(2,'0') + '/' +
                        today.getFullYear();
       localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({
-      ...statusHariIni,
+        ...statusHariIni,
         tgl: todayStr
       }));
 
@@ -477,7 +518,15 @@ async function kirimAbsenCepat(b64){
         document.getElementById('preview').classList.add('hidden');
       },2000);
     } else {
-      showNotif('❌ '+(hasil.message || hasil.pesan || 'Gagal absen'), true, false);
+      // TAMPILKAN ERROR LOKASI JIKA ADA
+      const pesanError = hasil.pesan || hasil.message || 'Gagal absen';
+      showNotif('❌ ' + pesanError, true, false);
+      
+      // JIKA ERROR LOKASI, BERITAHU USER
+      if(pesanError.includes('meter') || pesanError.includes('lokasi')){
+        alert('️ LOCATION LOCK AKTIF\n\n' + pesanError + '\n\nPastikan Anda berada di lokasi yang ditentukan.');
+      }
+      
       setTimeout(batalFoto, 2000);
     }
   }catch(e){
@@ -488,7 +537,8 @@ async function kirimAbsenCepat(b64){
       nama:currentUser.nama,
       tipe:tipe,
       foto:b64,
-      gps: gpsData? `${gpsData.lat},${gpsData.lng}` : '',
+      lat: gpsData? gpsData.lat.toString() : '',
+      lng: gpsData? gpsData.lng.toString() : '',
       alamat: alamatData,
       timestamp: Date.now()
     });
@@ -502,7 +552,6 @@ function showNotif(txt, err=false, load=false){
   const n = document.getElementById('notifAbsen');
   const ic = document.getElementById('notifIcon');
 
-  // Fix: kalau txt kosong/undefined, kasih default
   const text = txt || (err? 'Terjadi kesalahan' : 'Berhasil');
   document.getElementById('notifText').textContent = text;
 
@@ -792,6 +841,68 @@ async function updateDataPersonal(){
   }
 }
 
+// === LOCATION LOCK FUNCTIONS - TAMBAHAN BARU ===
+
+async function checkLocationLock(){
+  try{
+    const res = await fetch(GAS_URL,{
+      method:'POST',
+      body:JSON.stringify({action:'getLocationLock'})
+    });
+    const hasil = await res.json();
+    
+    if(hasil.status==='sukses' && hasil.data.latitude && hasil.data.longitude){
+      locationLockData = hasil.data;
+      const lockInfo = document.getElementById('locationLockInfo');
+      if(lockInfo){
+        lockInfo.classList.remove('hidden');
+        document.getElementById('lockNamaLokasi').textContent = 
+          `Lokasi: ${hasil.data.namaLokasi || 'Kantor'}`;
+        
+        if(gpsData){
+          updateJarakKeLokasi(hasil.data);
+        }
+      }
+      return hasil.data;
+    } else {
+      locationLockData = null;
+      const lockInfo = document.getElementById('locationLockInfo');
+      if(lockInfo) lockInfo.classList.add('hidden');
+      return null;
+    }
+  }catch(e){
+    console.error('Gagal cek location lock:', e);
+    return null;
+  }
+}
+
+function updateJarakKeLokasi(lockData){
+  if(!gpsData || !lockData.latitude) return;
+  
+  const jarakEl = document.getElementById('lockJarak');
+  if(!jarakEl) return;
+  
+  const R = 6371e3;
+  const φ1 = gpsData.lat * Math.PI / 180;
+  const φ2 = parseFloat(lockData.latitude) * Math.PI / 180;
+  const Δφ = (parseFloat(lockData.latitude) - gpsData.lat) * Math.PI / 180;
+  const Δλ = (parseFloat(lockData.longitude) - gpsData.lng) * Math.PI / 180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  const jarak = R * c;
+  const radius = parseFloat(lockData.radiusMeter) || 100;
+  
+  if(jarak <= radius){
+    jarakEl.innerHTML = `Jarak: <span style="color:#059669">${Math.round(jarak)}m dari lokasi ✓</span>`;
+  } else {
+    jarakEl.innerHTML = `Jarak: <span style="color:#dc2626">${Math.round(jarak)}m (Max: ${radius}m) ✗</span>`;
+  }
+}
+
 // Auto login jika ada session
 window.addEventListener('load', ()=>{
   try{
@@ -799,7 +910,6 @@ window.addEventListener('load', ()=>{
     if(saved){
       currentUser = JSON.parse(saved);
       if(currentUser && currentUser.nama){
-        // FIX: load status cache dulu, tapi cek tanggal
         const today = new Date();
         const todayStr = String(today.getDate()).padStart(2,'0') + '/' +
                          String(today.getMonth()+1).padStart(2,'0') + '/' +
@@ -866,7 +976,7 @@ async function showPage(page){
   }
 }
 
-// ===== SLIP GAJI - JANGAN DIEDIT BAGIAN LAIN =====
+// ===== SLIP GAJI =====
 let slipList = [];
 
 async function loadSlipGaji(){
@@ -878,7 +988,7 @@ async function loadSlipGaji(){
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2 style="margin:0;font-size:18px">Slip Gaji</h2>
       <div>
-        <button onclick="refreshSlip()" title="Refresh" style="background:rgba(255,255,255,.2);border:none;color:white;padding:6px 10px;border-radius:6px;margin-right:8px;font-size:16px">↻</button>
+        <button onclick="refreshSlip()" title="Refresh" style="background:rgba(255,255,255,.2);border:none;color:white;padding:6px 10px;border-radius:6px;margin-right:8px;font-size:16px"></button>
         <button onclick="tutupSlip()" style="background:none;border:none;color:white;font-size:28px;line-height:1">×</button>
       </div>
     </div>
@@ -916,11 +1026,9 @@ async function loadSlipGaji(){
     tampilkan(f);
   };
 
-  // cache dulu
   const cached = localStorage.getItem(cacheKey);
   if(cached){ try{ tampilkan(JSON.parse(cached)); }catch(e){} } else { container.innerHTML = '<div style="padding:40px;text-align:center">Memuat...</div>'; }
 
-  // update server
   try{
     const res = await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'getSlipGaji',username:currentUser.username})});
     const j = await res.json();
@@ -929,11 +1037,9 @@ async function loadSlipGaji(){
   }catch(e){}
 }
 
-// === TAMBAHKAN 2 FUNGSI INI DI BAWAHNYA ===
 function refreshSlip(){
   const c = document.getElementById('slipListContainer');
   if(c) c.innerHTML = '<div style="padding:40px;text-align:center;color:#64748b">Refresh...</div>';
-  // hapus cache DAN daftar sembunyikan
   localStorage.removeItem('slip_' + currentUser.username);
   localStorage.removeItem('slip_hidden_' + currentUser.username);
   setTimeout(loadSlipGaji, 300);
@@ -1017,4 +1123,18 @@ function downloadSlipKaryawan(idx){
     html2canvas:{scale:2},
     jsPDF:{unit:'mm',format:'a4'}
   }).from(el.firstChild).save();
+}
+
+function formatRupiah(angka) {
+  if (!angka) return '-';
+  return new Intl.NumberFormat('id-ID').format(angka);
+}
+
+// Helper untuk loadHomeData dan loadHistory (jika ada)
+function loadHomeData() {
+  // Placeholder - sesuaikan dengan kebutuhan
+}
+
+function loadHistory() {
+  // Placeholder - sesuaikan dengan kebutuhan
 }
