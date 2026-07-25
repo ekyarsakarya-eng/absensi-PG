@@ -156,6 +156,20 @@ async function syncOfflineData(){
   alert(`Sync selesai: ${sukses}/${data.length} data berhasil`);
 }
 
+// === FUNGSI BARU: Cek apakah data lokal sudah valid untuk hari ini ===
+function isLocalDataValid(){
+  const today = new Date();
+  const todayStr = String(today.getDate()).padStart(2,'0') + '/' + 
+                   String(today.getMonth()+1).padStart(2,'0') + '/' + 
+                   today.getFullYear();
+  const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
+  if(!cached) return false;
+  try{
+    const c = JSON.parse(cached);
+    return c.tgl === todayStr && c.masuk && c.pulang;
+  }catch(e){ return false; }
+}
+
 async function updateStatusHome(){
   if(!currentUser) return;
   const btn = document.getElementById('btnAbsenCepat');
@@ -163,22 +177,28 @@ async function updateStatusHome(){
   const text = document.getElementById('textAbsenCepat');
   btn.disabled = true; text.textContent = 'Cek status...'; icon.textContent = 'hourglass_empty';
 
-  try{
-    const res = await fetch(GAS_URL,{ method:'POST', body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama}) });
-    const hasil = await res.json();
-    if(hasil.status==='sukses'){
-      statusHariIni.masuk = hasil.data.masuk || '';
-      statusHariIni.pulang = hasil.data.pulang || '';
-      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: hasil.data.tanggal }));
-    }
-  }catch(e){
-    statusHariIni = {masuk:'', pulang:''};
-    const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
-    if(cached) {
-      const c = JSON.parse(cached);
-      const today = new Date();
-      const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
-      if(c.tgl === todayStr) statusHariIni = c;
+  // SKIP FETCH jika data lokal sudah lengkap (sudah absen masuk & pulang hari ini)
+  if(isLocalDataValid()){
+    const cached = JSON.parse(localStorage.getItem('statusHariIni_'+currentUser.username));
+    statusHariIni = {masuk: cached.masuk, pulang: cached.pulang};
+  } else {
+    try{
+      const res = await fetch(GAS_URL,{ method:'POST', body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama}) });
+      const hasil = await res.json();
+      if(hasil.status==='sukses'){
+        statusHariIni.masuk = hasil.data.masuk || '';
+        statusHariIni.pulang = hasil.data.pulang || '';
+        localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: hasil.data.tanggal }));
+      }
+    }catch(e){
+      statusHariIni = {masuk:'', pulang:''};
+      const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
+      if(cached) {
+        const c = JSON.parse(cached);
+        const today = new Date();
+        const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
+        if(c.tgl === todayStr) statusHariIni = c;
+      }
     }
   }
 
@@ -204,24 +224,32 @@ async function cekStatusHariIni(){
   if(!currentUser) return;
   const btn = document.getElementById('btnAksiUtama');
   btn.disabled = true;
-  try{
-    const res = await fetch(GAS_URL,{ method:'POST', body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama}) });
-    const hasil = await res.json();
-    if(hasil.status==='sukses'){
-      statusHariIni.masuk = hasil.data.masuk || '';
-      statusHariIni.pulang = hasil.data.pulang || '';
-      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: hasil.data.tanggal }));
-    }
-  }catch(e){
-    statusHariIni = {masuk:'', pulang:''};
-    const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
-    if(cached) {
-      const c = JSON.parse(cached);
-      const today = new Date();
-      const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
-      if(c.tgl === todayStr) statusHariIni = c;
+
+  // SKIP FETCH jika data lokal sudah lengkap
+  if(isLocalDataValid()){
+    const cached = JSON.parse(localStorage.getItem('statusHariIni_'+currentUser.username));
+    statusHariIni = {masuk: cached.masuk, pulang: cached.pulang};
+  } else {
+    try{
+      const res = await fetch(GAS_URL,{ method:'POST', body:JSON.stringify({action:'getStatusHariIni', nama:currentUser.nama}) });
+      const hasil = await res.json();
+      if(hasil.status==='sukses'){
+        statusHariIni.masuk = hasil.data.masuk || '';
+        statusHariIni.pulang = hasil.data.pulang || '';
+        localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: hasil.data.tanggal }));
+      }
+    }catch(e){
+      statusHariIni = {masuk:'', pulang:''};
+      const cached = localStorage.getItem('statusHariIni_'+currentUser.username);
+      if(cached) {
+        const c = JSON.parse(cached);
+        const today = new Date();
+        const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
+        if(c.tgl === todayStr) statusHariIni = c;
+      }
     }
   }
+
   document.getElementById('waktuMasuk').textContent = statusHariIni.masuk || 'Belum absen';
   document.getElementById('waktuPulang').textContent = statusHariIni.pulang || 'Belum absen';
   const itemM = document.getElementById('itemMasuk');
@@ -333,6 +361,11 @@ function updateTombolUtama(){
 }
 
 document.getElementById('btnAksiUtama').addEventListener('click', async ()=>{
+  // CEK: jika sudah lengkap, tampilkan pesan dan jangan buka kamera
+  if(statusHariIni.masuk && statusHariIni.pulang){
+    showNotif('✅ Anda sudah absen lengkap hari ini', false, false);
+    return;
+  }
   document.getElementById('tombolUtamaAbsen').classList.add('hidden');
   document.getElementById('kameraArea').classList.remove('hidden');
   document.getElementById('btnAmbilFoto').disabled = true;
@@ -391,7 +424,6 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   await kirimAbsenCepat(b64);
 });
 
-// === FIXED: kirimAbsenCepat dengan UI update langsung ===
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
@@ -440,14 +472,12 @@ async function kirimAbsenCepat(b64){
     const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
     offline.push({ action:'absen', nama:currentUser.nama, tipe:tipe, foto:b64, lat: gpsData? gpsData.lat.toString() : '', lng: gpsData? gpsData.lng.toString() : '', alamat: alamatData, timestamp: Date.now() });
     localStorage.setItem('offlineAbsen', JSON.stringify(offline));
-    showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
+    showNotif(' Offline, disimpan dulu. Nanti auto-sync', false, false);
     setTimeout(batalFoto, 2000);
   }
 }
 
-// === FUNGSI BARU: Update UI langsung setelah absen ===
 function updateUIAfterAbsen(){
-  // Update card Masuk/Pulang di halaman absensi
   const waktuMasukEl = document.getElementById('waktuMasuk');
   const waktuPulangEl = document.getElementById('waktuPulang');
   const itemMasukEl = document.getElementById('itemMasuk');
@@ -468,10 +498,8 @@ function updateUIAfterAbsen(){
     else if(statusHariIni.masuk) itemPulangEl.classList.add('active');
   }
   
-  // Update tombol utama
   updateTombolUtama();
   
-  // Update juga UI di home page
   const homeWaktuMasuk = document.getElementById('homeWaktuMasuk');
   const homeWaktuPulang = document.getElementById('homeWaktuPulang');
   const homeItemMasuk = document.getElementById('homeItemMasuk');
@@ -641,7 +669,7 @@ async function gantiPassword(){
   const notif = document.getElementById('notifPass');
   if(!lama ||!baru ||!baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Semua field wajib diisi'; notif.classList.remove('hidden'); return; }
   if(baru!== baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Password baru tidak cocok'; notif.classList.remove('hidden'); return; }
-  if(baru.length < 5){ notif.className = 'status error'; notif.innerHTML = ' Password minimal 5 karakter'; notif.classList.remove('hidden'); return; }
+  if(baru.length < 5){ notif.className = 'status error'; notif.innerHTML = '❌ Password minimal 5 karakter'; notif.classList.remove('hidden'); return; }
   notif.className = 'status loading';
   notif.innerHTML = '⏳ Update password...';
   notif.classList.remove('hidden');
@@ -695,7 +723,7 @@ async function updateDataPersonal(){
   }catch(e){
     showLoading(false);
     notif.className = 'status error';
-    notif.innerHTML = ' Gagal: '+e.message;
+    notif.innerHTML = '❌ Gagal: '+e.message;
   }
 }
 
@@ -891,7 +919,7 @@ function downloadSlipDetail(i) {
   const s = slipList[i];
   if (!el || !s) return;
   const originalText = event.target.innerHTML;
-  event.target.innerHTML = `<span style="font-size:16px">⏳</span> Memproses...`;
+  event.target.innerHTML = `<span style="font-size:16px"></span> Memproses...`;
   event.target.disabled = true;
   html2pdf().set({
     margin: 10,
