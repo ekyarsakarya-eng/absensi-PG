@@ -150,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="form-group">
           <div class="input-wrap">
             <input type="password" id="password" placeholder="Password" autocomplete="current-password">
-            <span class="toggle-pass" onclick="togglePassword()">👁️‍🗨️</span>
+            <span class="toggle-pass" onclick="togglePassword()">️‍🗨️</span>
           </div>
         </div>
         <button id="btnLogin" class="btn btn-primary">Login</button>
@@ -225,7 +225,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
           </div>
         </div>
         
-        <!-- LOCATION LOCK INFO - TAMBAHAN BARU -->
+        <!-- LOCATION LOCK INFO -->
         <div id="locationLockInfo" class="hidden" style="background:#fef3c7;border:2px solid #fbbf24;border-radius:12px;padding:12px;margin-bottom:16px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <span class="material-icons-round" style="color:#f59e0b;font-size:20px">location_on</span>
@@ -360,7 +360,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="form-group">
           <div class="input-wrap">
             <input type="password" id="passBaru" placeholder="Password Baru">
-            <span class="toggle-pass" onclick="togglePassProfil('passBaru', this)">️‍🗨️</span>
+            <span class="toggle-pass" onclick="togglePassProfil('passBaru', this)">️‍️</span>
           </div>
         </div>
         <div class="form-group">
@@ -431,7 +431,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="nav-label">Rekap</div>
     </div>
     <div class="nav-item" onclick="showPage('slip')">
-      <div class="nav-icon">💌</div>
+      <div class="nav-icon"></div>
       <div class="nav-label">Slip Gaji</div>
     </div>
     <div class="nav-item" onclick="showPage('profil')">
@@ -445,19 +445,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <audio id="audioTing" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> 
-<script src="app.js?v=23"></script>
+<script src="app.js?v=24"></script>
 <script>
 function togglePassword(){
   const i = document.getElementById('password');
   const ic = event.target;
   if(i.type=='password'){i.type='text';ic.textContent='👁️'}
-  else{i.type='password';ic.textContent='️‍🗨️'}
+  else{i.type='password';ic.textContent='️‍️'}
 }
 
 function togglePassProfil(id, el){
   const i = document.getElementById(id);
   if(i.type=='password'){i.type='text';el.textContent='👁️'}
-  else{i.type='password';el.textContent='👁️‍🗨️'}
+  else{i.type='password';el.textContent='️‍🗨️'}
 }
 </script>
 </body>
