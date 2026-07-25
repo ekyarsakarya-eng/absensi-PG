@@ -239,32 +239,18 @@ async function absenCepatDariHome(){
   setTimeout(()=>{ document.getElementById('btnAksiUtama').click(); },300);
 }
 
-// === OPTIMIZED: initAbsensi dengan parallel execution ===
 async function initAbsensi(){
   const wmAlamat = document.getElementById('wmAlamat');
-  
-  // JALANKAN GPS, LOCATION LOCK, DAN STATUS CHECK SECARA PARALEL
-  const promises = [
-    getGPS(),
-    checkLocationLock(),
-    cekStatusHariIni()
-  ];
-  
+  const promises = [getGPS(), checkLocationLock(), cekStatusHariIni()];
   await Promise.all(promises);
-  
-  // Reverse geocoding hanya jika online & GPS ada (tidak blocking)
   if(gpsData && navigator.onLine){
-    getAlamat().then(()=>{
-      // Alamat sudah di-set, tidak perlu await
-    });
+    getAlamat().then(()=>{});
   } else {
     if(wmAlamat) wmAlamat.textContent = 'Alamat tidak tersedia';
   }
-  
   updateTombolUtama();
 }
 
-// === OPTIMIZED: getGPS dengan cache & fallback ===
 async function getGPS(forceHighAccuracy = false){
   return new Promise((resolve)=>{
     if(!navigator.geolocation){
@@ -274,12 +260,10 @@ async function getGPS(forceHighAccuracy = false){
       resolve();
       return;
     }
-    
-    // CEK CACHE GPS (max 30 detik)
     const cachedGPS = localStorage.getItem('cachedGPS');
     if(cachedGPS && !forceHighAccuracy){
       const parsed = JSON.parse(cachedGPS);
-      if(Date.now() - parsed.timestamp < 30000){ // 30 detik
+      if(Date.now() - parsed.timestamp < 30000){
         gpsData = parsed.data;
         const wmGps = document.getElementById('wmGps');
         if(wmGps) wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (cached ±${Math.round(gpsData.accuracy)}m)`;
@@ -287,32 +271,17 @@ async function getGPS(forceHighAccuracy = false){
         return;
       }
     }
-    
     const wmGps = document.getElementById('wmGps');
     if(wmGps) wmGps.textContent = 'Mencari GPS...';
-    
-    // TIMEOUT DINAMIS: 5 detik jika ada cache, 10 detik jika tidak
     const timeout = cachedGPS ? 5000 : 10000;
-    
     navigator.geolocation.getCurrentPosition(
       (pos)=>{
-        gpsData = {
-          lat: pos.coords.latitude, 
-          lng: pos.coords.longitude,
-          accuracy: pos.coords.accuracy
-        };
-        // SIMPAN KE CACHE
-        localStorage.setItem('cachedGPS', JSON.stringify({
-          data: gpsData,
-          timestamp: Date.now()
-        }));
-        if(wmGps) {
-          wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (±${Math.round(gpsData.accuracy)}m)`;
-        }
+        gpsData = {lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy};
+        localStorage.setItem('cachedGPS', JSON.stringify({data: gpsData, timestamp: Date.now()}));
+        if(wmGps) wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (±${Math.round(gpsData.accuracy)}m)`;
         resolve();
       },
       (err)=>{
-        // FALLBACK: gunakan cache lama jika ada
         if(cachedGPS){
           const parsed = JSON.parse(cachedGPS);
           gpsData = parsed.data;
@@ -328,11 +297,7 @@ async function getGPS(forceHighAccuracy = false){
         if(wmGps) wmGps.textContent = errorMsg;
         resolve();
       },
-      {
-        enableHighAccuracy: forceHighAccuracy,
-        timeout: timeout,
-        maximumAge: 30000
-      }
+      {enableHighAccuracy: forceHighAccuracy, timeout: timeout, maximumAge: 30000}
     );
   });
 }
@@ -393,28 +358,22 @@ function batalFoto(){
   document.getElementById('preview').classList.add('hidden');
 }
 
-// === OPTIMIZED: btnAmbilFoto dengan resolusi lebih kecil ===
 document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-
-  // OPTIMIZED: Resolusi lebih kecil untuk upload cepat
   const maxWidth = 800;
   const maxHeight = 600;
   let width = video.videoWidth || 640;
   let height = video.videoHeight || 480;
-  
   if(width > maxWidth || height > maxHeight){
     const ratio = Math.min(maxWidth/width, maxHeight/height);
     width = width * ratio;
     height = height * ratio;
   }
-  
   canvas.width = width;
   canvas.height = height;
   ctx.drawImage(video, 0, 0, width, height);
-
   ctx.fillStyle = 'rgba(0,0,0,0.7)';
   ctx.fillRect(10, canvas.height-80, 250, 70);
   ctx.fillStyle = '#fff';
@@ -424,8 +383,6 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   ctx.fillText(document.getElementById('wmTanggal').textContent, 15, canvas.height-45);
   ctx.fillText(document.getElementById('wmGps').textContent, 15, canvas.height-30);
   ctx.fillText(document.getElementById('wmAlamat').textContent.substring(0,35), 15, canvas.height-15);
-
-  // OPTIMIZED: Kualitas 0.5 untuk upload lebih cepat
   const b64 = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
   document.getElementById('preview').src = canvas.toDataURL('image/jpeg', 0.5);
   document.getElementById('preview').classList.remove('hidden');
@@ -434,14 +391,11 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   await kirimAbsenCepat(b64);
 });
 
-// === OPTIMIZED: kirimAbsenCepat dengan cleanup cache ===
+// === FIXED: kirimAbsenCepat dengan UI update langsung ===
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
-  
-  if(!gpsData){
-    await getGPS(true);
-  }
+  if(!gpsData){ await getGPS(true); }
 
   try{
     const res = await fetch(GAS_URL,{
@@ -452,22 +406,34 @@ async function kirimAbsenCepat(b64){
     if(hasil.status==='sukses'){
       document.getElementById('audioTing').play();
       showNotif('✅ Absen berhasil jam '+hasil.jam, false, false);
-      if(tipe==='in') statusHariIni.masuk = hasil.jam;
-      else statusHariIni.pulang = hasil.jam;
+      
+      // UPDATE STATUS LANGSUNG
+      if(tipe==='in'){
+        statusHariIni.masuk = hasil.jam;
+      } else {
+        statusHariIni.pulang = hasil.jam;
+      }
+      
       const today = new Date();
       const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
-      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: todayStr }));
+      localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({...statusHariIni, tgl: todayStr}));
       
-      // HAPUS CACHE GPS KARENA SUDAH ABSEN
+      // HAPUS CACHE GPS
       localStorage.removeItem('cachedGPS');
       
-      await cekStatusHariIni();
-      updateTombolUtama();
-      setTimeout(()=>{ document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); document.getElementById('preview').classList.add('hidden'); },2000);
+      // UPDATE UI LANGSUNG
+      updateUIAfterAbsen();
+      
+      setTimeout(()=>{ 
+        document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); 
+        document.getElementById('preview').classList.add('hidden'); 
+      }, 2000);
     } else {
       const pesanError = hasil.pesan || hasil.message || 'Gagal absen';
       showNotif('❌ ' + pesanError, true, false);
-      if(pesanError.includes('meter') || pesanError.includes('lokasi')) alert('⚠️ LOCATION LOCK AKTIF\n\n' + pesanError + '\n\nPastikan Anda berada di lokasi yang ditentukan.');
+      if(pesanError.includes('meter') || pesanError.includes('lokasi')){
+        alert('⚠️ LOCATION LOCK AKTIF\n\n' + pesanError + '\n\nPastikan Anda berada di lokasi yang ditentukan.');
+      }
       setTimeout(batalFoto, 2000);
     }
   }catch(e){
@@ -476,6 +442,72 @@ async function kirimAbsenCepat(b64){
     localStorage.setItem('offlineAbsen', JSON.stringify(offline));
     showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
     setTimeout(batalFoto, 2000);
+  }
+}
+
+// === FUNGSI BARU: Update UI langsung setelah absen ===
+function updateUIAfterAbsen(){
+  // Update card Masuk/Pulang di halaman absensi
+  const waktuMasukEl = document.getElementById('waktuMasuk');
+  const waktuPulangEl = document.getElementById('waktuPulang');
+  const itemMasukEl = document.getElementById('itemMasuk');
+  const itemPulangEl = document.getElementById('itemPulang');
+  
+  if(waktuMasukEl) waktuMasukEl.textContent = statusHariIni.masuk || 'Belum absen';
+  if(waktuPulangEl) waktuPulangEl.textContent = statusHariIni.pulang || 'Belum absen';
+  
+  if(itemMasukEl){
+    itemMasukEl.classList.remove('active','done');
+    if(statusHariIni.masuk) itemMasukEl.classList.add('done');
+    else itemMasukEl.classList.add('active');
+  }
+  
+  if(itemPulangEl){
+    itemPulangEl.classList.remove('active','done');
+    if(statusHariIni.pulang) itemPulangEl.classList.add('done');
+    else if(statusHariIni.masuk) itemPulangEl.classList.add('active');
+  }
+  
+  // Update tombol utama
+  updateTombolUtama();
+  
+  // Update juga UI di home page
+  const homeWaktuMasuk = document.getElementById('homeWaktuMasuk');
+  const homeWaktuPulang = document.getElementById('homeWaktuPulang');
+  const homeItemMasuk = document.getElementById('homeItemMasuk');
+  const homeItemPulang = document.getElementById('homeItemPulang');
+  const btnAbsenCepat = document.getElementById('btnAbsenCepat');
+  const iconAbsenCepat = document.getElementById('iconAbsenCepat');
+  const textAbsenCepat = document.getElementById('textAbsenCepat');
+  
+  if(homeWaktuMasuk) homeWaktuMasuk.textContent = statusHariIni.masuk || '-';
+  if(homeWaktuPulang) homeWaktuPulang.textContent = statusHariIni.pulang || '-';
+  
+  if(homeItemMasuk){
+    homeItemMasuk.classList.remove('active','done');
+    if(statusHariIni.masuk) homeItemMasuk.classList.add('done');
+  }
+  
+  if(homeItemPulang){
+    homeItemPulang.classList.remove('active','done');
+    if(statusHariIni.pulang) homeItemPulang.classList.add('done');
+    else if(statusHariIni.masuk) homeItemPulang.classList.add('active');
+  }
+  
+  if(btnAbsenCepat && iconAbsenCepat && textAbsenCepat){
+    if(statusHariIni.masuk && statusHariIni.pulang){
+      btnAbsenCepat.disabled = true;
+      iconAbsenCepat.textContent = 'check_circle';
+      textAbsenCepat.textContent = 'SUDAH ABSEN LENGKAP';
+    } else if(statusHariIni.masuk){
+      btnAbsenCepat.disabled = false;
+      iconAbsenCepat.textContent = 'logout';
+      textAbsenCepat.textContent = 'ABSEN PULANG';
+    } else {
+      btnAbsenCepat.disabled = false;
+      iconAbsenCepat.textContent = 'login';
+      textAbsenCepat.textContent = 'ABSEN MASUK';
+    }
   }
 }
 
@@ -609,7 +641,7 @@ async function gantiPassword(){
   const notif = document.getElementById('notifPass');
   if(!lama ||!baru ||!baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Semua field wajib diisi'; notif.classList.remove('hidden'); return; }
   if(baru!== baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Password baru tidak cocok'; notif.classList.remove('hidden'); return; }
-  if(baru.length < 5){ notif.className = 'status error'; notif.innerHTML = '❌ Password minimal 5 karakter'; notif.classList.remove('hidden'); return; }
+  if(baru.length < 5){ notif.className = 'status error'; notif.innerHTML = ' Password minimal 5 karakter'; notif.classList.remove('hidden'); return; }
   notif.className = 'status loading';
   notif.innerHTML = '⏳ Update password...';
   notif.classList.remove('hidden');
@@ -663,7 +695,7 @@ async function updateDataPersonal(){
   }catch(e){
     showLoading(false);
     notif.className = 'status error';
-    notif.innerHTML = '❌ Gagal: '+e.message;
+    notif.innerHTML = ' Gagal: '+e.message;
   }
 }
 
@@ -706,7 +738,6 @@ function updateJarakKeLokasi(lockData){
   else jarakEl.innerHTML = `Jarak: <span style="color:#dc2626">${Math.round(jarak)}m (Max: ${radius}m) ✗</span>`;
 }
 
-// ===== SLIP GAJI KARYAWAN =====
 async function loadSlipGaji(){
   document.getElementById('slipOverlay')?.remove();
   const overlay = document.createElement('div');
@@ -792,9 +823,7 @@ function tutupSlip(){
 function bukaSlip(i) {
   const s = slipList[i];
   if (!s) return;
-
   const fmt = n => Number(n || 0).toLocaleString('id-ID');
-
   const html = `
     <div id="slipContentDetail" style="font-family:'Plus Jakarta Sans',sans-serif;max-width:800px;margin:0 auto;background:white;color:#111;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
       <div style="background:linear-gradient(135deg,#1e40af,#3b82f6);padding:24px 32px;color:white;text-align:center">
@@ -839,7 +868,6 @@ function bukaSlip(i) {
       <div style="text-align:center;padding:0 32px 24px;font-size:11px;color:#94a3b8;border-top:1px solid #e5e7eb;margin-top:16px;padding-top:16px">Slip gaji ini dicetak secara otomatis dan sah tanpa tanda tangan basah • Periode ${s.periode}</div>
     </div>
   `;
-
   const overlay = document.getElementById('slipOverlay');
   if (overlay) {
     overlay.innerHTML = `
@@ -862,11 +890,9 @@ function downloadSlipDetail(i) {
   const el = document.getElementById('slipContentDetail');
   const s = slipList[i];
   if (!el || !s) return;
-
   const originalText = event.target.innerHTML;
   event.target.innerHTML = `<span style="font-size:16px">⏳</span> Memproses...`;
   event.target.disabled = true;
-
   html2pdf().set({
     margin: 10,
     filename: `Slip_Gaji_${s.nama}_${s.periode.replace(/\//g, '-')}.pdf`,
@@ -889,7 +915,6 @@ function formatRupiah(angka) {
   return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-// Auto login jika ada session
 window.addEventListener('load', ()=>{
   try{
     const saved = localStorage.getItem('currentUser');
@@ -913,7 +938,6 @@ window.addEventListener('load', ()=>{
           document.getElementById('fotoProfilAbsen').style.display = 'block';
         }
         showPage('home');
-        // PRE-LOAD GPS saat login untuk absen lebih cepat
         setTimeout(()=>{ getGPS(); }, 1000);
         return;
       }
