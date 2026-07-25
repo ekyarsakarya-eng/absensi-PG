@@ -23,11 +23,35 @@ function showPage(page){
   if(page!=='login') document.getElementById('bottomNav').classList.remove('hidden');
   else document.getElementById('bottomNav').classList.add('hidden');
 
-  if(page === 'home') { updateJam(); updateStatusHome(); checkOfflineData(); }
+  if(page === 'home') { 
+  updateJam(); 
+  updateStatusHome(); 
+  updateGreetingWithPasaran(); // Tambahkan ini
+  checkOfflineData(); 
+}
   if(page === 'absensi') initAbsensi();
   if(page === 'rekap') loadRekap();
   if(page === 'profil') loadProfil();
   if(page === 'slip') loadSlipGaji();
+}
+
+function updateGreetingWithPasaran() {
+  const namaKaryawanEl = document.getElementById('namaKaryawan');
+  const tglSekarangEl = document.getElementById('tglSekarang');
+  
+  if(!namaKaryawanEl || !tglSekarangEl) return;
+  
+  const now = new Date();
+  const hariList = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const pasaran = getPasaranJawa(now);
+  const hari = hariList[now.getDay()];
+  const tanggal = now.getDate();
+  const bulan = bulanList[now.getMonth()];
+  const tahun = now.getFullYear();
+  
+  // Format: Sabtu Pahing, 25 Juli 2026
+  tglSekarangEl.textContent = `${hari} ${pasaran}, ${tanggal} ${bulan} ${tahun}`;
 }
 
 function updateJam(){
@@ -51,6 +75,16 @@ function updateJam(){
   };
   update();
   jamInterval = setInterval(update, 1000);
+}
+
+function getPasaranJawa(tanggal) {
+  const pasaranList = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
+  // Reference: 1 Januari 1900 adalah Senin Legi
+  const referenceDate = new Date(1900, 0, 1);
+  const diffTime = tanggal.getTime() - referenceDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const pasaranIndex = (diffDays % 5 + 5) % 5; // Handle negative numbers
+  return pasaranList[pasaranIndex];
 }
 
 function toggleDarkMode(){
