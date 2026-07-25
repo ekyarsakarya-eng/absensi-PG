@@ -24,11 +24,10 @@ function showPage(page){
   else document.getElementById('bottomNav').classList.add('hidden');
 
   if(page === 'home') { 
-    updateJam(); 
-    updateStatusHome(); 
-    updateGreetingWithPasaran(); // <-- PASARAN JAWA
-    checkOfflineData(); 
-  }
+  updateJam(); 
+  updateStatusHome(); 
+  checkOfflineData(); 
+}
   if(page === 'absensi') initAbsensi();
   if(page === 'rekap') loadRekap();
   if(page === 'profil') loadProfil();
@@ -68,13 +67,24 @@ function updateJam(){
   const update = ()=>{
     const now = new Date();
     const jam = now.toLocaleTimeString('id-ID',{hour12:false});
-    const tgl = now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    
+    // === FORMAT DENGAN PASARAN JAWA ===
+    const hariList = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const bulanList = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const pasaran = getPasaranJawa(now);
+    const hari = hariList[now.getDay()];
+    const tanggal = now.getDate();
+    const bulan = bulanList[now.getMonth()];
+    const tahun = now.getFullYear();
+    const tglDenganPasaran = `${hari} ${pasaran}, ${tanggal} ${bulan} ${tahun}`;
+    // ====================================
+    
     const elJam = document.getElementById('jamSekarang');
     if(elJam) elJam.textContent = jam;
     const elTgl = document.getElementById('tglSekarang');
-    if(elTgl) elTgl.textContent = tgl;
+    if(elTgl) elTgl.textContent = tglDenganPasaran; // <-- PAKAI YANG INI
     const elTglAbsen = document.getElementById('tglAbsen');
-    if(elTglAbsen) elTglAbsen.textContent = tgl;
+    if(elTglAbsen) elTglAbsen.textContent = tglDenganPasaran; // <-- JUGA DI SINI
     const elJamAbsen = document.getElementById('jamAbsen');
     if(elJamAbsen) elJamAbsen.textContent = jam;
     const elWmJam = document.getElementById('wmJamBox');
