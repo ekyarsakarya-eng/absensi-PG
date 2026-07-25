@@ -24,22 +24,31 @@ function showPage(page){
   else document.getElementById('bottomNav').classList.add('hidden');
 
   if(page === 'home') { 
-  updateJam(); 
-  updateStatusHome(); 
-  updateGreetingWithPasaran(); // Tambahkan ini
-  checkOfflineData(); 
-}
+    updateJam(); 
+    updateStatusHome(); 
+    updateGreetingWithPasaran(); // <-- PASARAN JAWA
+    checkOfflineData(); 
+  }
   if(page === 'absensi') initAbsensi();
   if(page === 'rekap') loadRekap();
   if(page === 'profil') loadProfil();
   if(page === 'slip') loadSlipGaji();
 }
 
+// === FUNGSI PASARAN JAWA ===
+function getPasaranJawa(tanggal) {
+  const pasaranList = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
+  // Reference: 1 Januari 1900 adalah Senin Legi
+  const referenceDate = new Date(1900, 0, 1);
+  const diffTime = tanggal.getTime() - referenceDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const pasaranIndex = (diffDays % 5 + 5) % 5; // Handle negative numbers
+  return pasaranList[pasaranIndex];
+}
+
 function updateGreetingWithPasaran() {
-  const namaKaryawanEl = document.getElementById('namaKaryawan');
   const tglSekarangEl = document.getElementById('tglSekarang');
-  
-  if(!namaKaryawanEl || !tglSekarangEl) return;
+  if(!tglSekarangEl) return;
   
   const now = new Date();
   const hariList = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -75,16 +84,6 @@ function updateJam(){
   };
   update();
   jamInterval = setInterval(update, 1000);
-}
-
-function getPasaranJawa(tanggal) {
-  const pasaranList = ['Legi', 'Pahing', 'Pon', 'Wage', 'Kliwon'];
-  // Reference: 1 Januari 1900 adalah Senin Legi
-  const referenceDate = new Date(1900, 0, 1);
-  const diffTime = tanggal.getTime() - referenceDate.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const pasaranIndex = (diffDays % 5 + 5) % 5; // Handle negative numbers
-  return pasaranList[pasaranIndex];
 }
 
 function toggleDarkMode(){
@@ -190,7 +189,6 @@ async function syncOfflineData(){
   alert(`Sync selesai: ${sukses}/${data.length} data berhasil`);
 }
 
-// === FUNGSI BARU: Cek apakah data lokal sudah valid untuk hari ini ===
 function isLocalDataValid(){
   const today = new Date();
   const todayStr = String(today.getDate()).padStart(2,'0') + '/' + 
@@ -211,7 +209,6 @@ async function updateStatusHome(){
   const text = document.getElementById('textAbsenCepat');
   btn.disabled = true; text.textContent = 'Cek status...'; icon.textContent = 'hourglass_empty';
 
-  // SKIP FETCH jika data lokal sudah lengkap (sudah absen masuk & pulang hari ini)
   if(isLocalDataValid()){
     const cached = JSON.parse(localStorage.getItem('statusHariIni_'+currentUser.username));
     statusHariIni = {masuk: cached.masuk, pulang: cached.pulang};
@@ -259,7 +256,6 @@ async function cekStatusHariIni(){
   const btn = document.getElementById('btnAksiUtama');
   btn.disabled = true;
 
-  // SKIP FETCH jika data lokal sudah lengkap
   if(isLocalDataValid()){
     const cached = JSON.parse(localStorage.getItem('statusHariIni_'+currentUser.username));
     statusHariIni = {masuk: cached.masuk, pulang: cached.pulang};
@@ -395,7 +391,6 @@ function updateTombolUtama(){
 }
 
 document.getElementById('btnAksiUtama').addEventListener('click', async ()=>{
-  // CEK: jika sudah lengkap, tampilkan pesan dan jangan buka kamera
   if(statusHariIni.masuk && statusHariIni.pulang){
     showNotif('✅ Anda sudah absen lengkap hari ini', false, false);
     return;
@@ -473,7 +468,6 @@ async function kirimAbsenCepat(b64){
       document.getElementById('audioTing').play();
       showNotif('✅ Absen berhasil jam '+hasil.jam, false, false);
       
-      // UPDATE STATUS LANGSUNG
       if(tipe==='in'){
         statusHariIni.masuk = hasil.jam;
       } else {
@@ -484,10 +478,8 @@ async function kirimAbsenCepat(b64){
       const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
       localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({...statusHariIni, tgl: todayStr}));
       
-      // HAPUS CACHE GPS
       localStorage.removeItem('cachedGPS');
       
-      // UPDATE UI LANGSUNG
       updateUIAfterAbsen();
       
       setTimeout(()=>{ 
@@ -498,7 +490,7 @@ async function kirimAbsenCepat(b64){
       const pesanError = hasil.pesan || hasil.message || 'Gagal absen';
       showNotif('❌ ' + pesanError, true, false);
       if(pesanError.includes('meter') || pesanError.includes('lokasi')){
-        alert('⚠️ LOCATION LOCK AKTIF\n\n' + pesanError + '\n\nPastikan Anda berada di lokasi yang ditentukan.');
+        alert('️ LOCATION LOCK AKTIF\n\n' + pesanError + '\n\nPastikan Anda berada di lokasi yang ditentukan.');
       }
       setTimeout(batalFoto, 2000);
     }
@@ -506,7 +498,7 @@ async function kirimAbsenCepat(b64){
     const offline = JSON.parse(localStorage.getItem('offlineAbsen')||'[]');
     offline.push({ action:'absen', nama:currentUser.nama, tipe:tipe, foto:b64, lat: gpsData? gpsData.lat.toString() : '', lng: gpsData? gpsData.lng.toString() : '', alamat: alamatData, timestamp: Date.now() });
     localStorage.setItem('offlineAbsen', JSON.stringify(offline));
-    showNotif(' Offline, disimpan dulu. Nanti auto-sync', false, false);
+    showNotif('📡 Offline, disimpan dulu. Nanti auto-sync', false, false);
     setTimeout(batalFoto, 2000);
   }
 }
@@ -578,7 +570,7 @@ function showNotif(txt, err=false, load=false){
   const ic = document.getElementById('notifIcon');
   document.getElementById('notifText').textContent = txt || (err? 'Terjadi kesalahan' : 'Berhasil');
   n.classList.remove('error');
-  if(load) ic.textContent = '⏳';
+  if(load) ic.textContent = '';
   else if(err){ ic.textContent = '❌'; n.classList.add('error'); }
   else { ic.textContent = '✅'; }
   n.classList.remove('hidden');
@@ -701,8 +693,8 @@ async function gantiPassword(){
   const baru = document.getElementById('passBaru').value;
   const baru2 = document.getElementById('passBaru2').value;
   const notif = document.getElementById('notifPass');
-  if(!lama ||!baru ||!baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Semua field wajib diisi'; notif.classList.remove('hidden'); return; }
-  if(baru!== baru2){ notif.className = 'status error'; notif.innerHTML = '❌ Password baru tidak cocok'; notif.classList.remove('hidden'); return; }
+  if(!lama ||!baru ||!baru2){ notif.className = 'status error'; notif.innerHTML = ' Semua field wajib diisi'; notif.classList.remove('hidden'); return; }
+  if(baru!== baru2){ notif.className = 'status error'; notif.innerHTML = ' Password baru tidak cocok'; notif.classList.remove('hidden'); return; }
   if(baru.length < 5){ notif.className = 'status error'; notif.innerHTML = '❌ Password minimal 5 karakter'; notif.classList.remove('hidden'); return; }
   notif.className = 'status loading';
   notif.innerHTML = '⏳ Update password...';
@@ -953,7 +945,7 @@ function downloadSlipDetail(i) {
   const s = slipList[i];
   if (!el || !s) return;
   const originalText = event.target.innerHTML;
-  event.target.innerHTML = `<span style="font-size:16px"></span> Memproses...`;
+  event.target.innerHTML = `<span style="font-size:16px">⏳</span> Memproses...`;
   event.target.disabled = true;
   html2pdf().set({
     margin: 10,
