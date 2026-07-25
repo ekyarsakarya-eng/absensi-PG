@@ -119,6 +119,7 @@ function logout(){
   currentUser = null;
   statusHariIni = {masuk:'', pulang:''};
   localStorage.removeItem('currentUser');
+  localStorage.removeItem('cachedGPS');
   Object.keys(localStorage).forEach(k=>{ if(k.startsWith('statusHariIni_')) localStorage.removeItem(k); });
   if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; }
   showPage('login');
@@ -238,31 +239,87 @@ async function absenCepatDariHome(){
   setTimeout(()=>{ document.getElementById('btnAksiUtama').click(); },300);
 }
 
+// === OPTIMIZED: initAbsensi dengan parallel execution ===
 async function initAbsensi(){
-  await getGPS();
-  await getAlamat();
-  await checkLocationLock();
-  await cekStatusHariIni();
+  const wmAlamat = document.getElementById('wmAlamat');
+  
+  // JALANKAN GPS, LOCATION LOCK, DAN STATUS CHECK SECARA PARALEL
+  const promises = [
+    getGPS(),
+    checkLocationLock(),
+    cekStatusHariIni()
+  ];
+  
+  await Promise.all(promises);
+  
+  // Reverse geocoding hanya jika online & GPS ada (tidak blocking)
+  if(gpsData && navigator.onLine){
+    getAlamat().then(()=>{
+      // Alamat sudah di-set, tidak perlu await
+    });
+  } else {
+    if(wmAlamat) wmAlamat.textContent = 'Alamat tidak tersedia';
+  }
+  
   updateTombolUtama();
 }
 
-async function getGPS(){
+// === OPTIMIZED: getGPS dengan cache & fallback ===
+async function getGPS(forceHighAccuracy = false){
   return new Promise((resolve)=>{
     if(!navigator.geolocation){
       gpsData = null;
       const wmGps = document.getElementById('wmGps');
       if(wmGps) wmGps.textContent = 'GPS tidak support';
-      resolve(); return;
+      resolve();
+      return;
     }
+    
+    // CEK CACHE GPS (max 30 detik)
+    const cachedGPS = localStorage.getItem('cachedGPS');
+    if(cachedGPS && !forceHighAccuracy){
+      const parsed = JSON.parse(cachedGPS);
+      if(Date.now() - parsed.timestamp < 30000){ // 30 detik
+        gpsData = parsed.data;
+        const wmGps = document.getElementById('wmGps');
+        if(wmGps) wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (cached ±${Math.round(gpsData.accuracy)}m)`;
+        resolve();
+        return;
+      }
+    }
+    
     const wmGps = document.getElementById('wmGps');
     if(wmGps) wmGps.textContent = 'Mencari GPS...';
+    
+    // TIMEOUT DINAMIS: 5 detik jika ada cache, 10 detik jika tidak
+    const timeout = cachedGPS ? 5000 : 10000;
+    
     navigator.geolocation.getCurrentPosition(
       (pos)=>{
-        gpsData = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
-        if(wmGps) wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (±${Math.round(gpsData.accuracy)}m)`;
+        gpsData = {
+          lat: pos.coords.latitude, 
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        };
+        // SIMPAN KE CACHE
+        localStorage.setItem('cachedGPS', JSON.stringify({
+          data: gpsData,
+          timestamp: Date.now()
+        }));
+        if(wmGps) {
+          wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (±${Math.round(gpsData.accuracy)}m)`;
+        }
         resolve();
       },
       (err)=>{
+        // FALLBACK: gunakan cache lama jika ada
+        if(cachedGPS){
+          const parsed = JSON.parse(cachedGPS);
+          gpsData = parsed.data;
+          if(wmGps) wmGps.textContent = `${gpsData.lat.toFixed(6)}, ${gpsData.lng.toFixed(6)} (cache lama ±${Math.round(gpsData.accuracy)}m)`;
+          resolve();
+          return;
+        }
         gpsData = null;
         let errorMsg = 'GPS error';
         if(err.code===1) errorMsg = 'Izin GPS ditolak';
@@ -271,7 +328,11 @@ async function getGPS(){
         if(wmGps) wmGps.textContent = errorMsg;
         resolve();
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      {
+        enableHighAccuracy: forceHighAccuracy,
+        timeout: timeout,
+        maximumAge: 30000
+      }
     );
   });
 }
@@ -332,13 +393,28 @@ function batalFoto(){
   document.getElementById('preview').classList.add('hidden');
 }
 
+// === OPTIMIZED: btnAmbilFoto dengan resolusi lebih kecil ===
 document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-  canvas.width = video.videoWidth || 640;
-  canvas.height = video.videoHeight || 480;
-  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+  // OPTIMIZED: Resolusi lebih kecil untuk upload cepat
+  const maxWidth = 800;
+  const maxHeight = 600;
+  let width = video.videoWidth || 640;
+  let height = video.videoHeight || 480;
+  
+  if(width > maxWidth || height > maxHeight){
+    const ratio = Math.min(maxWidth/width, maxHeight/height);
+    width = width * ratio;
+    height = height * ratio;
+  }
+  
+  canvas.width = width;
+  canvas.height = height;
+  ctx.drawImage(video, 0, 0, width, height);
+
   ctx.fillStyle = 'rgba(0,0,0,0.7)';
   ctx.fillRect(10, canvas.height-80, 250, 70);
   ctx.fillStyle = '#fff';
@@ -348,18 +424,25 @@ document.getElementById('btnAmbilFoto').addEventListener('click', async ()=>{
   ctx.fillText(document.getElementById('wmTanggal').textContent, 15, canvas.height-45);
   ctx.fillText(document.getElementById('wmGps').textContent, 15, canvas.height-30);
   ctx.fillText(document.getElementById('wmAlamat').textContent.substring(0,35), 15, canvas.height-15);
-  const b64 = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
-  document.getElementById('preview').src = canvas.toDataURL('image/jpeg', 0.6);
+
+  // OPTIMIZED: Kualitas 0.5 untuk upload lebih cepat
+  const b64 = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
+  document.getElementById('preview').src = canvas.toDataURL('image/jpeg', 0.5);
   document.getElementById('preview').classList.remove('hidden');
   if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; }
   document.getElementById('kameraArea').classList.add('hidden');
   await kirimAbsenCepat(b64);
 });
 
+// === OPTIMIZED: kirimAbsenCepat dengan cleanup cache ===
 async function kirimAbsenCepat(b64){
   const tipe = document.getElementById('btnAksiUtama').dataset.tipe;
   showNotif('Sabar ya, lagi upload foto keren kamu...', false, true);
-  if(!gpsData) await getGPS();
+  
+  if(!gpsData){
+    await getGPS(true);
+  }
+
   try{
     const res = await fetch(GAS_URL,{
       method:'POST',
@@ -374,6 +457,10 @@ async function kirimAbsenCepat(b64){
       const today = new Date();
       const todayStr = String(today.getDate()).padStart(2,'0') + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + today.getFullYear();
       localStorage.setItem('statusHariIni_'+currentUser.username, JSON.stringify({ ...statusHariIni, tgl: todayStr }));
+      
+      // HAPUS CACHE GPS KARENA SUDAH ABSEN
+      localStorage.removeItem('cachedGPS');
+      
       await cekStatusHariIni();
       updateTombolUtama();
       setTimeout(()=>{ document.getElementById('tombolUtamaAbsen').classList.remove('hidden'); document.getElementById('preview').classList.add('hidden'); },2000);
@@ -646,7 +733,7 @@ async function loadSlipGaji(){
   const tampilkan = (list) => {
     const hidden = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
     let data = list.filter(s => !hidden.includes(s.periode));
-    data.sort((a,b) => parseTgl(b.periode) - parseTgl(a.periode)); // Terbaru di atas
+    data.sort((a,b) => parseTgl(b.periode) - parseTgl(a.periode));
     slipList = data;
     const total = data.reduce((s,x)=>s+Number(x.takeHome),0);
     container.innerHTML = `<div style="padding:8px 16px;color:#64748b;font-size:12px">Total ${data.length} slip • Total Penghasilan: Rp ${total.toLocaleString('id-ID')}</div>` + data.map((s,i)=>`
@@ -826,6 +913,8 @@ window.addEventListener('load', ()=>{
           document.getElementById('fotoProfilAbsen').style.display = 'block';
         }
         showPage('home');
+        // PRE-LOAD GPS saat login untuk absen lebih cepat
+        setTimeout(()=>{ getGPS(); }, 1000);
         return;
       }
     }
