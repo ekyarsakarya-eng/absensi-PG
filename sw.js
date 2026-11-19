@@ -1,48 +1,49 @@
-const CACHE_NAME = 'ABSENSI-PG-V9'; // naikkan dari V8 → V9
-const URLS_TO_CACHE = [
-  '/absensi-PG/',
-  '/absensi-PG/index.html',
-  '/absensi-PG/app.js',
-  '/absensi-PG/manifest.json',
-  '/absensi-PG/icon-192.png',
-  '/absensi-PG/icon-512.png'
-];
+// sw.js - TIDAK PERLU DIUBAH VERSI LAGI SAAT DEPLOY
+const CACHE_NAME = 'pamili-garmen-cache';
+// File yang WAJIB selalu terbaru (Network-First):
+const NETWORK_FIRST = ['index.html', 'app.js'];
 
-self.addEventListener('install', event => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
+self.addEventListener('install', () => self.skipWaiting());
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-    ))
-  );
-  self.clients.claim();
-});
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
-self.addEventListener('fetch', event => {
-  if (event.request.url.includes('script.google.com') || 
-      event.request.url.includes('nominatim.openstreetmap.org')) {
-    return event.respondWith(fetch(event.request));
+  const path = url.pathname.replace(/^\//, '') || 'index.html';
+  const isNetworkFirst = req.mode === 'navigate' || NETWORK_FIRST.includes(path);
+
+  if (isNetworkFirst) {
+    // Network-First: ambil terbaru dari GitHub, simpan ke cache sbg cadangan offline
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(req, copy));
+        return res;
+      }).catch(() =>
+        caches.match(req).then(r => r || (req.mode === 'navigate' ? caches.match('/index.html') : undefined))
+      )
+    );
+  } else {
+    // Aset lain (icon, manifest, dll): Stale-While-Revalidate (cepat + auto-refresh)
+    e.respondWith(
+      caches.match(req).then(cached => {
+        const net = fetch(req).then(res => {
+          const c = res.clone();
+          caches.open(CACHE_NAME).then(x => x.put(req, c));
+          return res;
+        }).catch(() => cached);
+        return cached || net;
+      })
+    );
   }
-  event.respondWith(
-    caches.match(event.request).then(resp => resp || fetch(event.request))
-  );
-});
-
-// === TAMBAHAN UNTUK NOTIFIKASI ===
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  event.waitUntil(
-    clients.matchAll({type:'window'}).then(list => {
-      for (const c of list) {
-        if (c.url.includes('/absensi-PG/') && 'focus' in c) return c.focus();
-      }
-      return clients.openWindow('/absensi-PG/');
-    })
-  );
 });
