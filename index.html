@@ -102,18 +102,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .nav-label{font-size:11px;margin-top:2px}
 .hidden{display:none!important}
 
-/* ===== POLES HALAMAN LOGIN ===== */
-#page-login{background:linear-gradient(160deg,#eaf2ff 0%,var(--bg) 45%);display:flex;align-items:center;justify-content:center}
+/* ===== POLES HALAMAN LOGIN (CENTER + PROPORSIONAL ANDROID) ===== */
+#page-login{
+  background:linear-gradient(160deg,#eaf2ff 0%,var(--bg) 45%);
+  min-height:100vh;min-height:100dvh;
+  padding:24px 16px calc(24px + env(safe-area-inset-bottom));
+}
+#page-login.active{display:flex!important;align-items:center;justify-content:center}
 [data-theme="dark"] #page-login{background:linear-gradient(160deg,#16213a 0%,var(--bg) 45%)}
-#page-login .login-wrap{width:100%;max-width:360px;padding:20px}
-#page-login .card{padding:32px 24px;box-shadow:0 12px 32px rgba(11,99,243,.12);border-radius:20px;border:1px solid var(--border)}
-#page-login h2{text-align:center;color:var(--primary);font-size:24px;font-weight:700;margin-bottom:8px}
-#page-login .subtitle{text-align:center;color:var(--text2);font-size:14px;margin-bottom:28px}
-
-/* LOGO BARU (icon_512.png dari repo) */
-#page-login .login-logo{width:104px;height:104px;margin:0 auto 18px;border-radius:24px;overflow:hidden;background:#fff;border:1px solid var(--border);box-shadow:0 8px 24px rgba(11,99,243,.18);animation:logoPop .5s cubic-bezier(.2,.8,.2,1) both}
+#page-login .login-wrap{width:100%;max-width:360px;padding:0}
+#page-login .card{width:100%;padding:32px 24px;box-shadow:0 16px 40px rgba(11,99,243,.14);border-radius:24px;border:1px solid var(--border)}
+#page-login .login-logo{width:96px;height:96px;margin:0 auto 16px;border-radius:22px;overflow:hidden;background:#fff;border:1px solid var(--border);box-shadow:0 8px 22px rgba(11,99,243,.16);animation:logoPop .5s cubic-bezier(.2,.8,.2,1) both}
 #page-login .login-logo img{width:100%;height:100%;object-fit:cover;display:block}
 @keyframes logoPop{from{opacity:0;transform:scale(.82) translateY(10px)}to{opacity:1;transform:none}}
+#page-login h2{text-align:center;color:var(--primary);font-size:26px;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
+#page-login .subtitle{text-align:center;color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.3px;margin-bottom:26px}
+#page-login .form-group{margin-bottom:14px}
+#page-login .form-group input{padding:15px 16px;border-radius:12px;font-size:15px;transition:border-color .2s,box-shadow .2s}
+#page-login .form-group input:focus{box-shadow:0 0 0 3px rgba(11,99,243,.12)}
+#page-login .btn-primary{padding:16px;border-radius:12px;font-size:16px;font-weight:700;margin-top:6px;box-shadow:0 8px 18px rgba(11,99,243,.25)}
 /* ===== /POLES LOGIN ===== */
 
 #itemMasuk.active,#itemPulang.active,#homeItemMasuk.active,#homeItemPulang.active{border:2px solid var(--primary)}
@@ -151,7 +158,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="page active" id="page-login">
     <div class="login-wrap">
       <div class="card">
-        <!-- ===== LOGO BARU DI ATAS JUDUL ===== -->
+        <!-- ===== LOGO DI ATAS JUDUL ===== -->
         <div class="login-logo">
           <img src="icon_512.png" alt="Pamili Garmen" onerror="this.onerror=null;this.src='icon-192.png';">
         </div>
@@ -460,7 +467,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <audio id="audioTing" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="app.js?v=26"></script>
+<script src="app.js?v=27"></script>
 <script>
 function togglePassword(){
   const i = document.getElementById('password');
