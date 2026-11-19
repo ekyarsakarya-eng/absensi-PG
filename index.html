@@ -1,154 +1,142 @@
 <!DOCTYPE html>
 <html lang="id">
-<link rel="manifest" href="manifest.json">
-<meta name="color-scheme" content="light dark">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Absensi PG">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="permissions-policy" content="geolocation=(self)">
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js');
-  });
-}
-
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  setTimeout(() => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User install PWA');
-        }
-        deferredPrompt = null;
-      });
-    }
-  }, 1000);
-});
-
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  console.log('PWA sudah terinstall');
-});
-</script>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0B63F3">
-<title>Absensi Pamili Garmen</title>
-<style>
-:root{
-  --bg:#f5f5f5;--card:#fff;--text:#222;--text2:#666;--border:#E0E0E0;--primary:#0B63F3;--shadow:0 2px 8px rgba(0,0,0,.08);
-}
-[data-theme="dark"]{
-  --bg:#121212;--card:#1e1e1e;--text:#eee;--text2:#aaa;--border:#333;--primary:#4A90E2;--shadow:0 2px 8px rgba(0,0,0,.3);
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background.3s,color.3s}
-#app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);position:relative}
-.page{display:none!important;min-height:100vh;width:100%;position:absolute;top:0;left:0;background:var(--card)}
-.page.active{display:block!important}
-.header{background:linear-gradient(135deg,var(--primary),#4A90E2);color:#fff;padding:16px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
-.header h1{font-size:18px;font-weight:600}
-.header p{font-size:13px;opacity:.9;margin-top:2px}
-.header-actions{display:flex;gap:12px;align-items:center}
-.icon-btn{background:rgba(255,255,255,.2);border:none;width:36px;height:36px;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.icon-btn:active{transform:scale(.9)}
-.content{padding:16px;padding-bottom:80px}
-.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-success{background:#28a745;color:#fff}
-.btn-danger{background:#dc3545;color:#fff}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.form-group{margin-bottom:16px}
-.form-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:var(--bg);color:var(--text)}
-.form-group input:focus{outline:none;border-color:var(--primary);background:var(--card)}
-.input-wrap{position:relative}
-.input-wrap input{padding-right:45px}
-.toggle-pass{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:22px;color:var(--text2);user-select:none}
-.camera-container{position:relative;width:100%;max-width:400px;margin:0 auto}
-#video{width:100%;border-radius:12px;background:#000}
-#canvas{display:none}
-.camera-controls{display:flex;gap:12px;margin-top:16px}
-.camera-controls button{flex:1}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:16px;border-radius:12px}
-.stat-card.blue{background:linear-gradient(135deg,var(--primary),#4A90E2)}
-.stat-card.green{background:linear-gradient(135deg,#28a745,#20c997)}
-.stat-label{font-size:12px;opacity:.9}
-.stat-value{font-size:28px;font-weight:700;margin-top:4px}
-.status{padding:12px;border-radius:8px;margin-top:16px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.status.gagal{background:#F8D7DA;color:#721C24}
-.status.sukses{background:#D4EDDA;color:#155724}
-.status.loading{background:#D1ECF1;color:#0C5460}
-.status.error{background:#F8D7DA;color:#721C24}
-[data-theme="dark"].status.gagal{background:#3a1f1f;color:#ff8a8a}
-[data-theme="dark"].status.sukses{background:#1f3a2a;color:#8affb0}
-[data-theme="dark"].status.loading{background:#1f2f3a;color:#8adfff}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;max-width:480px;margin:0 auto;z-index:100}
-.nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;transition:all.3s}
-.nav-item.active{color:var(--primary)}
-.nav-item:active{background:var(--bg)}
-.nav-icon{font-size:24px}
-.nav-label{font-size:11px;margin-top:2px}
-.hidden{display:none!important}
+  <!-- ===== ANTI-CACHE (WAJIB) ===== -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="cache-control" content="max-age=0">
+  <!-- ============================== -->
 
-/* ===== POLES HALAMAN LOGIN (CENTER + PROPORSIONAL ANDROID) ===== */
-#page-login{
-  background:linear-gradient(160deg,#eaf2ff 0%,var(--bg) 45%);
-  min-height:100vh;min-height:100dvh;
-  padding:24px 16px calc(24px + env(safe-area-inset-bottom));
-}
-#page-login.active{display:flex!important;align-items:center;justify-content:center}
-[data-theme="dark"] #page-login{background:linear-gradient(160deg,#16213a 0%,var(--bg) 45%)}
-#page-login .login-wrap{width:100%;max-width:360px;padding:0}
-#page-login .card{width:100%;padding:32px 24px;box-shadow:0 16px 40px rgba(11,99,243,.14);border-radius:24px;border:1px solid var(--border)}
-#page-login .login-logo{width:96px;height:96px;margin:0 auto 16px;border-radius:22px;overflow:hidden;background:#fff;border:1px solid var(--border);box-shadow:0 8px 22px rgba(11,99,243,.16);animation:logoPop .5s cubic-bezier(.2,.8,.2,1) both}
-#page-login .login-logo img{width:100%;height:100%;object-fit:cover;display:block}
-@keyframes logoPop{from{opacity:0;transform:scale(.82) translateY(10px)}to{opacity:1;transform:none}}
-#page-login h2{text-align:center;color:var(--primary);font-size:26px;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
-#page-login .subtitle{text-align:center;color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.3px;margin-bottom:26px}
-#page-login .form-group{margin-bottom:14px}
-#page-login .form-group input{padding:15px 16px;border-radius:12px;font-size:15px;transition:border-color .2s,box-shadow .2s}
-#page-login .form-group input:focus{box-shadow:0 0 0 3px rgba(11,99,243,.12)}
-#page-login .btn-primary{padding:16px;border-radius:12px;font-size:16px;font-weight:700;margin-top:6px;box-shadow:0 8px 18px rgba(11,99,243,.25)}
-/* ===== /POLES LOGIN ===== */
+  <link rel="manifest" href="manifest.json">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Absensi PG">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="permissions-policy" content="geolocation=(self)">
 
-#itemMasuk.active,#itemPulang.active,#homeItemMasuk.active,#homeItemPulang.active{border:2px solid var(--primary)}
-#itemMasuk.done,#itemPulang.done,#homeItemMasuk.done,#homeItemPulang.done{border:2px solid #28a745;background:#F0FFF4}
-[data-theme="dark"] #itemMasuk.done,[data-theme="dark"] #itemPulang.done,[data-theme="dark"] #homeItemMasuk.done,[data-theme="dark"] #homeItemPulang.done{background:#1f3a2a}
-.material-icons-round{font-family:'Material Icons Round';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
-.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
-.loading-overlay.active{display:flex}
-.spinner{width:40px;height:40px;border:4px solid #fff;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.offline-badge{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#ff9800;color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:200;display:none}
-.offline-badge.active{display:block}
-.rekap-table{width:100%;border-collapse:collapse;font-size:14px}
-.rekap-table thead tr{background:var(--primary);color:#fff}
-.rekap-table th{padding:12px;text-align:center}
-.rekap-table th:first-child{border-radius:8px 0 0 0;text-align:left}
-.rekap-table th:last-child{border-radius:0 8px 0 0}
-.rekap-table td{padding:12px;text-align:center;border-bottom:1px solid var(--border)}
-.rekap-table td:first-child{text-align:left;font-weight:600}
-.rekap-table tbody tr:nth-child(even){background:var(--bg)}
-.rekap-table.weekend{background:#FFF3E0}
-[data-theme="dark"].rekap-table.weekend{background:#3a2e1a}
-.rekap-table.hari-min{color:#F57C00;font-weight:600}
-.bulan-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.bulan-nav button{background:var(--primary);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
-.bulan-nav span{font-weight:600;font-size:16px}
-</style>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0B63F3">
+  <title>Absensi Pamili Garmen</title>
+
+  <style>
+  :root{
+    --bg:#f5f5f5;--card:#fff;--text:#222;--text2:#666;--border:#E0E0E0;--primary:#0B63F3;--shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  [data-theme="dark"]{
+    --bg:#121212;--card:#1e1e1e;--text:#eee;--text2:#aaa;--border:#333;--primary:#4A90E2;--shadow:0 2px 8px rgba(0,0,0,.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;transition:background.3s,color.3s}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);position:relative}
+  .page{display:none!important;min-height:100vh;width:100%;position:absolute;top:0;left:0;background:var(--card)}
+  .page.active{display:block!important}
+  .header{background:linear-gradient(135deg,var(--primary),#4A90E2);color:#fff;padding:16px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:18px;font-weight:600}
+  .header p{font-size:13px;opacity:.9;margin-top:2px}
+  .header-actions{display:flex;gap:12px;align-items:center}
+  .icon-btn{background:rgba(255,255,255,.2);border:none;width:36px;height:36px;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .icon-btn:active{transform:scale(.9)}
+  .content{padding:16px;padding-bottom:80px}
+  .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+  .btn{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-success{background:#28a745;color:#fff}
+  .btn-danger{background:#dc3545;color:#fff}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .form-group{margin-bottom:16px}
+  .form-group input{width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:var(--bg);color:var(--text)}
+  .form-group input:focus{outline:none;border-color:var(--primary);background:var(--card)}
+  .input-wrap{position:relative}
+  .input-wrap input{padding-right:45px}
+  .toggle-pass{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:22px;color:var(--text2);user-select:none}
+  .camera-container{position:relative;width:100%;max-width:400px;margin:0 auto}
+  #video{width:100%;border-radius:12px;background:#000}
+  #canvas{display:none}
+  .camera-controls{display:flex;gap:12px;margin-top:16px}
+  .camera-controls button{flex:1}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:16px;border-radius:12px}
+  .stat-card.blue{background:linear-gradient(135deg,var(--primary),#4A90E2)}
+  .stat-card.green{background:linear-gradient(135deg,#28a745,#20c997)}
+  .stat-label{font-size:12px;opacity:.9}
+  .stat-value{font-size:28px;font-weight:700;margin-top:4px}
+  .status{padding:12px;border-radius:8px;margin-top:16px;text-align:center;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .status.gagal{background:#F8D7DA;color:#721C24}
+  .status.sukses{background:#D4EDDA;color:#155724}
+  .status.loading{background:#D1ECF1;color:#0C5460}
+  .status.error{background:#F8D7DA;color:#721C24}
+  [data-theme="dark"].status.gagal{background:#3a1f1f;color:#ff8a8a}
+  [data-theme="dark"].status.sukses{background:#1f3a2a;color:#8affb0}
+  [data-theme="dark"].status.loading{background:#1f2f3a;color:#8adfff}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;max-width:480px;margin:0 auto;z-index:100}
+  .nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;transition:all.3s}
+  .nav-item.active{color:var(--primary)}
+  .nav-item:active{background:var(--bg)}
+  .nav-icon{font-size:24px}
+  .nav-label{font-size:11px;margin-top:2px}
+  .hidden{display:none!important}
+
+  /* ===== POLES HALAMAN LOGIN (CENTER + PROPORSIONAL ANDROID) ===== */
+  #page-login{background:linear-gradient(160deg,#eaf2ff 0%,var(--bg) 45%);min-height:100vh;min-height:100dvh;padding:24px 16px calc(24px + env(safe-area-inset-bottom))}
+  #page-login.active{display:flex!important;align-items:center;justify-content:center}
+  [data-theme="dark"] #page-login{background:linear-gradient(160deg,#16213a 0%,var(--bg) 45%)}
+  #page-login .login-wrap{width:100%;max-width:360px;padding:0}
+  #page-login .card{width:100%;padding:32px 24px;box-shadow:0 16px 40px rgba(11,99,243,.14);border-radius:24px;border:1px solid var(--border)}
+  #page-login .login-logo{width:96px;height:96px;margin:0 auto 16px;border-radius:22px;overflow:hidden;background:#fff;border:1px solid var(--border);box-shadow:0 8px 22px rgba(11,99,243,.16);animation:logoPop .5s cubic-bezier(.2,.8,.2,1) both}
+  #page-login .login-logo img{width:100%;height:100%;object-fit:cover;display:block}
+  @keyframes logoPop{from{opacity:0;transform:scale(.82) translateY(10px)}to{opacity:1;transform:none}}
+  #page-login h2{text-align:center;color:var(--primary);font-size:26px;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
+  #page-login .subtitle{text-align:center;color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.3px;margin-bottom:26px}
+  #page-login .form-group{margin-bottom:14px}
+  #page-login .form-group input{padding:15px 16px;border-radius:12px;font-size:15px;transition:border-color .2s,box-shadow .2s}
+  #page-login .form-group input:focus{box-shadow:0 0 0 3px rgba(11,99,243,.12)}
+  #page-login .btn-primary{padding:16px;border-radius:12px;font-size:16px;font-weight:700;margin-top:6px;box-shadow:0 8px 18px rgba(11,99,243,.25)}
+  /* ===== /POLES LOGIN ===== */
+
+  #itemMasuk.active,#itemPulang.active,#homeItemMasuk.active,#homeItemPulang.active{border:2px solid var(--primary)}
+  #itemMasuk.done,#itemPulang.done,#homeItemMasuk.done,#homeItemPulang.done{border:2px solid #28a745;background:#F0FFF4}
+  [data-theme="dark"] #itemMasuk.done,[data-theme="dark"] #itemPulang.done,[data-theme="dark"] #homeItemMasuk.done,[data-theme="dark"] #homeItemPulang.done{background:#1f3a2a}
+  .material-icons-round{font-family:'Material Icons Round';font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
+  .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:9999}
+  .loading-overlay.active{display:flex}
+  .spinner{width:40px;height:40px;border:4px solid #fff;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .offline-badge{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#ff9800;color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;z-index:200;display:none}
+  .offline-badge.active{display:block}
+  .rekap-table{width:100%;border-collapse:collapse;font-size:14px}
+  .rekap-table thead tr{background:var(--primary);color:#fff}
+  .rekap-table th{padding:12px;text-align:center}
+  .rekap-table th:first-child{border-radius:8px 0 0 0;text-align:left}
+  .rekap-table th:last-child{border-radius:0 8px 0 0}
+  .rekap-table td{padding:12px;text-align:center;border-bottom:1px solid var(--border)}
+  .rekap-table td:first-child{text-align:left;font-weight:600}
+  .rekap-table tbody tr:nth-child(even){background:var(--bg)}
+  .rekap-table.weekend{background:#FFF3E0}
+  [data-theme="dark"].rekap-table.weekend{background:#3a2e1a}
+  .rekap-table.hari-min{color:#F57C00;font-weight:600}
+  .bulan-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .bulan-nav button{background:var(--primary);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
+  .bulan-nav span{font-weight:600;font-size:16px}
+
+  /* ===== POPUP UPDATE (auto, tanpa ubah versi sw.js) ===== */
+  #updatePopup{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+  #updatePopup.show{opacity:1;visibility:visible}
+  #updatePopup .box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);transform:translateY(20px) scale(.96);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  #updatePopup.show .box{transform:none}
+  #updatePopup .ic{width:64px;height:64px;border-radius:50%;background:rgba(11,99,243,.12);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:34px;animation:spinSlow 3s linear infinite}
+  @keyframes spinSlow{to{transform:rotate(360deg)}}
+  #updatePopup h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px}
+  #updatePopup p{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:18px}
+  #updatePopup .btn-up{width:100%;padding:14px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 18px rgba(11,99,243,.3);transition:transform .15s}
+  #updatePopup .btn-up:active{transform:scale(.97)}
+  /* ===== /POPUP UPDATE ===== */
+  </style>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 <body>
 <div class="offline-badge" id="offlineBadge">📡 Offline - Data akan disync otomatis</div>
@@ -466,8 +454,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <canvas id="canvas" style="display:none"></canvas>
 <audio id="audioTing" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
 
+<!-- ===== POPUP UPDATE OTOMATIS ===== -->
+<div id="updatePopup">
+  <div class="box">
+    <div class="ic"><span class="material-icons-round">system_update_alt</span></div>
+    <h3>Update Tersedia! 🎉</h3>
+    <p>Versi terbaru aplikasi sudah siap. Klik tombol di bawah untuk memperbarui sekarang.</p>
+    <button id="btnUpdateApp" class="btn-up">
+      <span class="material-icons-round">refresh</span> Update Sekarang
+    </button>
+  </div>
+</div>
+<!-- ===== /POPUP UPDATE ===== -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="app.js?v=27"></script>
+<script src="app.js?v=28"></script>
 <script>
 function togglePassword(){
   const i = document.getElementById('password');
@@ -481,6 +482,68 @@ function togglePassProfil(id, el){
   if(i.type=='password'){i.type='text';el.textContent='👁️'}
   else{i.type='password';el.textContent='👁️‍🗨️'}
 }
+
+// ===== PWA INSTALL PROMPT (dipertahankan) =====
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') { console.log('User install PWA'); }
+        deferredPrompt = null;
+      });
+    }
+  }, 1000);
+});
+window.addEventListener('appinstalled', () => { deferredPrompt = null; console.log('PWA sudah terinstall'); });
+
+// ===== DETEKSI UPDATE OTOMATIS (tanpa ubah versi sw.js) =====
+let currentSig = null;
+
+function getSignature(){
+  const files = ['app.js','index.html'];
+  return Promise.all(files.map(f =>
+    fetch(f + '?_t=' + Date.now(), { cache:'no-store', method:'HEAD' })
+      .then(r => r.headers.get('etag') || r.headers.get('last-modified') || r.headers.get('content-length') || '')
+      .catch(() => '')
+  )).then(parts => parts.join('::'));
+}
+
+function showUpdatePopup(){
+  const p = document.getElementById('updatePopup');
+  if(p) p.classList.add('show');
+}
+
+async function checkUpdate(){
+  const sig = await getSignature();
+  if(sig && sig !== '::' && sig !== currentSig){ showUpdatePopup(); }
+}
+
+async function initUpdateCheck(){
+  currentSig = await getSignature();
+  setInterval(checkUpdate, 30000); // cek tiap 30 detik
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){ checkUpdate(); }
+  });
+}
+
+document.getElementById('btnUpdateApp').addEventListener('click', async () => {
+  if('caches' in window){
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+  }
+  location.reload();
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(() => initUpdateCheck());
+  });
+}
+// ===== /DETEKSI UPDATE =====
 </script>
 </body>
 </html>
